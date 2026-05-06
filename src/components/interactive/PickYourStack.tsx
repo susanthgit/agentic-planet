@@ -168,7 +168,7 @@ export default function PickYourStack() {
   const [done, setDone] = useState(false);
 
   const total = QUESTIONS.length;
-  const progress = done ? 100 : Math.round((step / total) * 100);
+  const progress = done ? 100 : Math.round(((step + 1) / total) * 100);
 
   function answer(qId: string, optId: string) {
     setAnswers((a) => ({ ...a, [qId]: optId }));

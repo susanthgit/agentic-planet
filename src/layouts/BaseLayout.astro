@@ -108,12 +108,11 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
       try { localStorage.setItem('theme', next); } catch (_) {}
     });
 
-    // Command palette: ⌘K / Ctrl+K opens search (Pagefind UI)
+    // Command palette: ⌘K / Ctrl+K — for now, navigates to glossary
     document.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        const trigger = document.querySelector<HTMLElement>('[data-search-trigger]');
-        trigger?.click();
+        window.location.href = '/learn/glossary/';
       }
     });
   </script>

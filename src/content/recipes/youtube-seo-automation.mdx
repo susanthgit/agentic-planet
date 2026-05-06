@@ -1,14 +1,13 @@
 ---
-title: "Automate YouTube SEO across 30 videos"
+title: "Automate YouTube SEO across many videos"
 slug: "youtube-seo-automation"
-description: "Three MCPs chained: rewrite titles in Sush's voice, push updates to YouTube, verify Cloudflare cache."
+description: "Three MCPs chained: rewrite titles in Sush's voice, push updates to YouTube, verify Cloudflare cache. Scaffolded recipe — measurements pending Sush's verified runs."
 components: ["playwright-mcp", "youtube-mcp", "cloudflare-mcp"]
-before: "2 hrs / month"
-after: "8 min"
-cost: "$0.40 / run"
-status: "production"
+before: "Several hours / month manual"
+after: "Single-digit minutes"
+cost: "Roughly low single-digit cents per video (token usage)"
+status: "draft"
 domain: "Content / SEO"
-runs: 7
 risk: "medium"
 sushVerdictNeeded: true
 publishedAt: 2026-05-06
@@ -16,16 +15,11 @@ publishedAt: 2026-05-06
 
 # Why this recipe exists
 
-Every month, I have ~30 YouTube videos that need title and description tuning based on actual CTR data. Doing it manually means:
+Every month I have a batch of YouTube videos that need title and description tuning based on real performance data. Doing it manually is mostly mechanical work: open YouTube Studio, find underperforming titles, read context, draft a better one, save, repeat.
 
-- Open YouTube Studio
-- Filter to videos with declining CTR
-- For each one: read recent comments, check competing video titles, draft a better title, save it, repeat
-- About 4 minutes per video × 30 videos = 2 hours
+Chaining three MCPs collapses most of that to a single review pass.
 
-That's 24 hours a year on a task that's mostly mechanical. So I chained three MCPs and got it down to 8 minutes.
-
-> ⚠ **SUSH VERDICT NEEDED**: All numbers in this recipe are placeholders that match the structure I'll publish. Sush will fill the real measured values from his runs.
+> ⚠ **SUSH VERDICT NEEDED — DRAFT RECIPE.** This is a structural template. Real measured before/after, real costs, and verified API behavior come from Sush's own runs. Do not treat the numbers above as benchmarks.
 
 ## The architecture
 
@@ -51,17 +45,15 @@ Three MCPs:
 
 ## The flow
 
-1. **Pull video list.** youtube-mcp → "list my last 30 videos with CTR data"
-2. **Filter to candidates.** Claude looks at the data, picks the videos with declining CTR over the past 30 days.
-3. **Generate new titles.** For each candidate, Claude generates 3 alternative titles based on:
-   - The current title (what we're improving)
-   - The video transcript snippet (what's the video actually about)
-   - Top-performing similar videos (what works in this niche)
+1. **Pull video list with CTR / impressions.** This needs a YouTube **Analytics**-capable MCP, not just a Data API metadata wrapper. CTR and impression data come from the YouTube Analytics API; titles and descriptions are updated via the YouTube Data API. Both need OAuth.
+2. **Filter to candidates.** Claude looks at the data and picks videos with declining CTR over the past 30 days.
+3. **Generate new titles.** For each candidate, Claude generates 3 alternative titles based on the current title, transcript snippet, and reference titles from peers.
 4. **Pick the winner.** Claude scores each alternative against my brand voice rules and picks one.
-5. **Push to YouTube.** youtube-mcp → "update title for video X to Y"
-6. **Update blog references.** If the video is embedded in a blog post, also update the post title.
-7. **Purge Cloudflare cache.** cloudflare-mcp → "purge cache for /blog/* and /videos/*".
-8. **Generate diff report.** Markdown report of all changes for human review.
+5. **Show the diff. Wait for approval.** A human review pass before any update goes live. Non-negotiable.
+6. **Push to YouTube.** youtube-mcp → `videos.update` (~50 quota units per call).
+7. **Update blog references.** If the video is embedded in a blog post, also update the post title.
+8. **Purge Cloudflare cache.** cloudflare-mcp → "purge cache for /blog/* and /videos/*".
+9. **Generate diff report.** Markdown report of all changes.
 
 ## Step-by-step build
 
@@ -95,47 +87,31 @@ For each of my last 30 videos:
 
 ### Run it
 
-```bash
-# Save the prompt
-echo "..." > ~/recipes/youtube-seo.md
+How you actually run this depends on your host:
 
-# Run via Claude Desktop or a script
-claude < ~/recipes/youtube-seo.md
-```
-
-Estimated runtime: ~8 minutes.
-
-## Before / after
-
-| Metric | Before | After |
-|---|---|---|
-| Time per title | 4 min | 16 sec |
-| Titles processed / hour | 15 | 450 |
-| Cost per run (API calls) | $0 (time) | $0.40 |
-| Manual touchpoints | 30 | 1 (approval gate) |
-| Risk of typos | High | Low (review pass) |
+- **Claude Desktop:** paste the prompt into a chat where the three MCP servers are already connected.
+- **Claude Code / CLI:** invoke from a script if your CLI is configured with the MCPs.
+- **Custom runner:** call the model API + MCP clients from your own automation.
 
 ## The catch
 
-Three things that bit me on early runs:
+Things to know before running this for real:
 
-1. **YouTube rate limits.** 50 video updates / day max. If your channel is bigger, batch across days.
-2. **Title language drift.** Claude sometimes reduces character count to fit YouTube's 100-char limit, but in doing so drops emojis I had used deliberately. **Fix:** add to the prompt: *"Preserve emojis from the original title unless removing them objectively improves CTR."*
-3. **Cache purge timing.** Cloudflare's cache purge takes ~30 seconds on the free tier. Don't refresh blog posts immediately after.
+1. **YouTube API quota is the real limit.** `videos.update` costs ~50 quota units per call, and a default project has 10,000 units/day. So if you spend the entire quota on metadata updates, ~200 / day theoretical max — less if you also call list, search, or analytics endpoints. Watch the quota dashboard.
+2. **Title language drift.** Claude sometimes shortens titles to fit YouTube's 100-char limit, dropping emojis I had used deliberately. Add to the prompt: *"Preserve emojis from the original title unless removing them clearly improves the title."*
+3. **Cache purge timing.** Cloudflare's cache purge can take a moment on the free tier. Don't refresh blog posts immediately after.
 
-## Cost breakdown
+## Cost breakdown (notional — Sush to verify)
 
-- Claude tokens: ~$0.30 (mostly input — transcripts are large)
-- youtube-mcp: free
-- playwright-mcp: free (local)
-- cloudflare-mcp: free
-- **Total per run: $0.40**
+- Claude tokens — dominated by input (transcripts can be large).
+- youtube-mcp / playwright-mcp / cloudflare-mcp — free, local.
+- Specific per-run cost depends on context size and number of candidates. Sush will replace these with measured values.
 
 ## My take
 
-I run this monthly. The first run caught two typos I'd missed manually for three months. The review step is non-negotiable — Claude gets ~95% right, but the 5% includes edge cases (emoji handling, brand-specific phrasing) that I want to eyeball before publishing.
+> Pending Sush's review pass — leaving this section to be written by him after the next real run.
 
-Would I run this again? **Yes — every month.** It pays for itself in 5 minutes.
+The point of the review step is non-negotiable. Most title suggestions are usable, but the failures are exactly the ones I want to catch before publishing.
 
 ## Variants
 

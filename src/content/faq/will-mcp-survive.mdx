@@ -15,27 +15,27 @@ But survival isn't guaranteed. Here's the honest read.
 
 ## Why MCP is likely to stick
 
-**1. Cross-vendor adoption.** Microsoft Copilot Studio, OpenAI Apps SDK (interop), and Anthropic Claude all support MCP today. That's a level of cross-vendor agreement we rarely see.
+**1. Cross-vendor adoption.** Microsoft Copilot Studio, OpenAI's Apps SDK (which builds on MCP-style servers), and Anthropic Claude all support MCP today. That's unusual cross-vendor agreement.
 
-**2. Open spec.** Not vendor-controlled. Anyone can implement it. That makes it harder for any single player to break it.
+**2. Openly specified, but still Anthropic-led.** Anyone can implement MCP, which helps adoption. Governance is not yet under a neutral standards body, so that remains a risk (more on that below).
 
-**3. Real ecosystem.** 348+ MCP servers in registries, with dozens added weekly. Network effects are kicking in.
+**3. Real momentum.** Hundreds of MCP servers in registries, with new ones added weekly. Network effects are kicking in.
 
-**4. Practical design.** The protocol solves real problems (stateful context, tool discovery, permissions). It's not academic.
+**4. Practical design.** The protocol solves real problems (stateful context, tool discovery, structured I/O). It's not academic.
 
-**5. No clear competitor at the same scale.** A2A is younger and narrower. Apps SDK is OpenAI-only. Open Agent Protocol has minimal traction.
+**5. No clear competitor at the same scale.** A2A is younger and narrower. Apps SDK builds *on top of* MCP rather than replacing it. Open Agent Protocol has minimal traction.
 
 ## What could kill it
 
 Honest list of survival risks:
 
-**Risk 1: Microsoft or OpenAI fork it.** If a major vendor decides MCP doesn't fit their roadmap and they have leverage, they could ship "MCP++" or "MCP for X". This has killed open standards before.
+**Risk 1: Microsoft or OpenAI fork it.** If a major vendor decides MCP doesn't fit their roadmap and they have the market position to push their own, they could ship "MCP++" or "MCP for X". This has killed open standards before.
 
 **Risk 2: A simpler protocol emerges.** MCP is currently auth-heavy and stateful. If a leaner alternative ships and gets adoption, MCP becomes the JavaScript-frameworks-of-2014 — too many features, ready for replacement.
 
-**Risk 3: A breaking change in v2.** MCP v2 is being drafted. If the breaking changes are too aggressive, ecosystem fragmentation is real. We've seen this kill standards.
+**Risk 3: Breaking changes in future spec revisions.** The MCP spec is versioned by date and still moves quickly. If a future revision introduces aggressive breaking changes, fragmentation is a real risk. We've seen this kill open standards before.
 
-**Risk 4: Anthropic loses momentum.** If Anthropic the company stumbles (acquisition, regulatory issues, etc.), MCP doesn't have an independent foundation yet. It would need to find a neutral home fast.
+**Risk 4: Anthropic loses momentum.** If Anthropic the company stumbles (acquisition, regulatory issues, etc.), MCP doesn't have a neutral standards body yet. It would need to find one fast.
 
 **Risk 5: Major security incident.** A high-profile MCP-mediated breach could trigger overreaction and ecosystem panic.
 
@@ -63,7 +63,7 @@ That means:
 
 ## My honest editorial take
 
-MCP is the cleanest agent protocol we've ever had. I would build on it today without hesitation. If something better comes along in 18 months, the migration cost will be modest because the patterns transfer.
+My take: MCP is the cleanest widely-adopted tool-connection protocol I've seen in this wave of LLM apps. I would build on it today without hesitation. If something better comes along in 18 months, the migration cost will be modest because the patterns transfer.
 
 The bigger risk than "MCP dies" is "you spent 18 months waiting for the protocol to settle and your competitors shipped".
 

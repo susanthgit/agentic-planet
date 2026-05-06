@@ -26,12 +26,12 @@ const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
   <PillarHeader
     code="M03"
     color="cyan"
-    title="MCP Health Board · live signals."
-    description="The 30 MCP servers worth your time, with refreshed-every-6h signals: stars, weekly delta, last commit, status."
+    title="MCP Health Board · seed catalog."
+    description="The MCP servers worth your time, with stars, weekly delta, last commit, and status. Auto-refresh pipeline activates on the next scheduled run."
     count={rows.length}
     countLabel="servers tracked"
-    meta="REFRESH // 6H"
-    status="LIVE"
+    meta="REFRESH // 6H (PIPELINE PENDING)"
+    status="SEED"
   />
 
   <section class="container-wide section">
@@ -44,10 +44,10 @@ const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
     </div>
 
     <Panel
-      title="Live Health Board · all 30 servers"
-      kicker="LIVE"
-      meta={`Updated ${new Date(mcpHealth._lastUpdated).toUTCString().replace('GMT', 'UTC')}`}
-      live={true}
+      title={`Health Board · all ${rows.length} servers`}
+      kicker="SEED"
+      meta={`Seed updated ${new Date(mcpHealth._lastUpdated).toUTCString().replace('GMT', 'UTC')}`}
+      live={false}
       density="tight"
       variant="cyan"
     >
@@ -142,8 +142,8 @@ const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
     border-bottom: 1px solid var(--border-dim);
   }
 
-  /* Inline health pill (used in signal definitions table) */
-  :global(.hb) {
+  /* Inline signal pill (used in signal definitions table) — scoped to page only */
+  :global(.signal-pill) {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -158,7 +158,7 @@ const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
     background: rgba(0, 0, 0, 0.2);
   }
 
-  :global(.hb--alive) { color: var(--signal-green); }
-  :global(.hb--slowing) { color: var(--signal-amber); }
-  :global(.hb--abandoned) { color: var(--signal-red); opacity: 0.85; }
+  :global(.signal-pill--alive) { color: var(--signal-green); }
+  :global(.signal-pill--slowing) { color: var(--signal-amber); }
+  :global(.signal-pill--abandoned) { color: var(--signal-red); opacity: 0.85; }
 </style>

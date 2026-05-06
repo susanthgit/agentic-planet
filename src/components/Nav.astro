@@ -55,14 +55,14 @@ function isActive(href: string): boolean {
     </nav>
 
     <div class="nav__actions">
-      <button class="nav__search" type="button" data-search-trigger aria-label="Search (Ctrl+K)">
+      <a href="/learn/glossary/" class="nav__search" aria-label="Browse glossary (search Phase 2)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <span class="nav__search-text">Search</span>
-        <kbd class="nav__search-kbd">⌘K</kbd>
-      </button>
+        <span class="nav__search-text">Glossary</span>
+        <kbd class="nav__search-kbd">A–Z</kbd>
+      </a>
     </div>
 
     <button class="nav__menu-toggle" type="button" data-mobile-menu-toggle aria-label="Toggle menu" aria-expanded="false">
@@ -277,12 +277,39 @@ function isActive(href: string): boolean {
 </style>
 
 <script>
-  document.addEventListener('click', (e) => {
-    const toggle = (e.target as HTMLElement).closest('[data-mobile-menu-toggle]');
-    if (!toggle) return;
+  function closeMobileMenu() {
     const links = document.querySelector('.nav__links');
-    if (!links) return;
-    const open = links.classList.toggle('nav__links--open');
-    toggle.setAttribute('aria-expanded', String(open));
+    const toggle = document.querySelector('[data-mobile-menu-toggle]');
+    if (!links || !toggle) return;
+    links.classList.remove('nav__links--open');
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const toggle = target.closest('[data-mobile-menu-toggle]');
+
+    if (toggle) {
+      const links = document.querySelector('.nav__links');
+      if (!links) return;
+      const open = links.classList.toggle('nav__links--open');
+      toggle.setAttribute('aria-expanded', String(open));
+      return;
+    }
+
+    // Close on outside click
+    if (!target.closest('.nav')) {
+      closeMobileMenu();
+      return;
+    }
+
+    // Close on link selection
+    if (target.closest('.nav__link')) {
+      closeMobileMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMobileMenu();
   });
 </script>

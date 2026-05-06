@@ -22,32 +22,34 @@ It's like USB for agents. Plug in any tool, any agent picks it up.
 
 ## Why it matters
 
-- **Reusable integrations.** Write an MCP server for GitHub once → Claude, Cursor, Continue, and every other MCP-aware agent can use it.
-- **Standardised security.** Permissions, scopes, and revocation in one model.
-- **Vendor-neutral.** Microsoft, Anthropic, and OpenAI all now support MCP. The most likely-to-stick protocol of 2026.
+- **Reusable integrations.** Write an MCP server for GitHub once → Claude, Cursor, Continue, and every other MCP-aware host can use it.
+- **A better place to enforce access.** MCP standardises the connection and tool-discovery surface. The actual permission model still depends on the host, server, and how you configure credentials — MCP doesn't magically make unsafe tools safe, but it does give you a more consistent place to apply scopes.
+- **Cross-vendor support.** Microsoft, Anthropic, and OpenAI all support MCP today. That's unusual cross-vendor agreement, and it makes MCP the most likely-to-stick tool-connection protocol of 2026.
 
 ## The 90-second mental model
 
-There are three roles:
+There are three moving parts:
 
-1. **MCP Host** — the AI app (Claude Desktop, Cursor, etc.)
-2. **MCP Server** — exposes a tool or data source (a GitHub MCP server, a filesystem MCP server, etc.)
-3. **MCP Protocol** — the spec that defines how they talk
+1. **MCP Host** — the app the user interacts with. Claude Desktop, Cursor, Continue, etc.
+2. **MCP Client** — a component inside the host that maintains a connection to a server.
+3. **MCP Server** — the process or service exposing tools, resources, or prompts.
+
+The **protocol** is the contract those clients and servers use to talk.
 
 When you ask Claude to "summarise the open issues in repo X", here's what happens:
 
-1. Claude (the host) sees you connected the GitHub MCP server.
-2. Claude calls a function on the GitHub MCP server: `list_issues(repo: 'X')`.
-3. The MCP server returns the issues.
+1. Claude (the host) has the GitHub MCP server connected via its MCP client.
+2. Claude calls a function on the server: `list_issues(repo: 'X')`.
+3. The server returns the issues.
 4. Claude reads them and summarises.
 
 You don't write any of that wiring code. The protocol handles it.
 
 ## The catch
 
-MCP is still maturing. Auth flows are being refined (OAuth 2.0 support is improving fast), streaming is in v2 RFC, and permission models vary by host.
+MCP is still moving fast. Auth flows, transport (including streaming), and lifecycle behavior are evolving across spec revisions. Future updates may require migration work.
 
-If you're building today, **prefer MCP servers from official vendors** (GitHub, Cloudflare, Anthropic, etc.) over random hobby implementations. The spec changes; official servers track changes faster.
+If you're building today, **prefer MCP servers from official vendors** (GitHub, Cloudflare, Anthropic, etc.) over random hobby implementations. They track spec changes faster.
 
 ## What to do next
 

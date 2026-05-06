@@ -12,7 +12,7 @@ const standards = [
     fullName: 'Model Context Protocol',
     publisher: 'Anthropic',
     color: 'amber',
-    summary: 'Open protocol for connecting AI agents to external tools, data sources, and apps. Become the de facto standard in 12 months.',
+    summary: 'Open protocol for connecting AI agents to external tools, data sources, and apps. The most likely-to-stick tool-connection protocol of 2026, with cross-vendor support.',
     adoption: 'Established',
     adoptionLevel: 95,
     publishedAt: '2024-11',
@@ -24,8 +24,8 @@ const standards = [
     fullName: 'Agent-to-Agent Protocol',
     publisher: 'Google',
     color: 'magenta',
-    summary: 'Protocol for agents to talk to other agents. Multi-agent systems, delegation, sub-task handoff.',
-    adoption: 'Emerging',
+    summary: 'Protocol for agents to discover and delegate to other agents. Useful for multi-agent systems and sub-task handoff.',
+    adoption: 'Growing',
     adoptionLevel: 40,
     publishedAt: '2025',
     why: 'Important if you\'re building multi-agent systems. Watch this space.',
@@ -36,11 +36,11 @@ const standards = [
     fullName: 'OpenAI Apps SDK',
     publisher: 'OpenAI',
     color: 'green',
-    summary: 'OpenAI\'s answer to MCP. Native integration into ChatGPT, with widget rendering support.',
-    adoption: 'Emerging',
+    summary: 'OpenAI\'s framework for building apps inside ChatGPT. It uses MCP-style servers for tools and adds ChatGPT-specific UI/widget rendering.',
+    adoption: 'Growing',
     adoptionLevel: 50,
     publishedAt: '2025',
-    why: 'If your audience lives in ChatGPT, this is where you ship integrations.',
+    why: 'If your audience lives in ChatGPT, this is where you ship integrations. It builds on MCP rather than replacing it.',
   },
   {
     slug: 'agent-protocol',
@@ -49,7 +49,7 @@ const standards = [
     publisher: 'AI Engineer Foundation',
     color: 'cyan',
     summary: 'Vendor-neutral REST API for invoking agents. Less momentum than MCP/A2A.',
-    adoption: 'Draft',
+    adoption: 'Niche',
     adoptionLevel: 20,
     publishedAt: '2024',
     why: 'Niche right now; could become relevant if vendor protocols fragment.',
@@ -113,17 +113,18 @@ const standards = [
       </p>
       <p>
         <strong class="phosphor-accent">Honest take:</strong> MCP has the most momentum,
-        the cleanest spec, and the broadest cross-vendor support — including from Microsoft and OpenAI,
-        not just Anthropic. If you're building agents that need tools, default to MCP and only diverge
-        when you have a specific reason.
+        the cleanest spec, and the broadest cross-vendor support — including from Microsoft and OpenAI.
+        Apps SDK builds on MCP-style servers rather than replacing them. If you're building agents that
+        need tools, default to MCP and only diverge when you have a specific reason.
       </p>
       <p>
         A2A is interesting if you're orchestrating multiple agents. Apps SDK is essential if your audience
         is in ChatGPT. Don't over-think it; pick the one closest to your distribution channel and ship.
       </p>
-      <Button href="/standards/protocol-war/" variant="primary" iconRight="→">
-        Read the full protocol war analysis
-      </Button>
+      <p class="text-mute" style="font-size: var(--fs-xs); margin-top: var(--space-4);">
+        <strong>Adoption ratings here are editorial, not measured.</strong> They reflect a qualitative read of
+        vendor support, production usage, and developer tooling activity at time of review.
+      </p>
     </Panel>
   </section>
 </BaseLayout>

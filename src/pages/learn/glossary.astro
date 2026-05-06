@@ -13,7 +13,7 @@ interface GlossaryTerm {
 const terms: GlossaryTerm[] = [
   { term: 'Agent', short: 'Software that can plan, call tools, and act on a goal — not just respond. The keyword is "loop": observe → plan → act → observe.', related: ['Agentic', 'Tool calling', 'ReAct'] },
   { term: 'Agentic', short: 'Software that does things on your behalf, often via tool calls and multi-step loops. Marketing uses it loosely; engineers mean: LLM + tools + loop.', related: ['Agent'] },
-  { term: 'Apps SDK', short: 'OpenAI\'s framework for building rich apps inside ChatGPT. The OpenAI answer to MCP. Includes UI widget rendering.', related: ['MCP', 'OpenAI'] },
+  { term: 'Apps SDK', short: 'OpenAI\'s framework for building apps inside ChatGPT. Uses MCP-style servers as the tool/app interface and adds ChatGPT-specific UI/widget rendering.', related: ['MCP', 'OpenAI'] },
   { term: 'A2A', short: 'Agent-to-Agent protocol from Google. Lets agents discover and delegate to each other. Useful for multi-agent systems.', related: ['MCP', 'Multi-agent'] },
   { term: 'Chain-of-thought', short: 'Asking the model to "show its working" before answering. Improves reasoning on complex tasks at the cost of tokens.', related: ['Reasoning'] },
   { term: 'Context window', short: 'How much text the model can "see" at once. Bigger ≠ always better — there\'s a "lost in the middle" problem.', related: ['Long context', 'Token'] },

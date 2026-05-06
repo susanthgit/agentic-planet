@@ -5,7 +5,7 @@
     { "icon": "▲", "text": "Anthropic ships Computer Use v3 with 30% lower latency", "color": "green", "href": "/vendors/anthropic/" },
     { "icon": "◎", "text": "MCP Spec 2.0 RFC drops — auth + streaming improvements", "color": "cyan", "href": "/standards/mcp/" },
     { "icon": "▲", "text": "Claude Skills hits GA, marketplace open", "color": "green" },
-    { "icon": "▼", "text": "AutoGen archived — last commit 4 months", "color": "red", "href": "/open/" },
+    { "icon": "▼", "text": "AutoGen in maintenance mode — successor: Microsoft Agent Framework", "color": "amber", "href": "/open/" },
     { "icon": "◉", "text": "Microsoft Agent 365 GA next quarter", "color": "magenta", "href": "/vendors/microsoft/" },
     { "icon": "◆", "text": "OpenAI Apps SDK adoption: 12 new entries this week", "color": "amber" },
     { "icon": "▲", "text": "Cline crosses 50k stars on GitHub", "color": "green" },
