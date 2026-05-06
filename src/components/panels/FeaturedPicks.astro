@@ -1,0 +1,247 @@
+---
+/**
+ * FeaturedPicks — curated content surface.
+ * Two cards side-by-side: Recipe of the Week + MCP of the Month.
+ */
+
+import Icon from '@components/primitives/Icon.astro';
+import Tag from '@components/primitives/Tag.astro';
+import HealthBadge from '@components/data/HealthBadge.astro';
+
+interface FeaturedRecipe {
+  slug: string;
+  title: string;
+  description: string;
+  components: string[];
+  before: string;
+  after: string;
+  cost?: string;
+}
+
+interface FeaturedMcp {
+  slug: string;
+  name: string;
+  category: string;
+  summary: string;
+  health: 'alive' | 'slowing' | 'abandoned';
+  stars: number;
+}
+
+export interface Props {
+  recipe: FeaturedRecipe;
+  mcp: FeaturedMcp;
+}
+
+const { recipe, mcp } = Astro.props;
+
+function fmt(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace('.0', '')}k`;
+  return n.toString();
+}
+---
+
+<section class="featured">
+  <header class="featured__head">
+    <span class="featured__kicker mono">▸ FEATURED // SUSH'S PICKS THIS WEEK</span>
+    <span class="featured__sub mono">CURATED · NOT SPONSORED</span>
+  </header>
+
+  <div class="featured__cards">
+    <a class="fcard fcard--recipe" href={`/recipes/${recipe.slug}/`}>
+      <header class="fcard__head">
+        <span class="fcard__label mono"><Icon name="flask" size={12} /> RECIPE OF THE WEEK</span>
+        <span class="fcard__feat mono">★ FEATURED</span>
+      </header>
+      <h3 class="fcard__title">{recipe.title}</h3>
+      <p class="fcard__desc">{recipe.description}</p>
+      <div class="fcard__metrics">
+        <span class="fcard__before">{recipe.before}</span>
+        <Icon name="arrow-right" size={11} />
+        <span class="fcard__after phosphor-green mono">{recipe.after}</span>
+        {recipe.cost && <span class="fcard__cost mono">· {recipe.cost}</span>}
+      </div>
+      <div class="fcard__tags">
+        {recipe.components.slice(0, 4).map((c) => <Tag text={c} color="cyan" />)}
+      </div>
+      <span class="fcard__cta mono">Open recipe → /recipes/{recipe.slug}/</span>
+    </a>
+
+    <a class="fcard fcard--mcp" href={`/mcp/${mcp.slug}/`}>
+      <header class="fcard__head">
+        <span class="fcard__label mono"><Icon name="plug" size={12} /> MCP OF THE MONTH</span>
+        <HealthBadge status={mcp.health} />
+      </header>
+      <h3 class="fcard__title">{mcp.name}</h3>
+      <p class="fcard__desc">{mcp.summary}</p>
+      <div class="fcard__meta">
+        <span class="fcard__cat mono">{mcp.category}</span>
+        <span class="fcard__stars mono">{fmt(mcp.stars)} ★ tracked</span>
+      </div>
+      <span class="fcard__cta mono">Read review → /mcp/{mcp.slug}/</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .featured {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .featured__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .featured__kicker {
+    color: var(--accent-hi);
+    font-weight: var(--fw-semibold);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .featured__sub {
+    color: var(--text-mute);
+  }
+
+  .featured__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  @media (max-width: 800px) {
+    .featured__cards { grid-template-columns: 1fr; }
+  }
+
+  .fcard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    color: var(--text);
+    border-right: 1px solid var(--border-dim);
+    transition: all var(--duration-fast) var(--ease-out);
+    position: relative;
+  }
+
+  .fcard:last-child { border-right: 0; }
+
+  @media (max-width: 800px) {
+    .fcard {
+      border-right: 0;
+      border-bottom: 1px solid var(--border-dim);
+    }
+    .fcard:last-child { border-bottom: 0; }
+  }
+
+  .fcard:hover { background: var(--bg-elevated); }
+
+  .fcard--recipe { border-left: 3px solid var(--signal-magenta); }
+  .fcard--mcp { border-left: 3px solid var(--signal-cyan); }
+
+  .fcard__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .fcard__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    color: var(--accent-hi);
+    font-weight: var(--fw-semibold);
+  }
+
+  .fcard--recipe .fcard__label { color: var(--signal-magenta); }
+  .fcard--mcp .fcard__label { color: var(--signal-cyan); }
+
+  .fcard__feat {
+    color: var(--signal-amber);
+    font-weight: var(--fw-bold);
+    text-shadow: var(--text-glow-amber);
+  }
+
+  .fcard__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .fcard__desc {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .fcard__metrics {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    padding: var(--space-2);
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+  }
+
+  .fcard__before { color: var(--text-mute); text-decoration: line-through; text-decoration-color: var(--signal-red); }
+  .fcard__after { font-weight: var(--fw-semibold); }
+  .fcard__cost { color: var(--text-faint); margin-left: auto; }
+
+  .fcard__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .fcard__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+  }
+
+  .fcard__cat {
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .fcard__stars { color: var(--signal-cyan); }
+
+  .fcard__cta {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin-top: var(--space-1);
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--border-dim);
+  }
+
+  .fcard:hover .fcard__cta {
+    color: var(--text-bright);
+  }
+</style>

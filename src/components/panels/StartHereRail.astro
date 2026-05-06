@@ -1,0 +1,217 @@
+---
+/**
+ * StartHereRail — 3-step onboarding for first-time visitors.
+ * Read MCP in 90s → Try Pick Your Stack → Browse one Recipe.
+ */
+
+import Icon from '@components/primitives/Icon.astro';
+
+interface Step {
+  num: string;
+  title: string;
+  description: string;
+  href: string;
+  cta: string;
+  icon: 'brain' | 'beaker' | 'flask';
+  color: 'cyan' | 'magenta' | 'green';
+}
+
+const steps: Step[] = [
+  {
+    num: '01',
+    title: 'Get the concept',
+    description: 'MCP in 90 seconds — what the protocol is and why it matters.',
+    href: '/learn/mcp-in-90-seconds/',
+    cta: 'Read 90s primer',
+    icon: 'brain',
+    color: 'cyan',
+  },
+  {
+    num: '02',
+    title: 'Pick your stack',
+    description: '5 questions, your recommended stack — runs entirely client-side.',
+    href: '/lab/pick-your-stack/',
+    cta: 'Open wizard',
+    icon: 'beaker',
+    color: 'magenta',
+  },
+  {
+    num: '03',
+    title: 'Try a real recipe',
+    description: 'A measured workflow that chains MCPs to save real time.',
+    href: '/recipes/youtube-seo-automation/',
+    cta: 'Browse first recipe',
+    icon: 'flask',
+    color: 'green',
+  },
+];
+---
+
+<section class="startrail">
+  <header class="startrail__head">
+    <span class="startrail__kicker mono">▸ START HERE // FIRST VISIT?</span>
+    <span class="startrail__sub mono">3 STEPS · 5 MINUTES TOTAL</span>
+  </header>
+
+  <div class="startrail__steps">
+    {steps.map((s, i) => (
+      <a class={`shstep shstep--${s.color}`} href={s.href}>
+        <span class="shstep__num mono">{s.num}</span>
+        <span class="shstep__icon" aria-hidden="true">
+          <Icon name={s.icon} size={18} stroke={1.6} />
+        </span>
+        <div class="shstep__body">
+          <h3 class="shstep__title">{s.title}</h3>
+          <p class="shstep__desc">{s.description}</p>
+          <span class="shstep__cta mono">{s.cta} <Icon name="arrow-right" size={11} /></span>
+        </div>
+        {i < steps.length - 1 && <span class="shstep__arrow" aria-hidden="true">→</span>}
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .startrail {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .startrail__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .startrail__kicker {
+    color: var(--accent-hi);
+    font-weight: var(--fw-semibold);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .startrail__sub {
+    color: var(--text-mute);
+  }
+
+  .startrail__steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  @media (max-width: 800px) {
+    .startrail__steps { grid-template-columns: 1fr; }
+  }
+
+  .shstep {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-right: 1px solid var(--border-dim);
+    color: var(--text);
+    transition: all var(--duration-fast) var(--ease-out);
+    position: relative;
+  }
+
+  .shstep:last-child { border-right: 0; }
+
+  @media (max-width: 800px) {
+    .shstep {
+      border-right: 0;
+      border-bottom: 1px solid var(--border-dim);
+    }
+    .shstep:last-child { border-bottom: 0; }
+  }
+
+  .shstep:hover {
+    background: var(--bg-elevated);
+    color: var(--text-bright);
+  }
+
+  .shstep--cyan { border-left: 2px solid var(--signal-cyan); }
+  .shstep--magenta { border-left: 2px solid var(--signal-magenta); }
+  .shstep--green { border-left: 2px solid var(--signal-green); }
+
+  .shstep__num {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    color: currentColor;
+    letter-spacing: var(--tracking-tight);
+    text-shadow: 0 0 6px currentColor;
+  }
+
+  .shstep--cyan .shstep__num { color: var(--signal-cyan); }
+  .shstep--magenta .shstep__num { color: var(--signal-magenta); }
+  .shstep--green .shstep__num { color: var(--signal-green); }
+
+  .shstep__icon {
+    color: currentColor;
+    line-height: 0;
+    filter: drop-shadow(0 0 3px currentColor);
+  }
+
+  .shstep--cyan .shstep__icon { color: var(--signal-cyan); }
+  .shstep--magenta .shstep__icon { color: var(--signal-magenta); }
+  .shstep--green .shstep__icon { color: var(--signal-green); }
+
+  .shstep__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .shstep__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .shstep__desc {
+    font-size: 11px;
+    color: var(--text-mute);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .shstep__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--fs-2xs);
+    color: currentColor;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    font-weight: var(--fw-semibold);
+    margin-top: 2px;
+  }
+
+  .shstep--cyan .shstep__cta { color: var(--signal-cyan); }
+  .shstep--magenta .shstep__cta { color: var(--signal-magenta); }
+  .shstep--green .shstep__cta { color: var(--signal-green); }
+
+  .shstep__arrow {
+    color: var(--text-faint);
+    font-size: var(--fs-md);
+    margin: 0 -8px;
+  }
+
+  @media (max-width: 800px) {
+    .shstep__arrow { display: none; }
+  }
+</style>

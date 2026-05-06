@@ -185,10 +185,9 @@ const version = packageJson.version;
     const hh = String(now.getUTCHours()).padStart(2, '0');
     const mm = String(now.getUTCMinutes()).padStart(2, '0');
     const ss = String(now.getUTCSeconds()).padStart(2, '0');
-    const cs = String(Math.floor(now.getUTCMilliseconds() / 10)).padStart(2, '0');
-    const text = `${hh}:${mm}:${ss}.${cs}`;
+    const text = `${hh}:${mm}:${ss}`;
     els.forEach(el => { el.textContent = text; });
   }
   tickClock();
-  setInterval(tickClock, 100);
+  setInterval(tickClock, 1000);
 </script>

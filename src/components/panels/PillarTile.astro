@@ -12,6 +12,7 @@ export interface Props {
   title: string;
   description?: string;
   count?: number;
+  target?: number;
   fillPercent?: number;
   color?: 'accent' | 'cyan' | 'green' | 'amber' | 'magenta' | 'violet';
   icon?: IconName;
@@ -44,7 +45,7 @@ const {
     )}
     <span class="pt__title">{title}</span>
     {count !== undefined && (
-      <span class="pt__count mono">{count.toLocaleString()}</span>
+      <span class="pt__count mono">{count.toLocaleString()}{Astro.props.target !== undefined && <span class="pt__count-target">/{Astro.props.target}</span>}</span>
     )}
     <span class="pt__chev" aria-hidden="true">
       <Icon name="arrow-right" size={12} stroke={2} />
@@ -168,6 +169,13 @@ const {
 
   .pt--feature .pt__title {
     font-size: var(--fs-md);
+  }
+
+  .pt__count-target {
+    color: var(--text-faint);
+    font-weight: var(--fw-normal);
+    text-shadow: none;
+    margin-left: 1px;
   }
 
   .pt__count {
