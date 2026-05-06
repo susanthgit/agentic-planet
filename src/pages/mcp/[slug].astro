@@ -1,0 +1,374 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+import HealthBadge from '@components/data/HealthBadge.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('mcps');
+  return all.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const {
+  title,
+  name,
+  repo,
+  category,
+  summary,
+  verdict,
+  pros,
+  cons,
+  setupTime,
+  catch: catchNote,
+  dataAccess,
+  health,
+  recommend,
+  sushVerdictNeeded,
+  reviewedAt,
+} = entry.data;
+---
+
+<BaseLayout title={`${title} — MCP review`} description={summary}>
+  <article class="mcp-page">
+    <header class="mcp-page__head">
+      <div class="container-wide">
+        <nav class="breadcrumb mono">
+          <a href="/mcp/">MCPs</a>
+          <span aria-hidden="true">/</span>
+          <span>{name}</span>
+        </nav>
+
+        <span class="mcp-page__cat mono">{category.toUpperCase()}</span>
+        <h1 class="mcp-page__title">{name}</h1>
+        <p class="mcp-page__summary">{summary}</p>
+
+        <div class="mcp-page__meta">
+          <HealthBadge status={health} />
+          {recommend && <Tag text="Recommended" color="green" variant="solid" />}
+          {reviewedAt && (
+            <span class="mcp-page__reviewed mono">REVIEWED {new Date(reviewedAt).toISOString().slice(0, 10)}</span>
+          )}
+        </div>
+
+        {sushVerdictNeeded && (
+          <div class="banner">
+            <span class="banner__label mono">⚠ SUSH VERDICT NEEDED</span>
+            <span>Drafted from public information. Verdict pending Sush\'s actual usage.</span>
+          </div>
+        )}
+
+        {verdict && (
+          <div class="mcp-page__verdict">
+            <span class="mcp-page__verdict-label mono">VERDICT</span>
+            <p>{verdict}</p>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <div class="container-wide mcp-page__body">
+      <div class="mcp-page__content">
+        <Content />
+      </div>
+
+      <aside class="mcp-page__aside">
+        <Panel title="Quick facts" kicker="DATA" density="tight">
+          <dl class="quick-facts">
+            <div class="quick-facts__row">
+              <dt>Repository</dt>
+              <dd><a href={repo} rel="noopener" target="_blank">{repo.replace('https://github.com/', '')}</a></dd>
+            </div>
+            {setupTime && (
+              <div class="quick-facts__row">
+                <dt>Setup time</dt>
+                <dd>{setupTime}</dd>
+              </div>
+            )}
+            <div class="quick-facts__row">
+              <dt>Health</dt>
+              <dd><HealthBadge status={health} /></dd>
+            </div>
+          </dl>
+        </Panel>
+
+        {dataAccess && dataAccess.length > 0 && (
+          <Panel title="What it touches" kicker="PRIVACY" density="tight" variant="warning">
+            <ul class="data-list">
+              {dataAccess.map((d) => <li>{d}</li>)}
+            </ul>
+          </Panel>
+        )}
+
+        {pros && pros.length > 0 && (
+          <Panel title="Strengths" kicker="+" density="tight">
+            <ul class="pros-list">
+              {pros.map((p) => <li>{p}</li>)}
+            </ul>
+          </Panel>
+        )}
+
+        {cons && cons.length > 0 && (
+          <Panel title="Weaknesses" kicker="−" density="tight" variant="warning">
+            <ul class="cons-list">
+              {cons.map((c) => <li>{c}</li>)}
+            </ul>
+          </Panel>
+        )}
+
+        {catchNote && (
+          <Panel title="The catch" kicker="⚠" density="tight" variant="warning">
+            <p style="font-size: var(--fs-sm); margin: 0;">{catchNote}</p>
+          </Panel>
+        )}
+      </aside>
+    </div>
+
+    <footer class="mcp-page__foot container-wide">
+      <Button href="/mcp/" variant="ghost" iconLeft="←">Back to MCP board</Button>
+      <Button href={repo} variant="ghost" iconRight="↗" target="_blank" rel="noopener">View on GitHub</Button>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .mcp-page__head {
+    padding: var(--space-10) 0 var(--space-8);
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 0%, var(--signal-cyan-glow), transparent 60%),
+      var(--bg-base);
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-4);
+  }
+
+  .breadcrumb a { color: var(--signal-cyan); border-bottom: 0; }
+
+  .mcp-page__cat {
+    display: inline-block;
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid var(--signal-cyan);
+    border-radius: var(--radius-xs);
+    margin-bottom: var(--space-3);
+  }
+
+  .mcp-page__title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3) 0;
+    text-shadow: 0 0 20px var(--signal-cyan-glow);
+  }
+
+  .mcp-page__summary {
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--text-mute);
+    max-width: 720px;
+    margin: 0 0 var(--space-4) 0;
+  }
+
+  .mcp-page__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .mcp-page__reviewed {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .banner {
+    margin-top: var(--space-4);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--signal-amber);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--fs-sm);
+  }
+
+  .banner__label {
+    color: var(--signal-amber);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .mcp-page__verdict {
+    margin-top: var(--space-6);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--signal-cyan);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 1px var(--signal-cyan), 0 0 16px var(--signal-cyan-glow);
+    max-width: 720px;
+  }
+
+  .mcp-page__verdict-label {
+    display: block;
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-2);
+    text-shadow: var(--text-glow-cyan);
+  }
+
+  .mcp-page__verdict p {
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--text-bright);
+    margin: 0;
+  }
+
+  .mcp-page__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: var(--space-8);
+    padding: var(--space-10) 0;
+  }
+
+  @media (max-width: 1000px) {
+    .mcp-page__body {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .mcp-page__content {
+    font-size: var(--fs-md);
+    line-height: 1.7;
+    min-width: 0;
+  }
+
+  .mcp-page__content :global(h2) {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    color: var(--text-bright);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-dim);
+  }
+
+  .mcp-page__content :global(h2)::before {
+    content: "▸ ";
+    color: var(--signal-cyan);
+  }
+
+  .mcp-page__content :global(p) { margin-bottom: var(--space-4); }
+  .mcp-page__content :global(strong) { color: var(--text-bright); }
+
+  .mcp-page__content :global(pre) {
+    background: var(--code-bg);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    overflow-x: auto;
+    margin: var(--space-4) 0;
+  }
+
+  .mcp-page__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .quick-facts {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .quick-facts__row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .quick-facts__row:last-child { border-bottom: 0; }
+
+  .quick-facts dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .quick-facts dd {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .quick-facts dd a {
+    font-family: var(--font-mono);
+    color: var(--signal-cyan);
+    border-bottom: 0;
+  }
+
+  .data-list, .pros-list, .cons-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .data-list li, .pros-list li, .cons-list li {
+    padding: var(--space-1-5) 0;
+    border-bottom: 1px solid var(--border-dim);
+    font-size: var(--fs-sm);
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .data-list li:last-child, .pros-list li:last-child, .cons-list li:last-child {
+    border-bottom: 0;
+  }
+
+  .data-list li::before { content: "● "; color: var(--signal-amber); }
+  .pros-list li::before { content: "+ "; color: var(--signal-green); font-family: var(--font-mono); font-weight: var(--fw-bold); }
+  .cons-list li::before { content: "− "; color: var(--signal-red); font-family: var(--font-mono); font-weight: var(--fw-bold); }
+
+  .mcp-page__foot {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-dim);
+  }
+</style>

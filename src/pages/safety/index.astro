@@ -8,12 +8,18 @@ import Button from '@components/primitives/Button.astro';
 const risks = [
   { id: 'PI-001', title: 'Prompt injection (direct)', severity: 'high', summary: 'Attacker text in user input overrides system prompt; agent follows malicious instructions.' },
   { id: 'PI-002', title: 'Prompt injection (indirect)', severity: 'critical', summary: 'Malicious content in fetched web pages, files, or emails gets parsed as instructions.' },
+  { id: 'PI-003', title: 'Prompt injection via RAG', severity: 'high', summary: 'Hostile documents indexed into your knowledge base inject instructions into every retrieval.' },
   { id: 'DF-001', title: 'Over-broad tool access', summary: 'Agent has more permissions than the task needs. Damage radius if compromised: large.', severity: 'high' },
   { id: 'DF-002', title: 'Cross-tenant data leak', summary: 'Agent reads from one user\'s data and writes to another. Common in shared deployments.', severity: 'critical' },
+  { id: 'SC-001', title: 'Untrusted MCP server', severity: 'critical', summary: 'A malicious or compromised MCP server can read what you send it and return crafted responses to influence agent behaviour.' },
+  { id: 'AUTH-001', title: 'OAuth token leakage', severity: 'high', summary: 'Tokens stored in agent memory, logs, or transcripts can leak through error messages or shared sessions.' },
+  { id: 'TR-001', title: 'Tool-result poisoning', severity: 'high', summary: 'A tool returns crafted output (e.g. fake search results) that the agent then acts on as truth.' },
   { id: 'FM-001', title: 'Tool-call infinite loop', summary: 'Agent calls same tool repeatedly without progress. Burns budget, no output.', severity: 'medium' },
   { id: 'FM-002', title: 'Context window exhaustion', summary: 'Long-running agent fills context with stale data; behaviour becomes unstable.', severity: 'medium' },
   { id: 'FM-003', title: 'Hallucinated tool results', summary: 'Agent fabricates "successful" tool output without actually calling the tool.', severity: 'high' },
+  { id: 'HITL-001', title: 'Approval fatigue', severity: 'medium', summary: 'Humans rubber-stamp every "are you sure?" prompt. The gate becomes ceremonial, not protective.' },
   { id: 'PR-001', title: 'Inadvertent training data leak', summary: 'Sensitive prompts/data sent to providers without retention review.', severity: 'high' },
+  { id: 'LOG-001', title: 'Sensitive data in traces / logs', severity: 'high', summary: 'Observability tools capture full prompts and tool inputs. Forgotten log retention often = compliance breach waiting to happen.' },
 ];
 
 const sevColor = (s: string) =>

@@ -1,0 +1,124 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+---
+
+<BaseLayout
+  title="Colophon — how this site is built"
+  description="The stack, the editorial rules, and the production process behind The Agentic Planet."
+>
+  <header class="colophon-head container-prose">
+    <span class="kicker mono">▸ COLOPHON // META</span>
+    <h1 class="colophon-title">How this site is built.</h1>
+    <p class="colophon-lede">
+      A factual reference for what powers the Agentic Planet. Open source, no tracking, no email capture.
+    </p>
+  </header>
+
+  <section class="container-prose section">
+    <Panel kicker="STACK" title="What it runs on" density="loose">
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Choice</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Static site generator</td><td>Astro 5 + MDX</td></tr>
+          <tr><td>Interactive islands</td><td>React 18</td></tr>
+          <tr><td>Hosting</td><td>Cloudflare Pages</td></tr>
+          <tr><td>DNS / CDN</td><td>Cloudflare</td></tr>
+          <tr><td>Source / version control</td><td>GitHub (public)</td></tr>
+          <tr><td>Diagrams</td><td>Excalidraw (CC BY 4.0)</td></tr>
+          <tr><td>Search index (Phase 2)</td><td>Pagefind (static)</td></tr>
+          <tr><td>Analytics</td><td>Cloudflare Web Analytics (cookieless)</td></tr>
+          <tr><td>Health data refresh</td><td>GitHub Actions cron</td></tr>
+          <tr><td>Build pipeline</td><td>GitHub Actions</td></tr>
+        </tbody>
+      </table>
+    </Panel>
+
+    <Panel kicker="EDITORIAL" title="The rules we hold ourselves to" density="loose">
+      <ul>
+        <li><strong>Plain English.</strong> Forbidden words list applies. We translate jargon inline.</li>
+        <li><strong>Honest claims.</strong> Numbers are measured or marked as illustrative. No vibes.</li>
+        <li><strong>Disclosed conflicts.</strong> Microsoft pages show the disclosure footer. Other vendor relationships disclosed if any.</li>
+        <li><strong>Versioned reviews.</strong> Tool / vendor / MCP reviews carry last-reviewed dates and get refreshed.</li>
+        <li><strong>No sponsored content.</strong> If a vendor pays, we say so. Currently: <strong>0 sponsored posts.</strong></li>
+        <li><strong>No login walls. No paid tiers. No email-capture popups.</strong></li>
+      </ul>
+    </Panel>
+
+    <Panel kicker="LICENCES" title="What you can do with this" density="loose">
+      <p>
+        <strong>Code:</strong> MIT — fork, copy, run.<br />
+        <strong>Content</strong> (articles, recipes, reviews): CC BY 4.0 — quote, embed, even commercially. Just credit "Agentic Planet" with a link.<br />
+        <strong>Diagrams:</strong> CC BY 4.0 — embed in your blog, deck, or README. Attribution required.
+      </p>
+    </Panel>
+
+    <Panel kicker="DISCLOSURE" title="Who runs this" density="loose">
+      <p>
+        Built and maintained by <a href="https://github.com/susanthgit">Sush (Susanth Sutheesh)</a>,
+        a Copilot Solution Engineer at Microsoft New Zealand.
+      </p>
+      <p>
+        Microsoft pages on this site display this disclosure prominently. The takes on those pages
+        reflect Sush's independent engineering judgement — they are not Microsoft's official position.
+      </p>
+      <p class="text-mute" style="font-size: var(--fs-sm);">
+        If you spot a factual error, broken link, or stale data, please
+        <a href="https://github.com/susanthgit/agentic-planet/issues">open an issue on GitHub</a>.
+      </p>
+    </Panel>
+
+    <div class="actions">
+      <Button href="/" variant="ghost" iconLeft="←">Home</Button>
+      <Button href="https://github.com/susanthgit/agentic-planet" variant="ghost" iconRight="↗" target="_blank" rel="noopener">View source</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .colophon-head {
+    padding: var(--space-10) 0 var(--space-4);
+  }
+
+  .kicker {
+    display: inline-block;
+    font-size: var(--fs-2xs);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .colophon-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: var(--fw-bold);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .colophon-lede {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    margin: 0;
+  }
+
+  .section {
+    padding: var(--space-6) 0 var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+</style>

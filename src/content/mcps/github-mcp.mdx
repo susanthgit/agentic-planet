@@ -1,0 +1,67 @@
+---
+title: "github-mcp-server review"
+name: "github-mcp-server"
+repo: "https://github.com/github/github-mcp-server"
+category: "Dev"
+summary: "Official GitHub MCP server. Browse, search, and modify repos, issues, PRs, and Actions from any MCP-aware agent. Mature, fast-moving."
+verdict: "If your agent touches code or repositories, this is the default. Maintained by GitHub themselves."
+pros:
+  - "Official GitHub maintenance — keeps up with API changes"
+  - "Wide tool surface: repos, issues, PRs, code search, Actions, releases"
+  - "Granular scopes via PAT or fine-grained tokens"
+  - "Active issue response, frequent releases"
+cons:
+  - "Read scopes are coarse — broad PATs end up over-permissioned"
+  - "No first-party rate-limit handling — agents can hit secondary limits under heavy use"
+  - "Tool naming can be repetitive across resource types"
+setupTime: "5 minutes"
+catch: "Default tokens often grant more than the agent needs. Audit scopes carefully — especially for agents that write."
+dataAccess:
+  - "Repository contents (per token scope)"
+  - "Issues, PRs, comments, labels"
+  - "GitHub Actions workflow data"
+  - "Organisation membership (if granted)"
+health: "alive"
+recommend: true
+sushVerdictNeeded: true
+reviewedAt: 2026-05-06
+---
+
+# What it does
+
+Exposes a wide set of GitHub operations as MCP tools — listing repos, reading files, searching code, opening issues, drafting PRs, reading workflow runs, and more. Probably the most-installed MCP server in 2026.
+
+## Why you'd install it
+
+If your agent reads or writes code, github-mcp-server is the path of least resistance. The alternative — wiring `octokit.js` calls into a custom tool layer — duplicates work that GitHub now maintains officially.
+
+## Setup
+
+1. Generate a PAT (classic or fine-grained). Pick the smallest scope that covers your use case.
+2. Install the server:
+   ```bash
+   # Claude Desktop (config.json under "mcpServers")
+   "github": {
+     "command": "npx",
+     "args": ["-y", "@github/mcp-server"],
+     "env": { "GITHUB_TOKEN": "ghp_..." }
+   }
+   ```
+3. Restart Claude Desktop or your MCP host. Tools appear under "github".
+
+## My take
+
+> Pending Sush\'s real usage notes. Structure here reflects public information.
+
+For reading and exploring repos — fine. For writes — always pair with a human-in-the-loop step until you're confident. Don't grant `delete_repo` scopes lightly.
+
+## Combinations
+
+Works especially well with:
+
+- [`filesystem-mcp`](/mcp/) — for local + remote unified file access
+- `slack-mcp` — to post PR summaries to channels
+- `playwright-mcp` — to verify deployed previews
+
+Used in recipes:
+- [Automate YouTube SEO](/recipes/youtube-seo-automation/) (peripheral)

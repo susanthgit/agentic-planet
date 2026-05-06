@@ -53,6 +53,8 @@ const duration = `${speed}s`;
     padding: var(--space-2) var(--space-3);
     overflow: hidden;
     position: relative;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .ticker__label {
@@ -72,6 +74,7 @@ const duration = `${speed}s`;
   .ticker__track {
     flex: 1;
     overflow: hidden;
+    min-width: 0;
     mask-image: linear-gradient(
       90deg,
       transparent 0%,
@@ -93,6 +96,7 @@ const duration = `${speed}s`;
     align-items: center;
     gap: var(--space-3);
     white-space: nowrap;
+    width: max-content;
     animation: ticker-slide var(--ticker-duration, 60s) linear infinite;
     will-change: transform;
   }

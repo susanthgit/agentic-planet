@@ -63,6 +63,17 @@ const letters = Object.keys(grouped).sort();
   </header>
 
   <section class="container-wide section">
+    <div class="filter-row">
+      <input
+        type="search"
+        id="glossary-filter"
+        class="filter-input"
+        placeholder="Filter terms… (e.g. MCP, agent, RAG)"
+        aria-label="Filter glossary terms"
+      />
+      <span class="filter-count mono" id="filter-count">{terms.length} terms</span>
+    </div>
+
     <div class="letter-bar">
       {letters.map((l) => (
         <a href={`#${l}`} class="letter-bar__link mono">{l}</a>
@@ -94,6 +105,37 @@ const letters = Object.keys(grouped).sort();
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const filterEl = document.getElementById('glossary-filter') as HTMLInputElement | null;
+  const countEl = document.getElementById('filter-count');
+  const allTerms = Array.from(document.querySelectorAll<HTMLElement>('.term'));
+  const allSections = Array.from(document.querySelectorAll<HTMLElement>('.letter-section'));
+  const total = allTerms.length;
+
+  if (filterEl && countEl) {
+    filterEl.addEventListener('input', () => {
+      const q = filterEl.value.trim().toLowerCase();
+      let visible = 0;
+
+      for (const el of allTerms) {
+        const name = (el.querySelector('.term__name')?.textContent ?? '').toLowerCase();
+        const def = (el.querySelector('.term__def')?.textContent ?? '').toLowerCase();
+        const matches = !q || name.includes(q) || def.includes(q);
+        el.classList.toggle('term--hidden', !matches);
+        if (matches) visible++;
+      }
+
+      // Hide letter sections with no visible terms
+      for (const section of allSections) {
+        const hasVisible = section.querySelectorAll('.term:not(.term--hidden)').length > 0;
+        section.classList.toggle('letter-section--empty', !hasVisible);
+      }
+
+      countEl.textContent = q ? `${visible} of ${total}` : `${total} terms`;
+    });
+  }
+</script>
 
 <style>
   .ph {
@@ -132,6 +174,52 @@ const letters = Object.keys(grouped).sort();
   }
 
   .section { padding: var(--space-8) 0; }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .filter-input {
+    flex: 1;
+    padding: var(--space-2-5) var(--space-3);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    color: var(--text-bright);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    transition: all var(--duration-fast) var(--ease-out);
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .filter-input::placeholder {
+    color: var(--text-faint);
+  }
+
+  .filter-input:focus {
+    outline: none;
+    border-color: var(--signal-cyan);
+    box-shadow: 0 0 0 1px var(--signal-cyan), 0 0 12px var(--signal-cyan-glow);
+  }
+
+  .filter-count {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    flex-shrink: 0;
+  }
+
+  .term--hidden {
+    display: none;
+  }
+
+  .letter-section--empty {
+    display: none;
+  }
 
   .letter-bar {
     display: flex;

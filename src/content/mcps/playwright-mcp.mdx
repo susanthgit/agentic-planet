@@ -1,0 +1,70 @@
+---
+title: "playwright-mcp review"
+name: "playwright-mcp"
+repo: "https://github.com/microsoft/playwright-mcp"
+category: "Browser"
+summary: "Microsoft's MCP server wrapping Playwright. Lets agents drive a real browser — navigate, click, fill forms, capture screenshots, scrape."
+verdict: "Best-in-class browser automation MCP. Use it when your agent must interact with a web UI that has no API."
+pros:
+  - "Maintained by Microsoft (the makers of Playwright itself)"
+  - "Headless or headed modes, multiple browser engines (Chromium, Firefox, WebKit)"
+  - "Strong selector model — accessibility tree-aware"
+  - "Returns structured outputs the LLM can actually reason about"
+cons:
+  - "Heavier setup than HTTP-based MCPs — needs browser binaries"
+  - "Resource usage non-trivial for long sessions"
+  - "Sites with strong anti-bot protection (Cloudflare Turnstile, etc.) often defeat it"
+setupTime: "10–15 minutes"
+catch: "If your task is reachable via a public API or RSS, prefer that. Browser automation is the heaviest, slowest, and most fragile MCP option."
+dataAccess:
+  - "Any website the agent navigates to"
+  - "Form data the agent submits"
+  - "Screenshots / DOM snapshots in agent memory"
+  - "Cookies / auth from any sites you sign into"
+health: "alive"
+recommend: true
+sushVerdictNeeded: true
+reviewedAt: 2026-05-06
+---
+
+# What it does
+
+Wraps Playwright as MCP tools so an agent can drive a real browser the way a human would. Open URLs, click, type, navigate, screenshot, scrape. Used heavily in browser-agent workflows where there is no underlying API.
+
+## When you actually need it
+
+You usually do not. Try this order:
+
+1. Is there an API? Use it.
+2. Is there an RSS / sitemap / public data feed? Use it.
+3. Is the page static enough to fetch + parse? Use a fetch + cheerio MCP.
+4. Only then: reach for playwright-mcp.
+
+When you need it, you really need it — there is no substitute for "drive a real browser" tasks. But it is the heaviest tool in the kit.
+
+## Setup
+
+1. Install Node + Playwright dependencies (one-time browser binaries download).
+2. Add to your MCP host config:
+   ```json
+   "playwright": {
+     "command": "npx",
+     "args": ["-y", "@playwright/mcp"]
+   }
+   ```
+3. Restart your host.
+
+## My take
+
+> Pending Sush\'s real usage notes.
+
+Use it for narrow, well-scoped flows: scrape this dashboard, fill this form, capture this screenshot. Avoid letting the agent "explore the web freely" — that's where browser agents go off the rails.
+
+## Combinations
+
+- `cloudflare-mcp` — to purge cache after publishing
+- `youtube-mcp` — for YouTube workflows where some metadata isn't in the public API
+- `filesystem-mcp` — to save screenshots and DOM snapshots locally
+
+Used in recipes:
+- [Automate YouTube SEO](/recipes/youtube-seo-automation/)

@@ -340,9 +340,22 @@ const trendDeltaLabel =
   }
 
   .trend-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .trend-row :global(svg) {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  @media (max-width: 600px) {
+    .trend-row {
+      grid-template-columns: 1fr;
+    }
   }
 
   .trend-meta {
