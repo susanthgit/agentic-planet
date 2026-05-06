@@ -1,0 +1,217 @@
+---
+/**
+ * HealthBoard — flagship MCP health table.
+ * Sortable, filterable, with live signals.
+ */
+
+import HealthBadge from '@components/data/HealthBadge.astro';
+import DeltaPill from '@components/data/DeltaPill.astro';
+import Sparkline from '@components/data/Sparkline.astro';
+
+export interface HealthRow {
+  slug: string;
+  name: string;
+  category: string;
+  stars: number;
+  delta7d: number;
+  lastCommit: string;
+  lastCommitDays: number;
+  health: 'alive' | 'slowing' | 'abandoned' | 'unknown';
+  trend?: number[];
+  url?: string;
+}
+
+export interface Props {
+  rows: HealthRow[];
+  showSparkline?: boolean;
+  compact?: boolean;
+}
+
+const { rows, showSparkline = true, compact = false } = Astro.props;
+
+function formatStars(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace('.0', '')}k`;
+  return n.toString();
+}
+---
+
+<div class:list={['hb', { 'hb--compact': compact }]}>
+  <div class="hb__head">
+    <span class="hb__col hb__col--name">Server</span>
+    <span class="hb__col hb__col--cat">Category</span>
+    <span class="hb__col hb__col--stars">Stars</span>
+    <span class="hb__col hb__col--delta">Δ 7d</span>
+    {showSparkline && <span class="hb__col hb__col--trend">Trend</span>}
+    <span class="hb__col hb__col--last">Last commit</span>
+    <span class="hb__col hb__col--health">Status</span>
+  </div>
+
+  {rows.map((r) => (
+    <a
+      class="hb__row"
+      href={r.url ?? `/mcp/${r.slug}/`}
+      data-status={r.health}
+    >
+      <span class="hb__col hb__col--name">
+        <span class="hb__name">{r.name}</span>
+      </span>
+      <span class="hb__col hb__col--cat">
+        <span class="hb__cat">{r.category}</span>
+      </span>
+      <span class="hb__col hb__col--stars mono">
+        <span class="hb__stars">{formatStars(r.stars)}</span>
+      </span>
+      <span class="hb__col hb__col--delta">
+        <DeltaPill value={r.delta7d} />
+      </span>
+      {showSparkline && (
+        <span class="hb__col hb__col--trend">
+          {r.trend && r.trend.length > 0 ? (
+            <Sparkline data={r.trend} stroke={r.health === 'alive' ? 'green' : r.health === 'slowing' ? 'amber' : 'red'} />
+          ) : (
+            <span class="hb__trend-empty">—</span>
+          )}
+        </span>
+      )}
+      <span class="hb__col hb__col--last mono">
+        {r.lastCommit}
+      </span>
+      <span class="hb__col hb__col--health">
+        <HealthBadge status={r.health} />
+      </span>
+    </a>
+  ))}
+</div>
+
+<style>
+  .hb {
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .hb__head,
+  .hb__row {
+    display: grid;
+    grid-template-columns:
+      minmax(180px, 1.4fr)
+      minmax(110px, 0.9fr)
+      minmax(70px, 0.6fr)
+      minmax(70px, 0.6fr)
+      minmax(80px, 0.7fr)
+      minmax(110px, 0.9fr)
+      minmax(110px, 0.9fr);
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .hb__head {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--text-mute);
+    font-weight: var(--fw-semibold);
+  }
+
+  .hb__head .hb__col::before {
+    content: "// ";
+    color: var(--text-faint);
+  }
+
+  .hb__row {
+    border-bottom: 1px solid var(--border-dim);
+    color: var(--text);
+    transition: background var(--duration-fast) var(--ease-out),
+                border-color var(--duration-fast) var(--ease-out);
+    border-bottom-color: var(--border-dim);
+    text-decoration: none;
+  }
+
+  .hb__row:last-child {
+    border-bottom: 0;
+  }
+
+  .hb__row:hover {
+    background: var(--bg-elevated);
+    border-bottom-color: var(--accent);
+    color: var(--text-bright);
+  }
+
+  .hb__row[data-status="abandoned"] {
+    opacity: 0.6;
+  }
+
+  .hb__row[data-status="alive"] .hb__name {
+    color: var(--text-bright);
+  }
+
+  .hb__name {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    color: var(--text);
+  }
+
+  .hb__cat {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .hb__stars {
+    color: var(--signal-cyan);
+    font-weight: var(--fw-medium);
+  }
+
+  .hb__trend-empty {
+    color: var(--text-faint);
+  }
+
+  .hb__col--last {
+    color: var(--text-mute);
+    font-size: var(--fs-xs);
+  }
+
+  /* Compact mode hides some columns */
+  .hb--compact .hb__col--cat,
+  .hb--compact .hb__col--trend {
+    display: none;
+  }
+
+  .hb--compact .hb__head,
+  .hb--compact .hb__row {
+    grid-template-columns:
+      minmax(180px, 1.6fr)
+      minmax(70px, 0.6fr)
+      minmax(70px, 0.6fr)
+      minmax(110px, 0.9fr)
+      minmax(110px, 0.9fr);
+  }
+
+  @media (max-width: 900px) {
+    .hb__col--cat,
+    .hb__col--trend,
+    .hb__col--last {
+      display: none;
+    }
+    .hb__head,
+    .hb__row {
+      grid-template-columns: 1.5fr 0.6fr 0.6fr 0.9fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hb__col--delta { display: none; }
+    .hb__head,
+    .hb__row {
+      grid-template-columns: 1.5fr 0.6fr 0.9fr;
+    }
+  }
+</style>

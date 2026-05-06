@@ -1,0 +1,137 @@
+---
+/**
+ * Button — cockpit action button with accent or ghost variant.
+ */
+
+export interface Props {
+  href?: string;
+  variant?: 'primary' | 'ghost' | 'cyan';
+  size?: 'sm' | 'md' | 'lg';
+  type?: 'button' | 'submit' | 'reset';
+  rel?: string;
+  target?: string;
+  disabled?: boolean;
+  iconLeft?: string;
+  iconRight?: string;
+  ariaLabel?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  type = 'button',
+  rel,
+  target,
+  disabled,
+  iconLeft,
+  iconRight,
+  ariaLabel,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class:list={['btn', `btn--${variant}`, `btn--${size}`]}
+  href={href}
+  type={!href ? type : undefined}
+  rel={rel}
+  target={target}
+  disabled={!href && disabled}
+  aria-label={ariaLabel}
+>
+  {iconLeft && <span class="btn__icon" aria-hidden="true">{iconLeft}</span>}
+  <span class="btn__label"><slot /></span>
+  {iconRight && <span class="btn__icon" aria-hidden="true">{iconRight}</span>}
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2-5) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    border-radius: var(--radius-sm);
+    border: 1px solid currentColor;
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+    border-bottom: 1px solid currentColor;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn--sm {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--fs-xs);
+  }
+
+  .btn--lg {
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--fs-base);
+  }
+
+  .btn--primary {
+    color: var(--text-bright);
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), var(--glow-accent);
+  }
+
+  .btn--primary:hover {
+    background: var(--accent-hi);
+    border-color: var(--accent-hi);
+    box-shadow: 0 0 0 1px var(--accent-hi), 0 0 20px var(--accent-glow);
+  }
+
+  .btn--ghost {
+    color: var(--text-bright);
+    border-color: var(--border);
+    background: var(--bg-elevated);
+  }
+
+  .btn--ghost:hover {
+    border-color: var(--accent-hi);
+    color: var(--accent-hi);
+    background: var(--bg-overlay);
+  }
+
+  .btn--cyan {
+    color: var(--bg-base);
+    background: var(--signal-cyan);
+    border-color: var(--signal-cyan);
+    box-shadow: 0 0 0 1px var(--signal-cyan), var(--glow-cyan);
+  }
+
+  .btn--cyan:hover {
+    box-shadow: 0 0 0 1px var(--signal-cyan), 0 0 20px var(--signal-cyan-glow);
+  }
+
+  .btn__icon {
+    font-family: var(--font-mono);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--text-bright);
+    outline-offset: 2px;
+  }
+</style>

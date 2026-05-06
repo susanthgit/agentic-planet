@@ -1,0 +1,43 @@
+---
+/**
+ * LiveDot — pulsing live indicator dot.
+ * Pure visual — used inline next to "live" data points.
+ */
+
+export interface Props {
+  color?: 'green' | 'red' | 'amber' | 'cyan' | 'accent';
+  size?: 'sm' | 'md' | 'lg';
+  silent?: boolean;
+}
+
+const { color = 'green', size = 'sm', silent = false } = Astro.props;
+---
+
+<span
+  class:list={['ld', `ld--${color}`, `ld--${size}`, { 'ld--silent': silent }]}
+  aria-hidden="true"
+></span>
+
+<style>
+  .ld {
+    display: inline-block;
+    border-radius: var(--radius-full);
+    background: currentColor;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+
+  .ld--sm { width: 6px; height: 6px; }
+  .ld--md { width: 8px; height: 8px; }
+  .ld--lg { width: 10px; height: 10px; }
+
+  .ld--green { color: var(--signal-green); box-shadow: 0 0 6px var(--signal-green-glow); }
+  .ld--red { color: var(--signal-red); box-shadow: 0 0 6px var(--signal-red-glow); }
+  .ld--amber { color: var(--signal-amber); box-shadow: 0 0 6px var(--signal-amber-glow); }
+  .ld--cyan { color: var(--signal-cyan); box-shadow: 0 0 6px var(--signal-cyan-glow); }
+  .ld--accent { color: var(--accent-hi); box-shadow: 0 0 6px var(--accent-glow); }
+
+  .ld:not(.ld--silent) {
+    animation: pulse var(--pulse-duration) var(--ease-in-out) infinite;
+  }
+</style>

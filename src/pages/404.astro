@@ -1,0 +1,100 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Button from '@components/primitives/Button.astro';
+---
+
+<BaseLayout title="404 — Signal Lost" description="Page not found.">
+  <div class="errpage">
+    <div class="errpage__inner container-prose">
+      <div class="errpage__static" aria-hidden="true">
+        <span>SIGNAL</span><span>LOST</span><span>—</span><span>404</span>
+        <span>404</span><span>SIGNAL</span><span>LOST</span><span>—</span>
+        <span>—</span><span>404</span><span>SIGNAL</span><span>LOST</span>
+      </div>
+      <p class="errpage__code mono">ERR // 0x0404 // RESOURCE_NOT_FOUND</p>
+      <h1 class="errpage__title">SIGNAL LOST<span class="errpage__cursor">▌</span></h1>
+      <p class="errpage__msg">
+        The page you tried to reach isn't on this planet. Maybe it moved, maybe it was
+        deprecated, maybe it never existed. Below are some places you'll definitely find life.
+      </p>
+      <div class="errpage__actions">
+        <Button href="/" variant="primary" iconLeft="◉">Return to base</Button>
+        <Button href="/mcp/" variant="ghost">Browse MCPs</Button>
+        <Button href="/recipes/" variant="ghost">Browse recipes</Button>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .errpage {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    padding: var(--space-12) 0;
+  }
+
+  .errpage__inner {
+    text-align: center;
+    position: relative;
+  }
+
+  .errpage__static {
+    position: absolute;
+    inset: -80px 0 auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    opacity: 0.4;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    animation: flicker 2s var(--ease-in-out) infinite;
+  }
+
+  .errpage__code {
+    font-size: var(--fs-xs);
+    color: var(--signal-red);
+    text-shadow: var(--text-glow-red);
+    margin-bottom: var(--space-4);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .errpage__title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 8vw, 96px);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: var(--space-6);
+    text-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+    animation: flicker 4s var(--ease-in-out) infinite;
+  }
+
+  .errpage__cursor {
+    color: var(--signal-red);
+    animation: blink 1.1s infinite step-start;
+    margin-left: 6px;
+  }
+
+  .errpage__msg {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    line-height: 1.6;
+    max-width: 540px;
+    margin: 0 auto var(--space-8);
+  }
+
+  .errpage__actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+</style>

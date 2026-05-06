@@ -1,0 +1,442 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/panels/Hero.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import TickerStrip from '@components/panels/TickerStrip.astro';
+import HealthBoard from '@components/panels/HealthBoard.astro';
+import RecipeCard from '@components/panels/RecipeCard.astro';
+import PillarTile from '@components/panels/PillarTile.astro';
+import MetricTile from '@components/data/MetricTile.astro';
+import Sparkline from '@components/data/Sparkline.astro';
+import LiveDot from '@components/data/LiveDot.astro';
+import Tag from '@components/primitives/Tag.astro';
+
+import mcpHealth from '@data/mcp-health.json';
+import pulseData from '@data/pulse.json';
+import recipesData from '@data/featured-recipes.json';
+import pillarsData from '@data/pillars.json';
+
+const topMcps = mcpHealth.rows.slice(0, 6);
+const featuredRecipes = recipesData.recipes.slice(0, 4);
+const pillars = pillarsData.pillars;
+
+const totals = {
+  recipes: recipesData.recipes.length,
+  mcps: mcpHealth.rows.length,
+  alive: mcpHealth.rows.filter((r) => r.health === 'alive').length,
+  slowing: mcpHealth.rows.filter((r) => r.health === 'slowing').length,
+  abandoned: mcpHealth.rows.filter((r) => r.health === 'abandoned').length,
+};
+
+const healthTrend = [42, 45, 47, 49, 50, 52, totals.alive + totals.slowing + totals.abandoned];
+---
+
+<BaseLayout
+  title="The Agentic Planet"
+  description="Tools, MCPs, recipes, and honest reviews for techies building with agents. Plain English. No vendor spin."
+>
+  <Hero
+    kicker="THE AGENTIC PLANET // CHANNEL OPEN"
+    title="Cockpit for the agentic era."
+    subtitle="Tools, MCPs, recipes, and honest reviews for techies building with agents. Plain English. No vendor spin. Built by someone who actually ships this stuff for a living."
+    meta="ALL SYSTEMS NOMINAL"
+  >
+    <Fragment slot="cta">
+      <Button href="/recipes/" variant="primary" iconLeft="◉">Browse Recipes</Button>
+      <Button href="/mcp/health-board/" variant="ghost" iconLeft="◐">MCP Health Board</Button>
+      <Button href="/landscape/" variant="ghost" iconLeft="▣">Explore Landscape</Button>
+    </Fragment>
+
+    <Fragment slot="panels">
+      <div class="hero-stats">
+        <MetricTile
+          label="Pillars"
+          value={pillars.length}
+          variant="accent"
+          glow={true}
+          deltaLabel="active surfaces"
+        />
+        <MetricTile
+          label="Recipes Ready"
+          value={totals.recipes}
+          variant="cyan"
+          deltaLabel="measurable workflows"
+        />
+        <MetricTile
+          label="MCPs Tracked"
+          value={totals.mcps}
+          variant="green"
+          delta={4}
+          deltaLabel="this week"
+        />
+        <MetricTile
+          label="Honest Score"
+          value="100"
+          unit="%"
+          variant="amber"
+          deltaLabel="vendor-spin removed"
+        />
+      </div>
+    </Fragment>
+  </Hero>
+
+  <section class="container-wide section">
+    <TickerStrip items={pulseData.items} />
+  </section>
+
+  <section class="container-wide section">
+    <header class="section__head">
+      <span class="section__kicker">▸ TEN PILLARS // SYSTEM SURFACES</span>
+      <h2 class="section__title">Everything we cover, by surface.</h2>
+      <p class="section__lede">
+        Each pillar is a self-contained surface. Click a tile to land in its cockpit.
+      </p>
+    </header>
+
+    <div class="pillars-grid">
+      {pillars.map((p) => (
+        <PillarTile
+          href={p.href}
+          code={p.code}
+          title={p.title}
+          description={p.description}
+          count={p.count}
+          fillPercent={p.fillPercent}
+          color={p.color}
+          icon={p.icon}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="container-wide section">
+    <header class="section__head">
+      <span class="section__kicker">▸ FEATURED // RECIPE BAY</span>
+      <h2 class="section__title">Real workflows. Measured before / after.</h2>
+      <p class="section__lede">
+        Other sites give you tool lists. We give you chained workflows that actually saved time.
+      </p>
+    </header>
+
+    <div class="recipes-grid">
+      {featuredRecipes.map((r) => (
+        <RecipeCard
+          slug={r.slug}
+          title={r.title}
+          description={r.description}
+          components={r.components}
+          before={r.before}
+          after={r.after}
+          cost={r.cost}
+          status={r.status as 'production' | 'experimental' | 'draft'}
+        />
+      ))}
+    </div>
+
+    <div class="section__actions">
+      <Button href="/recipes/" variant="ghost" iconRight="→">All recipes</Button>
+    </div>
+  </section>
+
+  <section class="container-wide section">
+    <header class="section__head">
+      <span class="section__kicker">▸ MCP HEALTH BOARD // LIVE</span>
+      <h2 class="section__title">
+        <LiveDot color="green" />
+        The 30 MCP servers worth your time.
+      </h2>
+      <p class="section__lede">
+        Stars, weekly delta, last commit, status — refreshed every 6 hours via GitHub Actions cron.
+      </p>
+    </header>
+
+    <Panel
+      title="MCP Health Board · top 6 by stars"
+      kicker="LIVE"
+      meta={`Updated ${new Date(mcpHealth._lastUpdated).toUTCString().replace('GMT', 'UTC')}`}
+      live={true}
+      density="tight"
+      variant="cyan"
+    >
+      <HealthBoard rows={topMcps} compact />
+      <div slot="footer" class="board-footer">
+        <Button href="/mcp/health-board/" variant="ghost" iconRight="→">Full board (30 servers)</Button>
+        <Button href="/mcp/badges/" variant="ghost" iconLeft="◈">Embeddable badges</Button>
+      </div>
+    </Panel>
+
+    <div class="health-summary">
+      <MetricTile label="Alive" value={totals.alive} variant="green" glow={true} />
+      <MetricTile label="Slowing" value={totals.slowing} variant="amber" />
+      <MetricTile label="Abandoned" value={totals.abandoned} variant="red" />
+      <Panel title="Tracked Trend · 7 weeks" kicker="DELTA" density="tight">
+        <div class="trend-row">
+          <Sparkline data={healthTrend} stroke="cyan" width={220} height={60} />
+          <div class="trend-meta">
+            <span class="trend-meta__label mono">+{healthTrend.at(-1)! - healthTrend[0]} servers</span>
+            <span class="trend-meta__sub mono">across 7 weeks</span>
+          </div>
+        </div>
+      </Panel>
+    </div>
+  </section>
+
+  <section class="container-wide section">
+    <header class="section__head">
+      <span class="section__kicker">▸ HONEST FAQ // BIG QUESTIONS</span>
+      <h2 class="section__title">No vendor spin. Plain English.</h2>
+    </header>
+
+    <div class="faq-grid">
+      <a href="/faq/is-agentic-ai-hype/" class="faq-card">
+        <span class="faq-card__num mono">Q.01</span>
+        <h3 class="faq-card__title">Is agentic AI hype?</h3>
+        <p class="faq-card__hint">Some of it. Here's how to tell.</p>
+      </a>
+      <a href="/faq/will-mcp-survive/" class="faq-card">
+        <span class="faq-card__num mono">Q.02</span>
+        <h3 class="faq-card__title">Will MCP survive 18 months?</h3>
+        <p class="faq-card__hint">Probably. But watch the protocol war.</p>
+      </a>
+      <a href="/faq/build-with-zero-dollars/" class="faq-card">
+        <span class="faq-card__num mono">Q.03</span>
+        <h3 class="faq-card__title">What can I build with $0?</h3>
+        <p class="faq-card__hint">More than you think. Here's a starter stack.</p>
+      </a>
+      <a href="/faq/" class="faq-card faq-card--more">
+        <span class="faq-card__num mono">+ 7</span>
+        <h3 class="faq-card__title">All ten honest answers →</h3>
+        <p class="faq-card__hint">Real questions, no marketing voice.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="container-wide section">
+    <Panel
+      title="Manifesto"
+      kicker="WHY THIS EXISTS"
+      density="loose"
+      variant="default"
+    >
+      <div class="manifesto">
+        <p>
+          The agentic AI space is exploding — and most of what's written about it is either
+          marketing fluff, vendor-funded "thought leadership", or surface-level hype on social.
+        </p>
+        <p>
+          <strong>The Agentic Planet</strong> is the antidote: opinionated curation, plain English,
+          honest reviews, and recipes you can actually run. Built by an engineer who deploys
+          this stuff every day for a living — and writes about it because the gap is real.
+        </p>
+        <p class="mono manifesto__signature">
+          — Sush · Copilot Solution Engineer · Auckland, NZ
+        </p>
+      </div>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section {
+    padding: var(--space-12) 0;
+  }
+
+  .section__head {
+    margin-bottom: var(--space-8);
+    max-width: 720px;
+  }
+
+  .section__kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .section__title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, var(--fs-2xl));
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    line-height: 1.15;
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .section__lede {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .section__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
+
+  /* Hero stats panel */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-3);
+  }
+
+  /* Pillars grid */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-3);
+  }
+
+  /* Recipes grid */
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+
+  /* Health summary */
+  .health-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .health-summary > :last-child {
+    grid-column: span 2;
+    min-width: 0;
+  }
+
+  @media (max-width: 700px) {
+    .health-summary > :last-child {
+      grid-column: span 1;
+    }
+  }
+
+  .trend-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .trend-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .trend-meta__label {
+    color: var(--signal-cyan);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    text-shadow: var(--text-glow-cyan);
+  }
+
+  .trend-meta__sub {
+    color: var(--text-faint);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .board-footer {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid var(--border-dim);
+    background: var(--bg-elevated);
+    flex-wrap: wrap;
+  }
+
+  /* FAQ cards */
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .faq-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    border-bottom: 1px solid var(--border-dim);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .faq-card:hover {
+    border-color: var(--accent);
+    background: var(--bg-elevated);
+    transform: translateY(-2px);
+  }
+
+  .faq-card__num {
+    font-size: var(--fs-2xs);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .faq-card__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .faq-card__hint {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .faq-card--more {
+    background: var(--bg-base);
+  }
+
+  /* Manifesto */
+  .manifesto {
+    max-width: 720px;
+  }
+
+  .manifesto p {
+    font-size: var(--fs-md);
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: var(--space-4);
+  }
+
+  .manifesto strong {
+    color: var(--text-bright);
+  }
+
+  .manifesto__signature {
+    font-size: var(--fs-xs);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border-top: 1px dashed var(--border-dim);
+    padding-top: var(--space-4);
+    margin-top: var(--space-6);
+  }
+</style>

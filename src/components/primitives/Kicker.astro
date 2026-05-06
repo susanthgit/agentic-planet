@@ -1,0 +1,43 @@
+---
+/**
+ * Kicker — small uppercase mono label, used above headings or as section markers.
+ */
+
+export interface Props {
+  text: string;
+  color?: 'accent' | 'cyan' | 'green' | 'amber' | 'red' | 'mute';
+  arrow?: boolean;
+}
+
+const { text, color = 'accent', arrow = true } = Astro.props;
+---
+
+<span class:list={['kicker', `kicker--${color}`]}>
+  {arrow && <span class="kicker__arrow" aria-hidden="true">▸</span>}
+  <span class="kicker__text">{text}</span>
+</span>
+
+<style>
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    line-height: 1;
+  }
+
+  .kicker--accent { color: var(--accent-hi); }
+  .kicker--cyan { color: var(--signal-cyan); }
+  .kicker--green { color: var(--signal-green); }
+  .kicker--amber { color: var(--signal-amber); }
+  .kicker--red { color: var(--signal-red); }
+  .kicker--mute { color: var(--text-mute); }
+
+  .kicker__arrow {
+    font-size: 0.85em;
+  }
+</style>

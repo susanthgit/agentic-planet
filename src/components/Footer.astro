@@ -1,0 +1,202 @@
+---
+/**
+ * Footer — minimal cockpit-style footer with disclosure.
+ */
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer" role="contentinfo">
+  <div class="footer__inner">
+    <div class="footer__col">
+      <h4 class="footer__heading">Pillars</h4>
+      <ul class="footer__list">
+        <li><a href="/landscape/">Landscape</a></li>
+        <li><a href="/recipes/">Recipes</a></li>
+        <li><a href="/mcp/">MCP servers</a></li>
+        <li><a href="/tools/">Tools</a></li>
+        <li><a href="/vendors/">Vendors</a></li>
+        <li><a href="/safety/">Safety</a></li>
+        <li><a href="/standards/">Standards</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4 class="footer__heading">More</h4>
+      <ul class="footer__list">
+        <li><a href="/learn/">Learn</a></li>
+        <li><a href="/learn/glossary/">Glossary</a></li>
+        <li><a href="/lab/">Lab</a></li>
+        <li><a href="/diagrams/">Diagrams</a></li>
+        <li><a href="/faq/">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4 class="footer__heading">Project</h4>
+      <ul class="footer__list">
+        <li><a href="https://github.com/susanthgit/agentic-planet" rel="noopener">GitHub</a></li>
+        <li><a href="https://www.aguidetocloud.com">A Guide To Cloud</a></li>
+        <li><a href="/colophon/">Colophon</a></li>
+      </ul>
+    </div>
+    <div class="footer__col footer__col--meta">
+      <h4 class="footer__heading">Disclosure</h4>
+      <p class="footer__text">
+        Built by <a href="https://github.com/susanthgit">Sush (Susanth Sutheesh)</a>,
+        Copilot Solution Engineer at Microsoft NZ.
+        Vendor pages reflect <strong>independent takes</strong> — not Microsoft's official position.
+      </p>
+      <p class="footer__text footer__text--dim">
+        Code: <a href="https://github.com/susanthgit/agentic-planet/blob/main/LICENSE" rel="noopener">MIT</a>.
+        Content: <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="footer__bar">
+    <div class="footer__bar-inner">
+      <span class="footer__sigil mono">⌥</span>
+      <span class="footer__copyright mono">
+        © {year} A Guide To Cloud · Plain English. No vendor spin.
+      </span>
+      <span class="footer__transmission mono phosphor-green" aria-hidden="true">
+        ◉ Transmission stable
+      </span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: var(--space-20);
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.4;
+  }
+
+  .footer__inner {
+    max-width: var(--container-wide);
+    margin: 0 auto;
+    padding: var(--space-12) var(--gutter);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-8);
+  }
+
+  .footer__col {
+    min-width: 0;
+  }
+
+  .footer__col--meta {
+    grid-column: span 1;
+  }
+
+  .footer__heading {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+  }
+
+  .footer__heading::before {
+    content: "//";
+    color: var(--accent);
+    margin-right: var(--space-2);
+  }
+
+  .footer__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer__list li {
+    margin-bottom: var(--space-2);
+  }
+
+  .footer__list a {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--text-mute);
+    border-bottom: 0;
+  }
+
+  .footer__list a:hover {
+    color: var(--accent-hi);
+  }
+
+  .footer__text {
+    font-size: var(--fs-xs);
+    color: var(--text-mute);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--space-3);
+  }
+
+  .footer__text--dim {
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+
+  .footer__text a {
+    color: var(--accent-hi);
+    border-bottom: 1px dotted var(--accent);
+  }
+
+  .footer__bar {
+    border-top: 1px solid var(--border-dim);
+    background: var(--void);
+  }
+
+  .footer__bar-inner {
+    max-width: var(--container-wide);
+    margin: 0 auto;
+    padding: var(--space-3) var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+  }
+
+  .footer__sigil {
+    color: var(--accent-hi);
+    font-size: var(--fs-md);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .footer__copyright {
+    color: var(--text-mute);
+  }
+
+  .footer__transmission {
+    font-size: var(--fs-2xs);
+  }
+
+  @media (max-width: 800px) {
+    .footer__inner {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer__col--meta {
+      grid-column: span 2;
+    }
+    .footer__bar-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+  }
+</style>

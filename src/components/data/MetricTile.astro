@@ -1,0 +1,135 @@
+---
+/**
+ * MetricTile — cockpit-style metric display.
+ * Shows: label (small caps), large mono value, optional delta + sparkline.
+ * Used on landscape/dashboard pages, MCP/tool detail pages.
+ */
+
+import DeltaPill from '@components/data/DeltaPill.astro';
+
+export interface Props {
+  label: string;
+  value: string | number;
+  unit?: string;
+  delta?: number;
+  deltaLabel?: string;
+  variant?: 'default' | 'accent' | 'cyan' | 'green' | 'amber' | 'red';
+  glow?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  label,
+  value,
+  unit,
+  delta,
+  deltaLabel,
+  variant = 'default',
+  glow = false,
+  size = 'md',
+} = Astro.props;
+---
+
+<div
+  class:list={['mt', `mt--${variant}`, `mt--${size}`, { 'mt--glow': glow }]}
+>
+  <span class="mt__label">{label}</span>
+  <div class="mt__value-row">
+    <span class="mt__value">{value}{unit && <span class="mt__unit">{unit}</span>}</span>
+    {delta !== undefined && (
+      <span class="mt__delta">
+        <DeltaPill value={delta} />
+      </span>
+    )}
+  </div>
+  {deltaLabel && <span class="mt__delta-label">{deltaLabel}</span>}
+</div>
+
+<style>
+  .mt {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    position: relative;
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .mt::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  .mt:hover {
+    border-color: var(--border-active);
+  }
+
+  .mt--default { color: var(--accent-hi); }
+  .mt--accent { color: var(--accent-hi); }
+  .mt--cyan { color: var(--signal-cyan); }
+  .mt--green { color: var(--signal-green); }
+  .mt--amber { color: var(--signal-amber); }
+  .mt--red { color: var(--signal-red); }
+
+  .mt--glow {
+    box-shadow: 0 0 0 1px currentColor, 0 0 12px currentColor;
+    border-color: currentColor;
+  }
+
+  .mt__label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .mt__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .mt__value {
+    font-family: var(--font-display);
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    line-height: 1;
+    text-shadow: 0 0 12px currentColor;
+  }
+
+  .mt--sm .mt__value { font-size: var(--fs-xl); }
+  .mt--lg .mt__value { font-size: var(--fs-3xl); }
+
+  .mt__unit {
+    font-size: 0.5em;
+    color: var(--text-dim);
+    margin-left: 2px;
+    text-shadow: none;
+    font-weight: var(--fw-normal);
+  }
+
+  .mt__delta {
+    line-height: 1;
+  }
+
+  .mt__delta-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    margin-top: var(--space-1);
+  }
+</style>

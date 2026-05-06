@@ -1,0 +1,252 @@
+/* ============================================================
+   THE AGENTIC PLANET — DESIGN TOKENS
+   Standalone design system. Own rules, own physics.
+   Cockpit info-dense + lit-up functional aesthetic.
+   ============================================================ */
+
+:root {
+  /* ──────────────────────────────────────────────────────
+     COLORS — cockpit dark mode is primary.
+     ────────────────────────────────────────────────────── */
+
+  /* Surfaces */
+  --void: #07090C;            /* deepest background — almost black */
+  --bg-base: #0A0E14;         /* body background */
+  --bg-panel: #0F151E;        /* panel bg */
+  --bg-elevated: #141C28;     /* elevated panels, hover state base */
+  --bg-overlay: #1A2332;      /* hover, selection */
+
+  /* Borders */
+  --border-dim: #1F2937;
+  --border: #2D3748;
+  --border-active: #4A5568;
+  --border-grid: #131A24;
+
+  /* Text */
+  --text: #E5E7EB;
+  --text-bright: #F9FAFB;
+  --text-mute: #9CA3AF;
+  --text-dim: #6B7280;
+  --text-faint: #4B5563;
+
+  /* Functional accents (cockpit signal palette) */
+  --accent: #6366F1;
+  --accent-hi: #818CF8;
+  --accent-glow: rgba(129, 140, 248, 0.35);
+
+  --signal-cyan: #22D3EE;
+  --signal-cyan-glow: rgba(34, 211, 238, 0.4);
+
+  --signal-green: #10B981;
+  --signal-green-glow: rgba(16, 185, 129, 0.45);
+
+  --signal-amber: #F59E0B;
+  --signal-amber-glow: rgba(245, 158, 11, 0.45);
+
+  --signal-red: #EF4444;
+  --signal-red-glow: rgba(239, 68, 68, 0.45);
+
+  --signal-magenta: #EC4899;
+  --signal-magenta-glow: rgba(236, 72, 153, 0.4);
+
+  --signal-violet: #A78BFA;
+
+  /* Aliases */
+  --health-alive: var(--signal-green);
+  --health-slowing: var(--signal-amber);
+  --health-abandoned: var(--signal-red);
+  --health-unknown: var(--text-dim);
+
+  /* Code/data */
+  --code-bg: #0D1117;
+  --code-text: #E6EDF3;
+
+  /* ──────────────────────────────────────────────────────
+     TYPOGRAPHY
+     ────────────────────────────────────────────────────── */
+  --font-display: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-sm: 13px;
+  --fs-base: 14px;
+  --fs-md: 16px;
+  --fs-lg: 19px;
+  --fs-xl: 24px;
+  --fs-2xl: 32px;
+  --fs-3xl: 44px;
+  --fs-4xl: 64px;
+  --fs-5xl: 88px;
+
+  --lh-tight: 1.1;
+  --lh-snug: 1.25;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.7;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+  --tracking-widest: 0.18em;
+
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ──────────────────────────────────────────────────────
+     SPACING — 4px grid
+     ────────────────────────────────────────────────────── */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* ──────────────────────────────────────────────────────
+     RADII — sharp by default
+     ────────────────────────────────────────────────────── */
+  --radius-none: 0;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* ──────────────────────────────────────────────────────
+     SHADOWS / GLOWS — functional lit effects
+     ────────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-panel: 0 0 0 1px var(--border-dim), 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  --glow-accent: 0 0 12px var(--accent-glow);
+  --glow-cyan: 0 0 14px var(--signal-cyan-glow);
+  --glow-green: 0 0 12px var(--signal-green-glow);
+  --glow-amber: 0 0 12px var(--signal-amber-glow);
+  --glow-red: 0 0 12px var(--signal-red-glow);
+  --glow-magenta: 0 0 14px var(--signal-magenta-glow);
+
+  --text-glow-accent: 0 0 8px var(--accent-glow);
+  --text-glow-cyan: 0 0 8px var(--signal-cyan-glow);
+  --text-glow-green: 0 0 8px var(--signal-green-glow);
+  --text-glow-amber: 0 0 8px var(--signal-amber-glow);
+  --text-glow-red: 0 0 8px var(--signal-red-glow);
+
+  /* ──────────────────────────────────────────────────────
+     TIMING / MOTION
+     ────────────────────────────────────────────────────── */
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-snap: cubic-bezier(0.5, 0, 0.5, 1);
+
+  --pulse-duration: 2000ms;
+
+  /* ──────────────────────────────────────────────────────
+     LAYOUT
+     ────────────────────────────────────────────────────── */
+  --container-max: 1440px;
+  --container-prose: 720px;
+  --container-wide: 1680px;
+  --gutter: var(--space-6);
+
+  --header-height: 56px;
+  --footer-height: 80px;
+  --statusbar-height: 28px;
+
+  --z-base: 1;
+  --z-elevated: 10;
+  --z-sticky: 100;
+  --z-overlay: 1000;
+  --z-modal: 10000;
+  --z-toast: 100000;
+
+  /* ──────────────────────────────────────────────────────
+     SCAN LINES & GRID — signature visual elements
+     ────────────────────────────────────────────────────── */
+  --scanline-pattern: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 3px
+  );
+
+  --grid-pattern: linear-gradient(var(--border-grid) 1px, transparent 1px),
+                  linear-gradient(90deg, var(--border-grid) 1px, transparent 1px);
+  --grid-size: 32px;
+}
+
+/* ──────────────────────────────────────────────────────
+   LIGHT MODE — secondary, daytime use only.
+   ────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --void: #FAFAF9;
+  --bg-base: #FFFFFF;
+  --bg-panel: #F8FAFC;
+  --bg-elevated: #F1F5F9;
+  --bg-overlay: #E2E8F0;
+
+  --border-dim: #E2E8F0;
+  --border: #CBD5E1;
+  --border-active: #94A3B8;
+  --border-grid: #ECEFF3;
+
+  --text: #0F172A;
+  --text-bright: #000000;
+  --text-mute: #475569;
+  --text-dim: #64748B;
+  --text-faint: #94A3B8;
+
+  --accent-glow: rgba(99, 102, 241, 0.2);
+  --signal-cyan-glow: rgba(8, 145, 178, 0.25);
+  --signal-green-glow: rgba(5, 150, 105, 0.25);
+  --signal-amber-glow: rgba(217, 119, 6, 0.25);
+  --signal-red-glow: rgba(220, 38, 38, 0.25);
+
+  --code-bg: #F1F5F9;
+  --code-text: #0F172A;
+
+  --shadow-panel: 0 0 0 1px var(--border-dim), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 1ms;
+    --duration-fast: 1ms;
+    --duration-base: 1ms;
+    --duration-slow: 1ms;
+    --pulse-duration: 1ms;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,80 @@
+---
+/**
+ * DeltaPill — colored delta indicator (+320 / -2 / 0).
+ * Auto-colors based on sign.
+ */
+
+export interface Props {
+  value: number;
+  unit?: string;
+  /** Reverse colors: negative = good (e.g., bug count, latency) */
+  inverted?: boolean;
+  /** Override color regardless of sign */
+  forceColor?: 'green' | 'red' | 'amber' | 'cyan' | 'neutral';
+  showSign?: boolean;
+  size?: 'sm' | 'md';
+}
+
+const {
+  value,
+  unit = '',
+  inverted = false,
+  forceColor,
+  showSign = true,
+  size = 'sm',
+} = Astro.props;
+
+let kind: 'pos' | 'neg' | 'zero' = 'zero';
+if (value > 0) kind = inverted ? 'neg' : 'pos';
+else if (value < 0) kind = inverted ? 'pos' : 'neg';
+
+let colorClass = `dp--${kind}`;
+if (forceColor) {
+  colorClass = `dp--force-${forceColor}`;
+}
+
+const sign = value > 0 ? '+' : value < 0 ? '−' : '±';
+const abs = Math.abs(value);
+const display = showSign ? `${sign}${abs}${unit}` : `${abs}${unit}`;
+const arrow = value > 0 ? '▲' : value < 0 ? '▼' : '◆';
+---
+
+<span class:list={['dp', colorClass, `dp--${size}`]}>
+  <span class="dp__arrow" aria-hidden="true">{arrow}</span>
+  <span class="dp__value">{display}</span>
+</span>
+
+<style>
+  .dp {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1px var(--space-1-5);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    line-height: 1.3;
+    background: rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+  }
+
+  .dp--md {
+    font-size: var(--fs-sm);
+    padding: 2px var(--space-2);
+  }
+
+  .dp__arrow {
+    font-size: 0.7em;
+  }
+
+  .dp--pos { color: var(--signal-green); }
+  .dp--neg { color: var(--signal-red); }
+  .dp--zero { color: var(--text-dim); }
+
+  .dp--force-green { color: var(--signal-green); }
+  .dp--force-red { color: var(--signal-red); }
+  .dp--force-amber { color: var(--signal-amber); }
+  .dp--force-cyan { color: var(--signal-cyan); }
+  .dp--force-neutral { color: var(--text-mute); }
+</style>

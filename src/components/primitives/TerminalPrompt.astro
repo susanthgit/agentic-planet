@@ -1,0 +1,67 @@
+---
+/**
+ * TerminalPrompt — cockpit-style heading with terminal cursor.
+ * Mimics a terminal prompt: `> heading_`.
+ */
+
+export interface Props {
+  text: string;
+  level?: 1 | 2 | 3;
+  prompt?: string;
+  cursor?: boolean;
+  glow?: boolean;
+}
+
+const {
+  text,
+  level = 2,
+  prompt = '>',
+  cursor = false,
+  glow = false,
+} = Astro.props;
+
+const Tag = `h${level}` as 'h1' | 'h2' | 'h3';
+---
+
+<Tag class:list={['tp', `tp--lvl-${level}`, { 'tp--glow': glow, 'tp--cursor': cursor }]}>
+  <span class="tp__prompt" aria-hidden="true">{prompt}</span>
+  <span class="tp__text">{text}</span>
+</Tag>
+
+<style>
+  .tp {
+    font-family: var(--font-display);
+    color: var(--text-bright);
+    line-height: 1.1;
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-4);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2-5);
+  }
+
+  .tp--lvl-1 { font-size: var(--fs-3xl); }
+  .tp--lvl-2 { font-size: var(--fs-2xl); }
+  .tp--lvl-3 { font-size: var(--fs-xl); }
+
+  .tp__prompt {
+    color: var(--accent-hi);
+    font-weight: var(--fw-bold);
+  }
+
+  .tp--glow .tp__prompt {
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .tp__text {
+    color: var(--text-bright);
+  }
+
+  .tp--cursor .tp__text::after {
+    content: "▌";
+    display: inline-block;
+    margin-left: 6px;
+    animation: blink 1.1s infinite step-start;
+    color: var(--accent-hi);
+  }
+</style>

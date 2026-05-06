@@ -1,0 +1,139 @@
+---
+/**
+ * TickerStrip — scrolling marquee of items.
+ * Used for the "Pulse" panel (live news/changes).
+ */
+
+export interface TickerItem {
+  icon?: string;
+  text: string;
+  color?: 'green' | 'red' | 'amber' | 'cyan' | 'accent' | 'magenta';
+  href?: string;
+}
+
+export interface Props {
+  items: TickerItem[];
+  speed?: number;
+}
+
+const { items, speed = 60 } = Astro.props;
+
+// Duplicate items so the marquee loops seamlessly
+const displayItems = [...items, ...items];
+const duration = `${speed}s`;
+---
+
+<div class="ticker" role="region" aria-label="Live updates">
+  <span class="ticker__label">PULSE</span>
+  <div class="ticker__track" style={`--ticker-duration: ${duration};`}>
+    <div class="ticker__row">
+      {displayItems.map((item) => (
+        <span class:list={['ticker__item', `ticker__item--${item.color || 'accent'}`]}>
+          {item.icon && <span class="ticker__icon" aria-hidden="true">{item.icon}</span>}
+          {item.href ? (
+            <a href={item.href} class="ticker__link">{item.text}</a>
+          ) : (
+            <span>{item.text}</span>
+          )}
+          <span class="ticker__sep" aria-hidden="true">·</span>
+        </span>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .ticker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ticker__label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-xs);
+    flex-shrink: 0;
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .ticker__track {
+    flex: 1;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+  }
+
+  .ticker__row {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    white-space: nowrap;
+    animation: ticker-slide var(--ticker-duration, 60s) linear infinite;
+    will-change: transform;
+  }
+
+  .ticker:hover .ticker__row {
+    animation-play-state: paused;
+  }
+
+  .ticker__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--text-mute);
+  }
+
+  .ticker__item--green { color: var(--signal-green); }
+  .ticker__item--red { color: var(--signal-red); }
+  .ticker__item--amber { color: var(--signal-amber); }
+  .ticker__item--cyan { color: var(--signal-cyan); }
+  .ticker__item--accent { color: var(--accent-hi); }
+  .ticker__item--magenta { color: var(--signal-magenta); }
+
+  .ticker__icon {
+    font-size: var(--fs-sm);
+    line-height: 1;
+  }
+
+  .ticker__link {
+    color: inherit;
+    border-bottom: 0;
+  }
+
+  .ticker__link:hover {
+    color: var(--text-bright);
+    border-bottom: 0;
+  }
+
+  .ticker__sep {
+    color: var(--text-faint);
+    margin-left: var(--space-2);
+  }
+</style>

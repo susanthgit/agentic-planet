@@ -1,0 +1,288 @@
+---
+/**
+ * Nav — primary navigation with cockpit aesthetic.
+ * Pillar links + ⌘K command palette trigger.
+ */
+
+const pathname = Astro.url.pathname;
+
+const links = [
+  { href: '/landscape/', label: 'Landscape', code: 'L01' },
+  { href: '/recipes/', label: 'Recipes', code: 'R02' },
+  { href: '/mcp/', label: 'MCPs', code: 'M03' },
+  { href: '/tools/', label: 'Tools', code: 'T04' },
+  { href: '/vendors/', label: 'Vendors', code: 'V05' },
+  { href: '/safety/', label: 'Safety', code: 'S06' },
+  { href: '/standards/', label: 'Standards', code: 'P07' },
+  { href: '/learn/', label: 'Learn', code: 'L08' },
+  { href: '/lab/', label: 'Lab', code: 'X09' },
+  { href: '/faq/', label: 'FAQ', code: 'Q10' },
+];
+
+function isActive(href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
+---
+
+<header class="nav" role="banner">
+  <div class="nav__inner">
+    <a href="/" class="nav__brand" aria-label="The Agentic Planet — home">
+      <span class="nav__brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4" />
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-25 12 12)" />
+          <circle cx="12" cy="12" r="1" fill="currentColor" />
+        </svg>
+      </span>
+      <span class="nav__brand-text">
+        <span class="nav__brand-prefix">THE</span>
+        <span class="nav__brand-name">AGENTIC PLANET</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class:list={['nav__link', { 'nav__link--active': isActive(link.href) }]}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+        >
+          <span class="nav__link-code">{link.code}</span>
+          <span class="nav__link-label">{link.label}</span>
+        </a>
+      ))}
+    </nav>
+
+    <div class="nav__actions">
+      <button class="nav__search" type="button" data-search-trigger aria-label="Search (Ctrl+K)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <span class="nav__search-text">Search</span>
+        <kbd class="nav__search-kbd">⌘K</kbd>
+      </button>
+    </div>
+
+    <button class="nav__menu-toggle" type="button" data-mobile-menu-toggle aria-label="Toggle menu" aria-expanded="false">
+      <span class="nav__menu-bar"></span>
+      <span class="nav__menu-bar"></span>
+      <span class="nav__menu-bar"></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: var(--statusbar-height);
+    z-index: var(--z-sticky);
+    height: var(--header-height);
+    background: rgba(15, 21, 30, 0.92);
+    border-bottom: 1px solid var(--border-dim);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .nav__inner {
+    height: 100%;
+    max-width: var(--container-wide);
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    color: var(--text-bright);
+    border-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .nav__brand:hover {
+    color: var(--accent-hi);
+    border-bottom: 0;
+  }
+
+  .nav__brand-mark {
+    color: var(--accent-hi);
+    filter: drop-shadow(0 0 4px var(--accent-glow));
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .nav__brand:hover .nav__brand-mark {
+    transform: rotate(15deg);
+  }
+
+  .nav__brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+    font-family: var(--font-mono);
+  }
+
+  .nav__brand-prefix {
+    font-size: 8px;
+    color: var(--text-faint);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .nav__brand-name {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav__links::-webkit-scrollbar { display: none; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    padding: var(--space-2) var(--space-3);
+    color: var(--text-mute);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    border-radius: var(--radius-xs);
+    border-bottom: 1px solid transparent;
+    transition: all var(--duration-fast) var(--ease-out);
+    white-space: nowrap;
+  }
+
+  .nav__link:hover {
+    color: var(--text-bright);
+    background: var(--bg-overlay);
+    border-bottom-color: transparent;
+  }
+
+  .nav__link--active {
+    color: var(--accent-hi);
+    background: var(--bg-elevated);
+  }
+
+  .nav__link--active::before {
+    content: "▸";
+    color: var(--accent-hi);
+    margin-right: 2px;
+  }
+
+  .nav__link-code {
+    color: var(--text-faint);
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  .nav__link--active .nav__link-code {
+    color: var(--accent);
+  }
+
+  .nav__actions {
+    flex-shrink: 0;
+  }
+
+  .nav__search {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    color: var(--text-mute);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    transition: all var(--duration-fast) var(--ease-out);
+    cursor: pointer;
+  }
+
+  .nav__search:hover {
+    color: var(--text-bright);
+    border-color: var(--accent);
+    box-shadow: var(--glow-accent);
+  }
+
+  .nav__search-text {
+    color: inherit;
+  }
+
+  .nav__search-kbd {
+    background: var(--bg-elevated);
+    color: var(--text-faint);
+    padding: 1px 5px;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border-dim);
+    font-size: 10px;
+  }
+
+  .nav__menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-2);
+  }
+
+  .nav__menu-bar {
+    width: 18px;
+    height: 1.5px;
+    background: var(--text-mute);
+  }
+
+  @media (max-width: 1100px) {
+    .nav__search-text { display: none; }
+  }
+
+  @media (max-width: 900px) {
+    .nav__menu-toggle { display: flex; }
+    .nav__links {
+      display: none;
+      position: absolute;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      align-items: stretch;
+      padding: var(--space-2);
+      gap: 0;
+      max-height: calc(100vh - var(--header-height) - var(--statusbar-height));
+      overflow-y: auto;
+    }
+    .nav__links--open {
+      display: flex;
+    }
+    .nav__link {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const toggle = (e.target as HTMLElement).closest('[data-mobile-menu-toggle]');
+    if (!toggle) return;
+    const links = document.querySelector('.nav__links');
+    if (!links) return;
+    const open = links.classList.toggle('nav__links--open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+</script>

@@ -1,0 +1,15 @@
+{
+  "_note": "Pulse panel items. Auto-fed by GitHub Actions cron in production. Manual seed for now.",
+  "_lastUpdated": "2026-05-06T22:30:00Z",
+  "items": [
+    { "icon": "▲", "text": "Anthropic ships Computer Use v3 with 30% lower latency", "color": "green", "href": "/vendors/anthropic/" },
+    { "icon": "◎", "text": "MCP Spec 2.0 RFC drops — auth + streaming improvements", "color": "cyan", "href": "/standards/mcp/" },
+    { "icon": "▲", "text": "Claude Skills hits GA, marketplace open", "color": "green" },
+    { "icon": "▼", "text": "AutoGen archived — last commit 4 months", "color": "red", "href": "/open/" },
+    { "icon": "◉", "text": "Microsoft Agent 365 GA next quarter", "color": "magenta", "href": "/vendors/microsoft/" },
+    { "icon": "◆", "text": "OpenAI Apps SDK adoption: 12 new entries this week", "color": "amber" },
+    { "icon": "▲", "text": "Cline crosses 50k stars on GitHub", "color": "green" },
+    { "icon": "◎", "text": "Google A2A protocol draft v0.4 published", "color": "cyan", "href": "/standards/a2a/" },
+    { "icon": "▲", "text": "Cursor 0.45 ships background agents", "color": "green" }
+  ]
+}

@@ -1,0 +1,66 @@
+---
+/**
+ * Tag — small inline tag/label.
+ */
+
+export interface Props {
+  text: string;
+  variant?: 'default' | 'outline' | 'solid';
+  color?: 'accent' | 'cyan' | 'green' | 'amber' | 'red' | 'magenta' | 'neutral';
+  href?: string;
+}
+
+const { text, variant = 'default', color = 'neutral', href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag
+  class:list={['tag', `tag--${variant}`, `tag--${color}`]}
+  href={href}
+>
+  {text}
+</Tag>
+
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tracking-wide);
+    line-height: 1.3;
+    border: 1px solid currentColor;
+    background: rgba(0, 0, 0, 0.2);
+    transition: all var(--duration-fast) var(--ease-out);
+    border-bottom: 1px solid currentColor;
+    white-space: nowrap;
+  }
+
+  a.tag:hover {
+    background: currentColor;
+  }
+
+  a.tag:hover .tag__text,
+  a.tag:hover {
+    color: var(--bg-base) !important;
+  }
+
+  .tag--solid {
+    background: currentColor;
+    color: var(--bg-base);
+    border-color: transparent;
+  }
+
+  .tag--default { background: rgba(255, 255, 255, 0.04); }
+
+  .tag--accent { color: var(--accent-hi); }
+  .tag--cyan { color: var(--signal-cyan); }
+  .tag--green { color: var(--signal-green); }
+  .tag--amber { color: var(--signal-amber); }
+  .tag--red { color: var(--signal-red); }
+  .tag--magenta { color: var(--signal-magenta); }
+  .tag--neutral { color: var(--text-mute); }
+</style>

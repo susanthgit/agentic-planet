@@ -1,0 +1,121 @@
+---
+/**
+ * BaseLayout — root layout wrapping every page.
+ *
+ * Provides the cockpit frame: status bar (top), nav, main content,
+ * footer, scan-line overlay, and global theme handling.
+ */
+import StatusBar from '@components/StatusBar.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import '@styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  noIndex?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description = 'Tools, MCPs, recipes, and honest reviews for techies building with agents. Plain English. No vendor spin.',
+  canonical,
+  ogImage = '/og/default.png',
+  noIndex = false,
+  bodyClass = '',
+} = Astro.props;
+
+const fullTitle = title === 'The Agentic Planet'
+  ? title
+  : `${title} · The Agentic Planet`;
+
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+  <meta property="og:site_name" content="The Agentic Planet" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />
+
+  <meta name="theme-color" content="#0A0E14" />
+  <meta name="color-scheme" content="dark light" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <script is:inline>
+    // Theme: respect saved preference, default to dark (cockpit)
+    (function () {
+      try {
+        const saved = localStorage.getItem('theme');
+        const theme = saved || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (_) {
+        // ignore
+      }
+    })();
+  </script>
+</head>
+
+<body class={bodyClass}>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <StatusBar />
+  <Nav />
+
+  <main id="main" tabindex="-1">
+    <slot />
+  </main>
+
+  <Footer />
+
+  <script>
+    // Theme toggle handler
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('[data-theme-toggle]');
+      if (!btn) return;
+      e.preventDefault();
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (_) {}
+    });
+
+    // Command palette: ⌘K / Ctrl+K opens search (Pagefind UI)
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const trigger = document.querySelector<HTMLElement>('[data-search-trigger]');
+        trigger?.click();
+      }
+    });
+  </script>
+</body>
+</html>

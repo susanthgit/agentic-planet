@@ -1,0 +1,242 @@
+---
+/**
+ * Panel — the cockpit panel primitive.
+ * Used everywhere as the container for grouped data/content.
+ *
+ * Features:
+ *  - Cockpit-style border with corner accents
+ *  - Optional title bar with status indicator
+ *  - Optional kicker (small uppercase label)
+ *  - Optional right-side meta (e.g., timestamp)
+ *  - Variants: default, glow (active), warning, error
+ */
+
+export interface Props {
+  title?: string;
+  kicker?: string;
+  meta?: string;
+  variant?: 'default' | 'glow' | 'warning' | 'error' | 'cyan';
+  density?: 'normal' | 'tight' | 'loose';
+  /** Show the cockpit corner accent marks */
+  corners?: boolean;
+  /** Show the live pulse dot in the title bar */
+  live?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  kicker,
+  meta,
+  variant = 'default',
+  density = 'normal',
+  corners = true,
+  live = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<section
+  class:list={[
+    'panel',
+    `panel--${variant}`,
+    `panel--density-${density}`,
+    { 'panel--corners': corners },
+    className,
+  ]}
+  data-variant={variant}
+>
+  {(title || kicker || meta) && (
+    <header class="panel__head">
+      <div class="panel__head-left">
+        {kicker && <span class="panel__kicker">{kicker}</span>}
+        {title && (
+          <h3 class="panel__title">
+            {live && <span class="panel__live-dot" aria-hidden="true"></span>}
+            <span class="panel__title-text">{title}</span>
+          </h3>
+        )}
+      </div>
+      {meta && <span class="panel__meta">{meta}</span>}
+    </header>
+  )}
+
+  {corners && (
+    <>
+      <span class="panel__corner panel__corner--tl" aria-hidden="true"></span>
+      <span class="panel__corner panel__corner--tr" aria-hidden="true"></span>
+      <span class="panel__corner panel__corner--bl" aria-hidden="true"></span>
+      <span class="panel__corner panel__corner--br" aria-hidden="true"></span>
+    </>
+  )}
+
+  <div class="panel__body">
+    <slot />
+  </div>
+
+  <slot name="footer" />
+</section>
+
+<style>
+  .panel {
+    position: relative;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .panel--glow {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), var(--glow-accent);
+  }
+
+  .panel--cyan {
+    border-color: var(--signal-cyan);
+    box-shadow: 0 0 0 1px var(--signal-cyan), var(--glow-cyan);
+  }
+
+  .panel--warning {
+    border-color: var(--signal-amber);
+  }
+
+  .panel--error {
+    border-color: var(--signal-red);
+  }
+
+  .panel:hover {
+    border-color: var(--border);
+  }
+
+  .panel--glow:hover,
+  .panel--cyan:hover {
+    border-color: currentColor;
+  }
+
+  /* Corner accents */
+  .panel__corner {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--accent-hi);
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .panel:hover .panel__corner {
+    opacity: 1;
+  }
+
+  .panel__corner--tl {
+    top: -1px;
+    left: -1px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  .panel__corner--tr {
+    top: -1px;
+    right: -1px;
+    border-left: 0;
+    border-bottom: 0;
+  }
+
+  .panel__corner--bl {
+    bottom: -1px;
+    left: -1px;
+    border-right: 0;
+    border-top: 0;
+  }
+
+  .panel__corner--br {
+    bottom: -1px;
+    right: -1px;
+    border-left: 0;
+    border-top: 0;
+  }
+
+  .panel--cyan .panel__corner { border-color: var(--signal-cyan); }
+  .panel--warning .panel__corner { border-color: var(--signal-amber); }
+  .panel--error .panel__corner { border-color: var(--signal-red); }
+
+  /* Header */
+  .panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border-dim);
+    background: linear-gradient(
+      90deg,
+      var(--bg-elevated) 0%,
+      transparent 100%
+    );
+  }
+
+  .panel__head-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  .panel__kicker {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    white-space: nowrap;
+  }
+
+  .panel__kicker::before {
+    content: "▸ ";
+    color: var(--accent);
+  }
+
+  .panel__title {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .panel__live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--signal-green);
+    box-shadow: 0 0 6px var(--signal-green-glow);
+    animation: pulse var(--pulse-duration) var(--ease-in-out) infinite;
+    flex-shrink: 0;
+  }
+
+  .panel__meta {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+  }
+
+  /* Body */
+  .panel__body {
+    padding: var(--space-4);
+  }
+
+  .panel--density-tight .panel__body { padding: var(--space-3); }
+  .panel--density-loose .panel__body { padding: var(--space-6); }
+</style>

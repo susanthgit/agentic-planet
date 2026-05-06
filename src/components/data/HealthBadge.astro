@@ -1,0 +1,87 @@
+---
+/**
+ * HealthBadge — status pill (alive / slowing / abandoned / unknown).
+ * Used on MCP catalog, tools catalog, projects.
+ */
+
+export interface Props {
+  status: 'alive' | 'slowing' | 'abandoned' | 'unknown';
+  label?: string;
+  glow?: boolean;
+  size?: 'sm' | 'md';
+}
+
+const { status, label, glow = true, size = 'md' } = Astro.props;
+
+const STATUS_LABELS: Record<Props['status'], string> = {
+  alive: 'Alive',
+  slowing: 'Slowing',
+  abandoned: 'Abandoned',
+  unknown: 'Unknown',
+};
+
+const display = label ?? STATUS_LABELS[status];
+---
+
+<span
+  class:list={['hb', `hb--${status}`, `hb--${size}`, { 'hb--glow': glow }]}
+  role="status"
+>
+  <span class="hb__dot" aria-hidden="true"></span>
+  <span class="hb__label">{display}</span>
+</span>
+
+<style>
+  .hb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border: 1px solid currentColor;
+    background: rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+  }
+
+  .hb--md {
+    font-size: var(--fs-xs);
+    padding: 3px var(--space-2-5);
+  }
+
+  .hb__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .hb--alive {
+    color: var(--signal-green);
+  }
+  .hb--alive.hb--glow .hb__dot {
+    box-shadow: 0 0 6px var(--signal-green-glow);
+    animation: pulse var(--pulse-duration) var(--ease-in-out) infinite;
+  }
+
+  .hb--slowing {
+    color: var(--signal-amber);
+  }
+  .hb--slowing.hb--glow .hb__dot {
+    box-shadow: 0 0 6px var(--signal-amber-glow);
+  }
+
+  .hb--abandoned {
+    color: var(--signal-red);
+    opacity: 0.85;
+  }
+
+  .hb--unknown {
+    color: var(--text-dim);
+  }
+</style>
