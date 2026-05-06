@@ -1,10 +1,10 @@
 ---
 /**
  * AgenticStackDiagram — signature SVG visual for the homepage.
- * Shows the layered architecture of an agent: UI → Orchestrator → LLM →
- * Tools (MCP) ↔ Memory. Each layer is hoverable.
+ * Five layers: UI → Orchestration → LLM → Tools/MCP ↔ Memory.
+ * The loop arrow shows the agentic loop pattern (return path).
  *
- * Pure SVG, no external deps. Animated subtly via CSS.
+ * v2: text fits within boxes, FEATURE label moved off pulse, no floating title.
  */
 
 export interface Props {
@@ -16,131 +16,138 @@ const { class: className = '' } = Astro.props;
 
 <figure class:list={['stackdiag', className]} role="img" aria-label="The agentic stack: UI, Orchestration, LLM, Tools/MCP, Memory">
   <div class="stackdiag__head">
-    <span class="stackdiag__kicker mono">▸ THE AGENTIC STACK</span>
-    <span class="stackdiag__caption mono">FIVE LAYERS · ONE LOOP</span>
+    <span class="stackdiag__kicker mono">▸ AGENT.ARCH // FIVE LAYERS · ONE LOOP</span>
+    <span class="stackdiag__caption mono">Single agent = LLM + Loop + Tools. Anything else is decoration.</span>
   </div>
 
-  <svg class="stackdiag__svg" viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <svg class="stackdiag__svg" viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs>
-      <linearGradient id="layerAccent" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#6366F1" stop-opacity="0.4" />
-        <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
-      </linearGradient>
       <linearGradient id="layerCyan" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.4" />
+        <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.30" />
         <stop offset="100%" stop-color="#22D3EE" stop-opacity="0" />
       </linearGradient>
+      <linearGradient id="layerAccent" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#6366F1" stop-opacity="0.30" />
+        <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
+      </linearGradient>
       <linearGradient id="layerMagenta" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#EC4899" stop-opacity="0.35" />
+        <stop offset="0%" stop-color="#EC4899" stop-opacity="0.32" />
         <stop offset="100%" stop-color="#EC4899" stop-opacity="0" />
       </linearGradient>
       <linearGradient id="layerGreen" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#10B981" stop-opacity="0.35" />
+        <stop offset="0%" stop-color="#10B981" stop-opacity="0.30" />
         <stop offset="100%" stop-color="#10B981" stop-opacity="0" />
       </linearGradient>
       <linearGradient id="layerAmber" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.35" />
+        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.30" />
         <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
       </linearGradient>
       <pattern id="cellGrid" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
-        <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1A2332" stroke-width="0.5" opacity="0.5" />
+        <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1A2332" stroke-width="0.5" opacity="0.4" />
       </pattern>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#4A5568" />
+      </marker>
+      <marker id="arrCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#22D3EE" />
+      </marker>
     </defs>
 
-    <!-- Background grid -->
-    <rect width="720" height="380" fill="url(#cellGrid)" />
+    <rect width="720" height="320" fill="url(#cellGrid)" />
 
-    <!-- Layer 1: UI / Trigger (top) -->
-    <g class="stackdiag__layer stackdiag__layer--ui">
-      <rect x="80" y="20" width="560" height="48" rx="2" fill="#0F151E" stroke="#22D3EE" stroke-width="1" />
-      <rect x="80" y="20" width="560" height="48" rx="2" fill="url(#layerCyan)" />
+    <!-- L01 UI -->
+    <g class="stackdiag__layer">
+      <rect x="80" y="20" width="560" height="46" rx="2" fill="#0F151E" stroke="#22D3EE" stroke-width="1" />
+      <rect x="80" y="20" width="560" height="46" rx="2" fill="url(#layerCyan)" />
       <text x="100" y="42" class="stackdiag__layer-code" fill="#22D3EE">L01</text>
-      <text x="140" y="42" class="stackdiag__layer-name">UI · Trigger · Goal</text>
-      <text x="140" y="58" class="stackdiag__layer-sub">User input, schedule, API call, webhook</text>
-      <!-- Corner brackets -->
+      <text x="142" y="42" class="stackdiag__layer-name">UI · Trigger · Goal</text>
+      <text x="142" y="58" class="stackdiag__layer-sub">User input · schedule · API call · webhook</text>
       <path d="M 80 20 L 80 28 M 80 20 L 88 20" stroke="#22D3EE" stroke-width="1.5" fill="none" />
       <path d="M 640 20 L 640 28 M 640 20 L 632 20" stroke="#22D3EE" stroke-width="1.5" fill="none" />
-      <path d="M 80 68 L 80 60 M 80 68 L 88 68" stroke="#22D3EE" stroke-width="1.5" fill="none" />
-      <path d="M 640 68 L 640 60 M 640 68 L 632 68" stroke="#22D3EE" stroke-width="1.5" fill="none" />
+      <path d="M 80 66 L 80 58 M 80 66 L 88 66" stroke="#22D3EE" stroke-width="1.5" fill="none" />
+      <path d="M 640 66 L 640 58 M 640 66 L 632 66" stroke="#22D3EE" stroke-width="1.5" fill="none" />
     </g>
 
-    <!-- Connection: UI → Orchestrator -->
-    <line x1="360" y1="68" x2="360" y2="86" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" />
-    <polygon points="360,90 357,84 363,84" fill="#4A5568" />
+    <line x1="360" y1="66" x2="360" y2="84" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#arr)" />
 
-    <!-- Layer 2: Orchestrator -->
-    <g class="stackdiag__layer stackdiag__layer--orch">
-      <rect x="80" y="92" width="560" height="48" rx="2" fill="#0F151E" stroke="#818CF8" stroke-width="1" />
-      <rect x="80" y="92" width="560" height="48" rx="2" fill="url(#layerAccent)" />
-      <text x="100" y="114" class="stackdiag__layer-code" fill="#818CF8">L02</text>
-      <text x="140" y="114" class="stackdiag__layer-name">Orchestration · Planner</text>
-      <text x="140" y="130" class="stackdiag__layer-sub">Loop: observe → plan → act → observe (ReAct, plan-and-execute, reflexion)</text>
-      <path d="M 80 92 L 80 100 M 80 92 L 88 92" stroke="#818CF8" stroke-width="1.5" fill="none" />
-      <path d="M 640 92 L 640 100 M 640 92 L 632 92" stroke="#818CF8" stroke-width="1.5" fill="none" />
-      <path d="M 80 140 L 80 132 M 80 140 L 88 140" stroke="#818CF8" stroke-width="1.5" fill="none" />
-      <path d="M 640 140 L 640 132 M 640 140 L 632 140" stroke="#818CF8" stroke-width="1.5" fill="none" />
+    <!-- L02 Orchestration -->
+    <g class="stackdiag__layer">
+      <rect x="80" y="86" width="560" height="46" rx="2" fill="#0F151E" stroke="#818CF8" stroke-width="1" />
+      <rect x="80" y="86" width="560" height="46" rx="2" fill="url(#layerAccent)" />
+      <text x="100" y="108" class="stackdiag__layer-code" fill="#818CF8">L02</text>
+      <text x="142" y="108" class="stackdiag__layer-name">Orchestration · Planner</text>
+      <text x="142" y="124" class="stackdiag__layer-sub">Loop: observe → plan → act → observe</text>
+      <text x="620" y="124" class="stackdiag__layer-sub stackdiag__layer-sub--right" fill="#818CF8">ReAct · plan-execute · reflexion</text>
+      <path d="M 80 86 L 80 94 M 80 86 L 88 86" stroke="#818CF8" stroke-width="1.5" fill="none" />
+      <path d="M 640 86 L 640 94 M 640 86 L 632 86" stroke="#818CF8" stroke-width="1.5" fill="none" />
+      <path d="M 80 132 L 80 124 M 80 132 L 88 132" stroke="#818CF8" stroke-width="1.5" fill="none" />
+      <path d="M 640 132 L 640 124 M 640 132 L 632 132" stroke="#818CF8" stroke-width="1.5" fill="none" />
     </g>
 
-    <line x1="360" y1="140" x2="360" y2="158" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" />
-    <polygon points="360,162 357,156 363,156" fill="#4A5568" />
+    <line x1="360" y1="132" x2="360" y2="150" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#arr)" />
 
-    <!-- Layer 3: LLM (the brain) -->
-    <g class="stackdiag__layer stackdiag__layer--llm">
-      <rect x="80" y="164" width="560" height="60" rx="2" fill="#0F151E" stroke="#EC4899" stroke-width="1.5" />
-      <rect x="80" y="164" width="560" height="60" rx="2" fill="url(#layerMagenta)" />
-      <text x="100" y="190" class="stackdiag__layer-code" fill="#EC4899">L03</text>
-      <text x="140" y="190" class="stackdiag__layer-name stackdiag__layer-name--feature">LLM · The Brain</text>
-      <text x="140" y="208" class="stackdiag__layer-sub">Claude · GPT · Gemini · Llama — predicts next tokens, calls tools</text>
-      <text x="500" y="190" class="stackdiag__layer-tag" fill="#EC4899">FEATURE</text>
-      <path d="M 80 164 L 80 174 M 80 164 L 90 164" stroke="#EC4899" stroke-width="2" fill="none" />
-      <path d="M 640 164 L 640 174 M 640 164 L 630 164" stroke="#EC4899" stroke-width="2" fill="none" />
-      <path d="M 80 224 L 80 214 M 80 224 L 90 224" stroke="#EC4899" stroke-width="2" fill="none" />
-      <path d="M 640 224 L 640 214 M 640 224 L 630 224" stroke="#EC4899" stroke-width="2" fill="none" />
-      <!-- Pulse ring -->
-      <circle cx="500" cy="180" r="3" fill="#EC4899">
+    <!-- L03 LLM (feature) -->
+    <g class="stackdiag__layer">
+      <rect x="80" y="152" width="560" height="58" rx="2" fill="#0F151E" stroke="#EC4899" stroke-width="1.5" />
+      <rect x="80" y="152" width="560" height="58" rx="2" fill="url(#layerMagenta)" />
+      <text x="100" y="178" class="stackdiag__layer-code" fill="#EC4899">L03</text>
+      <text x="142" y="178" class="stackdiag__layer-name stackdiag__layer-name--feature">LLM · The Brain</text>
+
+      <rect x="540" y="160" width="86" height="18" rx="2" fill="#EC4899" fill-opacity="0.15" stroke="#EC4899" stroke-width="0.7" />
+      <text x="583" y="173" class="stackdiag__layer-tag" fill="#EC4899" text-anchor="middle">FEATURE</text>
+
+      <text x="142" y="196" class="stackdiag__layer-sub">Claude · GPT · Gemini · Llama — predicts tokens, calls tools</text>
+
+      <path d="M 80 152 L 80 162 M 80 152 L 90 152" stroke="#EC4899" stroke-width="2" fill="none" />
+      <path d="M 640 152 L 640 162 M 640 152 L 630 152" stroke="#EC4899" stroke-width="2" fill="none" />
+      <path d="M 80 210 L 80 200 M 80 210 L 90 210" stroke="#EC4899" stroke-width="2" fill="none" />
+      <path d="M 640 210 L 640 200 M 640 210 L 630 210" stroke="#EC4899" stroke-width="2" fill="none" />
+
+      <circle cx="620" cy="200" r="3" fill="#EC4899">
         <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
       </circle>
     </g>
 
-    <line x1="240" y1="224" x2="240" y2="248" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" />
-    <polygon points="240,252 237,246 243,246" fill="#4A5568" />
-    <line x1="480" y1="224" x2="480" y2="248" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" />
-    <polygon points="480,252 477,246 483,246" fill="#4A5568" />
+    <line x1="215" y1="210" x2="215" y2="232" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#arr)" />
+    <line x1="505" y1="210" x2="505" y2="232" stroke="#4A5568" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#arr)" />
 
-    <!-- Layer 4: Tools / MCP — split -->
-    <g class="stackdiag__layer stackdiag__layer--tools">
-      <rect x="80" y="254" width="270" height="48" rx="2" fill="#0F151E" stroke="#10B981" stroke-width="1" />
-      <rect x="80" y="254" width="270" height="48" rx="2" fill="url(#layerGreen)" />
-      <text x="100" y="276" class="stackdiag__layer-code" fill="#10B981">L04</text>
-      <text x="140" y="276" class="stackdiag__layer-name">Tools · MCP Servers</text>
-      <text x="140" y="292" class="stackdiag__layer-sub">github, playwright, postgres…</text>
-      <path d="M 80 254 L 80 262 M 80 254 L 88 254" stroke="#10B981" stroke-width="1.5" fill="none" />
-      <path d="M 350 254 L 350 262 M 350 254 L 342 254" stroke="#10B981" stroke-width="1.5" fill="none" />
-      <path d="M 80 302 L 80 294 M 80 302 L 88 302" stroke="#10B981" stroke-width="1.5" fill="none" />
-      <path d="M 350 302 L 350 294 M 350 302 L 342 302" stroke="#10B981" stroke-width="1.5" fill="none" />
+    <!-- L04 Tools -->
+    <g class="stackdiag__layer">
+      <rect x="80" y="234" width="270" height="50" rx="2" fill="#0F151E" stroke="#10B981" stroke-width="1" />
+      <rect x="80" y="234" width="270" height="50" rx="2" fill="url(#layerGreen)" />
+      <text x="100" y="256" class="stackdiag__layer-code" fill="#10B981">L04</text>
+      <text x="142" y="256" class="stackdiag__layer-name">Tools · MCP</text>
+      <text x="100" y="272" class="stackdiag__layer-sub">github · playwright · postgres · slack · …</text>
+      <path d="M 80 234 L 80 242 M 80 234 L 88 234" stroke="#10B981" stroke-width="1.5" fill="none" />
+      <path d="M 350 234 L 350 242 M 350 234 L 342 234" stroke="#10B981" stroke-width="1.5" fill="none" />
+      <path d="M 80 284 L 80 276 M 80 284 L 88 284" stroke="#10B981" stroke-width="1.5" fill="none" />
+      <path d="M 350 284 L 350 276 M 350 284 L 342 284" stroke="#10B981" stroke-width="1.5" fill="none" />
     </g>
 
-    <!-- Layer 5: Memory (right of Tools) -->
-    <g class="stackdiag__layer stackdiag__layer--memory">
-      <rect x="370" y="254" width="270" height="48" rx="2" fill="#0F151E" stroke="#F59E0B" stroke-width="1" />
-      <rect x="370" y="254" width="270" height="48" rx="2" fill="url(#layerAmber)" />
-      <text x="390" y="276" class="stackdiag__layer-code" fill="#F59E0B">L05</text>
-      <text x="430" y="276" class="stackdiag__layer-name">Memory · Context</text>
-      <text x="430" y="292" class="stackdiag__layer-sub">Short-term turns, long-term embeddings, RAG</text>
-      <path d="M 370 254 L 370 262 M 370 254 L 378 254" stroke="#F59E0B" stroke-width="1.5" fill="none" />
-      <path d="M 640 254 L 640 262 M 640 254 L 632 254" stroke="#F59E0B" stroke-width="1.5" fill="none" />
-      <path d="M 370 302 L 370 294 M 370 302 L 378 302" stroke="#F59E0B" stroke-width="1.5" fill="none" />
-      <path d="M 640 302 L 640 294 M 640 302 L 632 302" stroke="#F59E0B" stroke-width="1.5" fill="none" />
+    <!-- L05 Memory -->
+    <g class="stackdiag__layer">
+      <rect x="370" y="234" width="270" height="50" rx="2" fill="#0F151E" stroke="#F59E0B" stroke-width="1" />
+      <rect x="370" y="234" width="270" height="50" rx="2" fill="url(#layerAmber)" />
+      <text x="390" y="256" class="stackdiag__layer-code" fill="#F59E0B">L05</text>
+      <text x="432" y="256" class="stackdiag__layer-name">Memory · Context</text>
+      <text x="390" y="272" class="stackdiag__layer-sub">short-term · long-term · RAG embeddings</text>
+      <path d="M 370 234 L 370 242 M 370 234 L 378 234" stroke="#F59E0B" stroke-width="1.5" fill="none" />
+      <path d="M 640 234 L 640 242 M 640 234 L 632 234" stroke="#F59E0B" stroke-width="1.5" fill="none" />
+      <path d="M 370 284 L 370 276 M 370 284 L 378 284" stroke="#F59E0B" stroke-width="1.5" fill="none" />
+      <path d="M 640 284 L 640 276 M 640 284 L 632 284" stroke="#F59E0B" stroke-width="1.5" fill="none" />
     </g>
 
-    <!-- Loop arrow (back to orchestrator) -->
-    <path d="M 220 302 Q 60 302 60 116 Q 60 92 80 92" stroke="#22D3EE" stroke-width="1" fill="none" stroke-dasharray="3,3" opacity="0.6" />
-    <polygon points="80,92 72,89 72,95" fill="#22D3EE" opacity="0.6" />
-    <text x="20" y="200" class="stackdiag__loop-label" fill="#22D3EE">LOOP</text>
-
-    <!-- Title overlay -->
-    <text x="80" y="338" class="stackdiag__title-text">⌬ AGENT.ARCH</text>
-    <text x="80" y="358" class="stackdiag__sub-text">Single agent = LLM + Loop + Tools. Anything else is decoration.</text>
+    <!-- LOOP arrow -->
+    <path
+      d="M 215 284 Q 56 284 56 110 Q 56 86 80 86"
+      stroke="#22D3EE"
+      stroke-width="1"
+      fill="none"
+      stroke-dasharray="3,3"
+      opacity="0.7"
+      marker-end="url(#arrCyan)"
+    />
+    <text x="32" y="190" class="stackdiag__loop-label" fill="#22D3EE">LOOP</text>
   </svg>
 </figure>
 
@@ -163,18 +170,21 @@ const { class: className = '' } = Astro.props;
     border-bottom: 1px solid var(--border-dim);
     font-family: var(--font-mono);
     font-size: var(--fs-2xs);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-widest);
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   .stackdiag__kicker {
     color: var(--accent-hi);
     font-weight: var(--fw-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
     text-shadow: var(--text-glow-accent);
   }
 
   .stackdiag__caption {
     color: var(--text-mute);
+    font-style: italic;
   }
 
   .stackdiag__svg {
@@ -184,7 +194,6 @@ const { class: className = '' } = Astro.props;
     background: var(--bg-base);
   }
 
-  /* SVG text styles via global rules so they apply inside SVG */
   :global(.stackdiag__svg .stackdiag__layer-code) {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -211,9 +220,14 @@ const { class: className = '' } = Astro.props;
     fill: #9CA3AF;
   }
 
+  :global(.stackdiag__svg .stackdiag__layer-sub--right) {
+    text-anchor: end;
+    font-style: italic;
+  }
+
   :global(.stackdiag__svg .stackdiag__layer-tag) {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 8.5px;
     font-weight: 700;
     letter-spacing: 0.18em;
   }
@@ -223,30 +237,15 @@ const { class: className = '' } = Astro.props;
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.2em;
+    text-anchor: middle;
   }
 
-  :global(.stackdiag__svg .stackdiag__title-text) {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-    fill: var(--accent-hi);
-    letter-spacing: 0.05em;
-  }
-
-  :global(.stackdiag__svg .stackdiag__sub-text) {
-    font-family: var(--font-body);
-    font-size: 12px;
-    fill: var(--text-mute);
-    font-style: italic;
-  }
-
-  /* Hover effects on layers */
   :global(.stackdiag__svg .stackdiag__layer) {
     transition: filter 200ms ease-out;
     cursor: default;
   }
 
   :global(.stackdiag__svg .stackdiag__layer:hover) {
-    filter: brightness(1.2);
+    filter: brightness(1.18);
   }
 </style>

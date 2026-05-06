@@ -1,7 +1,7 @@
 ---
 /**
- * PillarTile — large clickable tile for a pillar (used on homepage).
- * Cockpit-style: code, SVG icon, count, bar fill.
+ * PillarTile — compact single-line pillar tile (cockpit dense).
+ * Layout: [code] [icon] [title] [count] [arrow] over a thin progress bar.
  */
 import Icon from '@components/primitives/Icon.astro';
 import type { IconName } from '@components/primitives/icons';
@@ -10,11 +10,12 @@ export interface Props {
   href: string;
   code: string;
   title: string;
-  description: string;
+  description?: string;
   count?: number;
   fillPercent?: number;
   color?: 'accent' | 'cyan' | 'green' | 'amber' | 'magenta' | 'violet';
   icon?: IconName;
+  feature?: boolean;
 }
 
 const {
@@ -26,37 +27,37 @@ const {
   fillPercent = 50,
   color = 'accent',
   icon,
+  feature = false,
 } = Astro.props;
 ---
 
-<a class:list={['pt', `pt--${color}`]} href={href}>
+<a class:list={['pt', `pt--${color}`, { 'pt--feature': feature }]} href={href}>
   <span class="pt__corner pt__corner--tl" aria-hidden="true"></span>
   <span class="pt__corner pt__corner--br" aria-hidden="true"></span>
 
-  <div class="pt__head">
-    <span class="pt__code">{code}</span>
+  <div class="pt__body">
+    <span class="pt__code mono">{code}</span>
+    {icon && (
+      <span class="pt__icon" aria-hidden="true">
+        <Icon name={icon} size={feature ? 18 : 14} stroke={1.6} />
+      </span>
+    )}
+    <span class="pt__title">{title}</span>
     {count !== undefined && (
       <span class="pt__count mono">{count.toLocaleString()}</span>
     )}
+    <span class="pt__chev" aria-hidden="true">
+      <Icon name="arrow-right" size={12} stroke={2} />
+    </span>
   </div>
 
-  <div class="pt__body">
-    {icon && (
-      <span class="pt__icon" aria-hidden="true">
-        <Icon name={icon} size={22} stroke={1.6} />
-      </span>
-    )}
-    <h3 class="pt__title">{title}</h3>
+  {feature && description && (
     <p class="pt__desc">{description}</p>
-  </div>
+  )}
 
   <div class="pt__bar" aria-hidden="true">
     <span class="pt__bar-fill" style={`width: ${Math.min(100, Math.max(0, fillPercent))}%`}></span>
   </div>
-
-  <span class="pt__chev" aria-hidden="true">
-    <Icon name="arrow-right" size={14} stroke={2} />
-  </span>
 </a>
 
 <style>
@@ -64,8 +65,6 @@ const {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-3) var(--space-3);
     background: var(--bg-panel);
     border: 1px solid var(--border-dim);
     border-radius: var(--radius-sm);
@@ -74,7 +73,10 @@ const {
     border-bottom: 1px solid var(--border-dim);
     transition: all var(--duration-fast) var(--ease-out);
     overflow: hidden;
-    min-height: 132px;
+  }
+
+  .pt--feature {
+    background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-elevated) 100%);
   }
 
   .pt:hover {
@@ -109,105 +111,76 @@ const {
 
   .pt__corner {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border: 1px solid currentColor;
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--duration-fast) var(--ease-out);
   }
 
-  .pt:hover .pt__corner { opacity: 0.8; }
+  .pt:hover .pt__corner { opacity: 0.85; }
 
-  .pt__corner--tl {
-    top: -1px;
-    left: -1px;
-    border-right: 0;
-    border-bottom: 0;
-  }
-
-  .pt__corner--br {
-    bottom: -1px;
-    right: -1px;
-    border-left: 0;
-    border-top: 0;
-  }
-
-  .pt__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-widest);
-  }
-
-  .pt__code {
-    color: currentColor;
-    font-weight: var(--fw-semibold);
-  }
-
-  .pt__count {
-    color: var(--text-bright);
-    font-size: var(--fs-base);
-    font-weight: var(--fw-bold);
-    letter-spacing: var(--tracking-tight);
-    line-height: 1;
-    text-shadow: 0 0 8px currentColor;
-  }
+  .pt__corner--tl { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+  .pt__corner--br { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
 
   .pt__body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2-5) var(--space-3);
     flex: 1;
     min-width: 0;
   }
 
+  .pt--feature .pt__body {
+    padding: var(--space-3) var(--space-3) var(--space-2);
+  }
+
+  .pt__code {
+    font-size: 9px;
+    color: currentColor;
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
   .pt__icon {
     color: currentColor;
-    margin-bottom: var(--space-1);
     line-height: 0;
-    filter: drop-shadow(0 0 4px currentColor);
+    filter: drop-shadow(0 0 3px currentColor);
   }
 
   .pt__title {
     font-family: var(--font-display);
-    font-size: var(--fs-md);
+    font-size: var(--fs-sm);
     font-weight: var(--fw-semibold);
     color: var(--text-bright);
-    margin: 0;
-    line-height: 1.15;
+    line-height: 1.1;
     letter-spacing: var(--tracking-tight);
-  }
-
-  .pt__desc {
-    font-size: 11px;
-    color: var(--text-mute);
-    line-height: 1.45;
-    margin: 0;
-  }
-
-  .pt__bar {
-    height: 2px;
-    background: var(--border-dim);
-    border-radius: var(--radius-full);
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 
-  .pt__bar-fill {
-    display: block;
-    height: 100%;
-    background: currentColor;
-    box-shadow: 0 0 4px currentColor;
-    transition: width var(--duration-slow) var(--ease-out);
+  .pt--feature .pt__title {
+    font-size: var(--fs-md);
+  }
+
+  .pt__count {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--text-bright);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-tight);
+    text-shadow: 0 0 6px currentColor;
+    line-height: 1;
   }
 
   .pt__chev {
-    position: absolute;
-    bottom: var(--space-2-5);
-    right: var(--space-2-5);
     color: currentColor;
     line-height: 0;
     opacity: 0.4;
@@ -218,5 +191,28 @@ const {
     opacity: 1;
     transform: translateX(2px);
     filter: drop-shadow(0 0 4px currentColor);
+  }
+
+  .pt__desc {
+    padding: 0 var(--space-3) var(--space-2-5);
+    font-size: 11px;
+    color: var(--text-mute);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .pt__bar {
+    height: 2px;
+    background: var(--border-dim);
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .pt__bar-fill {
+    display: block;
+    height: 100%;
+    background: currentColor;
+    box-shadow: 0 0 4px currentColor;
+    transition: width var(--duration-slow) var(--ease-out);
   }
 </style>
