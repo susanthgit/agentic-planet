@@ -245,7 +245,7 @@
     },
     {
       "slug": "legacy-agent-x",
-      "name": "legacy-agent-x",
+      "name": "(illustrative · sample)",
       "category": "Misc",
       "stars": 1100,
       "delta7d": -2,
@@ -261,7 +261,7 @@
         1102,
         1100
       ],
-      "url": "/mcp/legacy-agent-x/"
+      "url": "/mcp/"
     }
   ]
 }
