@@ -1,0 +1,245 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+const risks = [
+  { id: 'PI-001', title: 'Prompt injection (direct)', severity: 'high', summary: 'Attacker text in user input overrides system prompt; agent follows malicious instructions.' },
+  { id: 'PI-002', title: 'Prompt injection (indirect)', severity: 'critical', summary: 'Malicious content in fetched web pages, files, or emails gets parsed as instructions.' },
+  { id: 'DF-001', title: 'Over-broad tool access', summary: 'Agent has more permissions than the task needs. Damage radius if compromised: large.', severity: 'high' },
+  { id: 'DF-002', title: 'Cross-tenant data leak', summary: 'Agent reads from one user\'s data and writes to another. Common in shared deployments.', severity: 'critical' },
+  { id: 'FM-001', title: 'Tool-call infinite loop', summary: 'Agent calls same tool repeatedly without progress. Burns budget, no output.', severity: 'medium' },
+  { id: 'FM-002', title: 'Context window exhaustion', summary: 'Long-running agent fills context with stale data; behaviour becomes unstable.', severity: 'medium' },
+  { id: 'FM-003', title: 'Hallucinated tool results', summary: 'Agent fabricates "successful" tool output without actually calling the tool.', severity: 'high' },
+  { id: 'PR-001', title: 'Inadvertent training data leak', summary: 'Sensitive prompts/data sent to providers without retention review.', severity: 'high' },
+];
+
+const sevColor = (s: string) =>
+  s === 'critical' ? 'red' : s === 'high' ? 'amber' : s === 'medium' ? 'cyan' : 'green';
+
+const decisionQs = [
+  { q: 'Should I let an agent read my email?', verdict: 'Yes, with rules', detail: 'Read-only access, allow-list senders, never let it auto-send.' },
+  { q: 'Should an agent have my GitHub repo write access?', verdict: 'PR-only, never push to main', detail: 'Force pull-request flow. Never grant force-push or admin.' },
+  { q: 'Should an agent run shell commands on my laptop?', verdict: 'Sandboxed only', detail: 'Use a container or VM. Never grant raw shell on host machine.' },
+  { q: 'Should an agent access customer data?', verdict: 'Tenant-isolated only', detail: 'Pass scoped credentials; agent must never see cross-tenant data.' },
+];
+---
+
+<BaseLayout
+  title="Safety — what does this agent actually access?"
+  description="Risk catalog. Data-flow analysis. Decision trees. Plain English safety lens for techies — not enterprise security theatre."
+>
+  <PillarHeader
+    code="S06"
+    color="red"
+    title="What does this agent actually touch?"
+    description="Risk catalog. Data-flow diagrams. Decision trees. Plain English safety lens — not enterprise security theatre."
+    count={risks.length}
+    countLabel="risks cataloged"
+    meta="ALWAYS-EVOLVING"
+    status="LIVE"
+  />
+
+  <section class="container-wide section">
+    <Panel kicker="RISK CATALOG // CURRENT THREATS" title="Things that go wrong" variant="error">
+      <div class="risk-grid">
+        {risks.map((r) => (
+          <article class:list={['risk', `risk--${sevColor(r.severity)}`]}>
+            <div class="risk__head">
+              <span class="risk__id mono">{r.id}</span>
+              <span class:list={['risk__sev', `risk__sev--${sevColor(r.severity)}`]}>
+                {r.severity.toUpperCase()}
+              </span>
+            </div>
+            <h3 class="risk__title">{r.title}</h3>
+            <p class="risk__summary">{r.summary}</p>
+          </article>
+        ))}
+      </div>
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="DECISION TREES // SHOULD I LET..." title="Common 'should I let it' questions">
+      <div class="dq-grid">
+        {decisionQs.map((d) => (
+          <article class="dq">
+            <div class="dq__q">
+              <span class="dq__icon" aria-hidden="true">?</span>
+              <span class="dq__qtext">{d.q}</span>
+            </div>
+            <div class="dq__verdict mono">
+              <span class="dq__verdict-label">VERDICT</span>
+              <strong class="phosphor-amber">{d.verdict}</strong>
+            </div>
+            <p class="dq__detail">{d.detail}</p>
+          </article>
+        ))}
+      </div>
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="THE PROMISE" title="What we cover here" density="loose">
+      <p>
+        Most "AI safety" content is either enterprise-level (governance frameworks, compliance) or academic (alignment, interpretability research). Both important — but neither helps a developer asking <em>"is it safe to let this agent touch my email?"</em>
+      </p>
+      <p>This pillar fills that gap, in plain English, with examples:</p>
+      <ul>
+        <li><strong>Risk catalog</strong> — every failure mode we've seen, with severity</li>
+        <li><strong>Data flow diagrams</strong> — what does each MCP / agent / tool actually access?</li>
+        <li><strong>Decision trees</strong> — interactive "should I" flowcharts</li>
+        <li><strong>Privacy notes</strong> — where data goes, per provider</li>
+        <li><strong>Threat models</strong> — different advice for hobbyist vs enterprise</li>
+      </ul>
+    </Panel>
+
+    <div class="cta-row">
+      <Button href="/safety/prompt-injection/" variant="ghost" iconLeft="◉">Prompt injection</Button>
+      <Button href="/safety/data-flow/" variant="ghost" iconLeft="◊">Data flows</Button>
+      <Button href="/safety/threat-models/" variant="ghost" iconLeft="◈">Threat models</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .risk {
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-left: 3px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .risk--red { color: var(--signal-red); }
+  .risk--amber { color: var(--signal-amber); }
+  .risk--cyan { color: var(--signal-cyan); }
+  .risk--green { color: var(--signal-green); }
+
+  .risk__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-2);
+  }
+
+  .risk__id { color: var(--text-faint); }
+
+  .risk__sev {
+    color: currentColor;
+    font-weight: var(--fw-bold);
+    text-shadow: 0 0 6px currentColor;
+  }
+
+  .risk__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0 0 var(--space-2) 0;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .risk__summary {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Decision questions */
+  .dq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .dq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+  }
+
+  .dq__q {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+
+  .dq__icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-full);
+    background: var(--signal-amber);
+    color: var(--bg-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+  }
+
+  .dq__qtext {
+    font-family: var(--font-display);
+    font-size: var(--fs-base);
+    color: var(--text-bright);
+    line-height: 1.3;
+  }
+
+  .dq__verdict {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-2);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-xs);
+    border-left: 2px solid var(--signal-amber);
+  }
+
+  .dq__verdict-label {
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .dq__verdict strong {
+    font-size: var(--fs-sm);
+  }
+
+  .dq__detail {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
+</style>

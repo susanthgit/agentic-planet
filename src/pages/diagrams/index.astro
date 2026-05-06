@@ -1,0 +1,107 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+const planned = [
+  'The agentic stack — visual breakdown of every layer',
+  'How MCP works, visually',
+  'Tool calling vs function calling',
+  'Multi-agent architecture patterns',
+  'Prompt injection examples (with diagrams)',
+  'Context window — lost in the middle',
+  'RAG flow — retrieval to generation',
+  'Agent loop — ReAct, plan-execute, reflexion',
+];
+---
+
+<BaseLayout
+  title="Diagrams — embeddable visual library"
+  description="Visual library for the agentic ecosystem. CC BY 4.0. Embed anywhere."
+>
+  <PillarHeader
+    code="D13"
+    color="cyan"
+    title="Visual library, embeddable."
+    description="Diagrams for every concept. CC BY 4.0. Embed in your blog, slide deck, README — just keep the attribution."
+    count={planned.length}
+    countLabel="diagrams planned"
+    meta="DAY 1 // 8 OF 30+"
+    status="EXPANDING"
+  />
+
+  <section class="container-wide section">
+    <Panel kicker="LAUNCHING WITH" title="The first 8 diagrams" density="loose">
+      <ul class="dgs">
+        {planned.map((d) => (
+          <li class="dg">
+            <span class="dg__icon" aria-hidden="true">◇</span>
+            <span class="dg__name">{d}</span>
+            <span class="dg__status mono">PHASE 1</span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+
+    <Panel kicker="HOW TO EMBED" title="Use these freely" density="loose">
+      <p>
+        Every diagram comes with a copy-paste embed snippet, a downloadable SVG and PNG, and a link
+        to open the source in Excalidraw if you want to remix it.
+      </p>
+      <p>
+        Licence: <strong>CC BY 4.0</strong>. Use them in blog posts, slide decks, READMEs,
+        even commercially — just credit "Agentic Planet" with a link.
+      </p>
+      <Button href="https://github.com/susanthgit/agentic-planet" variant="ghost" iconRight="→">
+        Source files on GitHub
+      </Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .dgs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dg {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .dg:last-child { border-bottom: 0; }
+
+  .dg__icon {
+    color: var(--signal-cyan);
+    text-shadow: var(--text-glow-cyan);
+    font-size: var(--fs-md);
+  }
+
+  .dg__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-base);
+    color: var(--text-bright);
+  }
+
+  .dg__status {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid var(--signal-cyan);
+    border-radius: var(--radius-xs);
+  }
+</style>

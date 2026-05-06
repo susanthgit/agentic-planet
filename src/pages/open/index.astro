@@ -1,0 +1,135 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+const projects = [
+  { name: 'LangChain', cat: 'framework', stars: '92.1k', summary: 'The OG agent framework. Massive ecosystem. Sometimes over-engineered.', health: 'alive' },
+  { name: 'LlamaIndex', cat: 'framework', stars: '38.4k', summary: 'RAG-first framework. Great for data-heavy agents.', health: 'alive' },
+  { name: 'CrewAI', cat: 'orchestration', stars: '24.6k', summary: 'Role-based multi-agent orchestration. Strong opinions, fast iteration.', health: 'alive' },
+  { name: 'LangGraph', cat: 'orchestration', stars: '12.8k', summary: 'Graph-based agent state machines. From the LangChain team.', health: 'alive' },
+  { name: 'AutoGen', cat: 'orchestration', stars: '38.2k', summary: 'Microsoft Research multi-agent framework. Recently archived.', health: 'abandoned' },
+  { name: 'Mastra', cat: 'framework', stars: '8.4k', summary: 'TypeScript-first agentic framework. Growing fast.', health: 'alive' },
+  { name: 'Ollama', cat: 'self-hosted', stars: '102k', summary: 'Local LLM runner. Foundation for self-hosted agentic stacks.', health: 'alive' },
+  { name: 'Open WebUI', cat: 'self-hosted', stars: '68k', summary: 'Self-hosted ChatGPT-style UI for local models.', health: 'alive' },
+];
+
+const healthClass = (h: string) =>
+  h === 'alive' ? 'green' : h === 'slowing' ? 'amber' : 'red';
+---
+
+<BaseLayout
+  title="Open Source — frameworks, agents, and the wild west"
+  description="Open source agentic projects worth tracking. Frameworks, indie projects, self-hosted alternatives."
+>
+  <PillarHeader
+    code="O11"
+    color="green"
+    title="The open-source agentic ecosystem."
+    description="Frameworks, indie projects, self-hosted alternatives. The wider open-source surface — beyond just MCP servers."
+    count={projects.length}
+    countLabel="projects tracked"
+    meta="MONTHLY SPOTLIGHT"
+    status="PHASE 2"
+  />
+
+  <section class="container-wide section">
+    <div class="proj-grid">
+      {projects.map((p) => (
+        <article class:list={['proj', `proj--${healthClass(p.health)}`]}>
+          <div class="proj__head">
+            <span class="proj__cat mono">{p.cat}</span>
+            <span class:list={['proj__health', `proj__health--${healthClass(p.health)}`]}>
+              ● {p.health.toUpperCase()}
+            </span>
+          </div>
+          <h3 class="proj__name">{p.name}</h3>
+          <p class="proj__summary">{p.summary}</p>
+          <div class="proj__foot">
+            <span class="proj__stars mono">⭐ {p.stars}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <Panel kicker="MONTHLY SPOTLIGHT" title="One open-source project deep-dive per month" density="loose">
+      <p>
+        Each month, one open-source agentic project gets a full deep-dive: what it is, who's building it, what it solves better than alternatives, where it falls short. No promotion, just honest tour.
+      </p>
+      <p class="text-mute">First spotlight publishes Phase 2.</p>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-12);
+  }
+
+  .proj {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .proj:hover {
+    border-color: var(--signal-green);
+    background: var(--bg-elevated);
+  }
+
+  .proj--abandoned { opacity: 0.65; }
+
+  .proj__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .proj__cat { color: var(--text-faint); }
+
+  .proj__health--green { color: var(--signal-green); text-shadow: var(--text-glow-green); }
+  .proj__health--amber { color: var(--signal-amber); }
+  .proj__health--red { color: var(--signal-red); }
+
+  .proj__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: var(--space-1) 0;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .proj__summary {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .proj__foot {
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--border-dim);
+  }
+
+  .proj__stars {
+    font-size: var(--fs-xs);
+    color: var(--signal-cyan);
+  }
+</style>

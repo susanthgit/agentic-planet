@@ -1,0 +1,190 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+const explainers = [
+  { slug: 'what-is-an-agent', title: 'What is an agent?', summary: 'Agent vs chatbot vs copilot vs assistant. The words are abused. Here\'s the real difference.', depth: '5-min' },
+  { slug: 'mcp-in-90-seconds', title: 'MCP in 90 seconds', summary: 'Model Context Protocol explained without the spec jargon. The "why" before the "what".', depth: '90-sec' },
+  { slug: 'what-is-agentic', title: 'What "agentic" actually means', summary: 'The marketing version vs the engineering reality. Hint: it\'s about loops + tools, not buzzwords.', depth: '5-min' },
+  { slug: 'tool-calling-vs-mcp', title: 'Tool calling vs function calling vs MCP', summary: 'Three things people conflate. We disentangle them.', depth: '5-min' },
+  { slug: 'agentic-stack', title: 'The agentic stack', summary: 'LLM → memory → tools → orchestration → UI. Visual breakdown of every layer.', depth: '5-min' },
+  { slug: 'rag-plain-english', title: 'RAG in plain English', summary: 'Retrieval-augmented generation explained without academic notation.', depth: '5-min' },
+  { slug: 'agentic-loops', title: 'How agentic loops work', summary: 'ReAct, plan-and-execute, reflexion — the three core patterns.', depth: 'deep' },
+  { slug: 'context-windows', title: 'Context windows: why they matter', summary: 'Why "1M context" doesn\'t mean what you think. The lost-in-the-middle problem.', depth: '5-min' },
+  { slug: 'memory-in-agents', title: 'Memory in agents', summary: 'Short-term, long-term, episodic. What persists, what doesn\'t, and why it\'s hard.', depth: '5-min' },
+  { slug: 'multi-agent-systems', title: 'Multi-agent systems', summary: 'When more than one agent is useful. When it\'s just complexity for its own sake.', depth: 'deep' },
+];
+
+const depthColor = (d: string) => d === '90-sec' ? 'green' : d === '5-min' ? 'cyan' : 'magenta';
+---
+
+<BaseLayout
+  title="Learn — plain English explainers + glossary"
+  description="The agentic concepts that matter, explained in plain English. With diagrams. No jargon. Built for techies who want to actually understand."
+>
+  <PillarHeader
+    code="L08"
+    color="cyan"
+    title="Plain English. With diagrams. No jargon."
+    description="Concepts that matter, explained for techies who want to actually understand. 90-second primers. 5-minute deep-dives. Searchable glossary."
+    count={explainers.length}
+    countLabel="explainers ready"
+    meta="EVERGREEN"
+    status="LIVE"
+  />
+
+  <section class="container-wide section">
+    <div class="learn-meta">
+      <Panel kicker="DEPTH FILTER" title="Pick your time budget" density="tight">
+        <div class="depth-row">
+          <a href="#90-sec" class="depth-pill depth-pill--green">
+            <span class="depth-pill__icon">⚡</span>
+            <span><strong>90-sec</strong> primers</span>
+          </a>
+          <a href="#5-min" class="depth-pill depth-pill--cyan">
+            <span class="depth-pill__icon">⏱</span>
+            <span><strong>5-min</strong> walks</span>
+          </a>
+          <a href="#deep" class="depth-pill depth-pill--magenta">
+            <span class="depth-pill__icon">🔍</span>
+            <span><strong>Deep</strong> dives</span>
+          </a>
+        </div>
+      </Panel>
+    </div>
+
+    <div class="explainers-grid">
+      {explainers.map((e) => (
+        <a class="ex" href={`/learn/${e.slug}/`}>
+          <div class="ex__head">
+            <span class:list={['ex__depth', `ex__depth--${depthColor(e.depth)}`]}>{e.depth.toUpperCase()}</span>
+          </div>
+          <h3 class="ex__title">{e.title}</h3>
+          <p class="ex__summary">{e.summary}</p>
+          <span class="ex__chev mono">Read →</span>
+        </a>
+      ))}
+    </div>
+
+    <Panel kicker="GLOSSARY" title="Searchable jargon decoder" density="loose">
+      <p>
+        Every buzzword that gets thrown around — agent, MCP, RAG, tool calling, context, embedding,
+        function calling, prompt injection, system prompt — translated into plain English.
+      </p>
+      <p class="text-mute">~50 terms at launch, growing weekly as new jargon emerges.</p>
+      <Button href="/learn/glossary/" variant="primary" iconRight="→">Open glossary</Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .learn-meta { margin-bottom: var(--space-6); }
+
+  .depth-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .depth-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: currentColor;
+    border-bottom: 1px solid currentColor;
+    background: var(--bg-base);
+  }
+
+  .depth-pill__icon { font-size: var(--fs-base); }
+
+  .depth-pill--green { color: var(--signal-green); }
+  .depth-pill--cyan { color: var(--signal-cyan); }
+  .depth-pill--magenta { color: var(--signal-magenta); }
+
+  .depth-pill:hover {
+    background: currentColor;
+  }
+
+  .depth-pill:hover * {
+    color: var(--bg-base) !important;
+  }
+
+  /* Explainers grid */
+  .explainers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-12);
+  }
+
+  .ex {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    border-bottom: 1px solid var(--border-dim);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .ex:hover {
+    border-color: var(--signal-cyan);
+    background: var(--bg-elevated);
+    transform: translateY(-2px);
+  }
+
+  .ex__depth {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .ex__depth--green { color: var(--signal-green); }
+  .ex__depth--cyan { color: var(--signal-cyan); }
+  .ex__depth--magenta { color: var(--signal-magenta); }
+
+  .ex__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .ex__summary {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .ex__chev {
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin-top: var(--space-2);
+  }
+</style>

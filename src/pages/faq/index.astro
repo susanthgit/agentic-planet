@@ -1,0 +1,126 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+const faqs = [
+  { slug: 'is-agentic-ai-hype', q: 'Is agentic AI hype?', summary: 'Some of it. Here\'s how to tell signal from noise.', cat: 'big-picture' },
+  { slug: 'will-mcp-survive', q: 'Will MCP survive 18 months?', summary: 'Probably yes. Here\'s why — and what could kill it.', cat: 'protocol' },
+  { slug: 'build-with-zero-dollars', q: 'What can I actually build with $0?', summary: 'More than you think. A starter stack that costs nothing.', cat: 'cost' },
+  { slug: 'why-still-hallucinate', q: 'Why do agents still hallucinate?', summary: 'It\'s not solved. Here\'s the engineering reality.', cat: 'technical' },
+  { slug: 'is-prompt-engineer-real', q: 'Is "prompt engineer" still a real role?', summary: 'It morphed. Here\'s what replaced it.', cat: 'career' },
+  { slug: 'anthropic-vs-openai', q: 'Should I build on Anthropic, OpenAI, or both?', summary: 'Depends on your audience. Here\'s the honest call.', cat: 'big-picture' },
+  { slug: 'self-hosted-practical', q: 'Is self-hosted/local agents practical yet?', summary: 'For some workloads, yes. For others, no.', cat: 'technical' },
+  { slug: 'real-cost-of-agents', q: 'How much does running an agent really cost?', summary: 'Tokens × calls × days. Plus the things vendors don\'t bill you for.', cat: 'cost' },
+  { slug: 'skills-vs-copilot-studio', q: 'Difference between Claude Skills and Copilot Studio agent?', summary: 'Different audiences, different protocols, different lock-in profiles.', cat: 'protocol' },
+  { slug: 'agentic-replace-saas', q: 'Will agentic AI replace SaaS?', summary: 'Eventually for some, never for others. Here\'s the dividing line.', cat: 'big-picture' },
+];
+---
+
+<BaseLayout
+  title="FAQ — honest answers to the big questions"
+  description="Is agentic AI hype? Will MCP survive? What can I build with $0? Plain English answers to the questions techies actually ask."
+>
+  <PillarHeader
+    code="Q10"
+    color="amber"
+    title="The big questions, answered."
+    description="No marketing voice. No vendor spin. Just honest answers from someone who deploys this for a living."
+    count={faqs.length}
+    countLabel="answers"
+    meta="QUARTERLY REVIEW"
+    status="LIVE"
+  />
+
+  <section class="container-wide section">
+    <div class="faq-grid">
+      {faqs.map((f, i) => (
+        <a class="faq" href={`/faq/${f.slug}/`}>
+          <span class="faq__num mono">Q.{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="faq__q">{f.q}</h3>
+          <p class="faq__a">{f.summary}</p>
+          <span class="faq__cat mono">{f.cat}</span>
+        </a>
+      ))}
+    </div>
+
+    <Panel kicker="WHY THIS PILLAR" title="The honest FAQ promise" density="loose">
+      <ul>
+        <li><strong>No marketing voice</strong> — these answer the question, not pitch a product</li>
+        <li><strong>No vendor spin</strong> — we'll say "MS is wrong here" or "Anthropic is overselling there" if true</li>
+        <li><strong>Updated</strong> — every answer has a "last reviewed" date and gets revisited quarterly</li>
+        <li><strong>Counter-takes</strong> — when reasonable people disagree, we acknowledge it</li>
+        <li><strong>Real examples</strong> — from real deployments, not hypothetical</li>
+      </ul>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-12);
+  }
+
+  .faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    border-bottom: 1px solid var(--border-dim);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .faq:hover {
+    border-color: var(--signal-amber);
+    background: var(--bg-elevated);
+    transform: translateY(-2px);
+  }
+
+  .faq__num {
+    font-size: var(--fs-2xs);
+    color: var(--signal-amber);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    text-shadow: var(--text-glow-amber);
+  }
+
+  .faq__q {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .faq__a {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .faq__cat {
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    align-self: flex-start;
+    padding: 2px var(--space-2);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    margin-top: var(--space-2);
+  }
+</style>

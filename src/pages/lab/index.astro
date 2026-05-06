@@ -1,0 +1,189 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+const tools = [
+  {
+    slug: 'pick-your-stack',
+    name: 'Pick Your Stack',
+    summary: '5 questions → recommended agent + MCP + framework stack tailored to your situation.',
+    status: 'live',
+    icon: '🎯',
+  },
+  {
+    slug: 'cost-calculator',
+    name: 'Agent Cost Calculator',
+    summary: 'Tokens × calls × days → projected monthly cost. Compare Claude vs GPT vs Gemini.',
+    status: 'phase-2',
+    icon: '💰',
+  },
+  {
+    slug: 'model-comparator',
+    name: 'Model Comparator',
+    summary: 'Side-by-side: latency, context window, pricing, capabilities, by task type.',
+    status: 'phase-2',
+    icon: '⚖️',
+  },
+  {
+    slug: 'mcp-combiner',
+    name: 'MCP Combination Explorer',
+    summary: 'Pick 2–3 MCPs → see existing recipes that combine them.',
+    status: 'phase-3',
+    icon: '🔌',
+  },
+  {
+    slug: 'protocol-decision',
+    name: 'Protocol Decision Tree',
+    summary: 'Should you use MCP, Skills, Apps SDK, or roll your own? Interactive flowchart.',
+    status: 'phase-3',
+    icon: '🌳',
+  },
+  {
+    slug: 'badge-generator',
+    name: 'MCP Health Badge Generator',
+    summary: 'Paste a GitHub repo URL → get embeddable SVG badge. Public good.',
+    status: 'phase-3',
+    icon: '🏷️',
+  },
+];
+
+const statusBadge = {
+  live: { label: '● LIVE', color: 'green' },
+  'phase-2': { label: '○ PHASE 2', color: 'amber' },
+  'phase-3': { label: '○ PHASE 3', color: 'red' },
+};
+---
+
+<BaseLayout
+  title="Lab — interactive tools for techies"
+  description="Calculators, comparators, wizards. Tools that answer real questions interactively."
+>
+  <PillarHeader
+    code="X09"
+    color="magenta"
+    title="The Lab. Tools that answer questions."
+    description="Calculators, comparators, wizards. Pick your stack, compare costs, decide protocols. Interactive — no scrolling through articles."
+    count={tools.filter((t) => t.status === 'live').length}
+    countLabel="live tools"
+    meta="EXPANDING"
+    status="PHASE 1 // 1 OF 6"
+  />
+
+  <section class="container-wide section">
+    <div class="lab-grid">
+      {tools.map((t) => {
+        const st = statusBadge[t.status as keyof typeof statusBadge];
+        return (
+          <article class:list={['lab-tool', `lab-tool--${t.status}`]}>
+            <div class="lab-tool__head">
+              <span class="lab-tool__icon" aria-hidden="true">{t.icon}</span>
+              <span class:list={['lab-tool__status', `lab-tool__status--${st.color}`]}>
+                {st.label}
+              </span>
+            </div>
+            <h3 class="lab-tool__name">{t.name}</h3>
+            <p class="lab-tool__summary">{t.summary}</p>
+            <div class="lab-tool__cta">
+              {t.status === 'live' ? (
+                <Button href={`/lab/${t.slug}/`} variant="primary" iconRight="→">Launch</Button>
+              ) : (
+                <Button variant="ghost" disabled>Coming soon</Button>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <Panel kicker="THE LAB PROMISE" title="Interactive > article" density="loose">
+      <p>
+        Articles tell you. Calculators answer. Wizards decide. Comparators show.
+      </p>
+      <p>
+        Every Lab tool exists to answer a real question that comes up over and over in
+        agentic AI work. They run client-side (no server cost, no data leaves your browser),
+        load instantly, and never require a login.
+      </p>
+      <p class="text-mute">
+        Phase 1 ships <strong>Pick Your Stack</strong>. Phase 2 adds the cost calculator and
+        model comparator. Phase 3 fills out the rest.
+      </p>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-12);
+  }
+
+  .lab-tool {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .lab-tool--live:hover {
+    border-color: var(--signal-magenta);
+    background: var(--bg-elevated);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px var(--signal-magenta-glow);
+  }
+
+  .lab-tool--phase-2,
+  .lab-tool--phase-3 {
+    opacity: 0.65;
+  }
+
+  .lab-tool__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .lab-tool__icon { font-size: var(--fs-2xl); }
+
+  .lab-tool__status {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .lab-tool__status--green { color: var(--signal-green); text-shadow: var(--text-glow-green); }
+  .lab-tool__status--amber { color: var(--signal-amber); }
+  .lab-tool__status--red { color: var(--signal-red); }
+
+  .lab-tool__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .lab-tool__summary {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .lab-tool__cta { margin-top: var(--space-2); }
+</style>

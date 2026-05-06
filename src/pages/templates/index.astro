@@ -1,0 +1,89 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+const planned = [
+  { name: 'Boilerplate Copilot Studio agent', summary: 'Ready-to-deploy declarative agent with sample knowledge sources, MCP plugin, and conversation starters.' },
+  { name: 'Boilerplate Claude Skill', summary: 'Skill manifest, instructions.md, and SKILL.md template aligned with Anthropic best practices.' },
+  { name: 'Boilerplate MCP server (Python)', summary: 'Minimal but production-ready MCP server. Auth, error handling, structured outputs.' },
+  { name: 'Boilerplate MCP server (Node.js)', summary: 'Same in TypeScript. With Vitest tests and OAuth scaffolding.' },
+  { name: 'Boilerplate MCP server (Go)', summary: 'For when you need raw performance. Concurrency-safe, single-binary deploy.' },
+  { name: 'System prompts library', summary: 'Reusable system prompts for common patterns — code review, summarisation, classification, extraction.' },
+  { name: 'Recipe-derived templates', summary: 'Each Recipe in Pillar 6 gets a template with the exact code from the recipe.' },
+];
+---
+
+<BaseLayout
+  title="Templates — copy-paste boilerplates that actually work"
+  description="Production-ready starters for Copilot Studio agents, Claude Skills, MCP servers, and recipe boilerplates."
+>
+  <PillarHeader
+    code="T11"
+    color="cyan"
+    title="Boilerplates that don't waste your weekend."
+    description="Copy-paste starters with auth done, errors handled, and tests in place. No 'works in tutorial, broken in production'."
+    count={planned.length}
+    countLabel="templates planned"
+    meta="PHASE 3"
+    status="COMING"
+  />
+
+  <section class="container-wide section">
+    <Panel kicker="PHASE 3 // PLANNED" title="What's coming" density="loose">
+      <ul class="planned">
+        {planned.map((p) => (
+          <li class="planned__item">
+            <strong class="planned__name">{p.name}</strong>
+            <span class="planned__summary">{p.summary}</span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+
+    <Panel kicker="PHILOSOPHY" title="Why templates matter" density="loose">
+      <p>
+        A Recipe shows the workflow. A Template gives you the executable starting point.
+      </p>
+      <p>
+        Each template is a public GitHub repo, MIT-licensed, with a working README, real tests,
+        and the same engineering rigour as production code. Fork, customise, ship.
+      </p>
+      <p class="text-mute">Phase 3 launches the first three: MCP server (Python), Claude Skill, Copilot Studio agent.</p>
+      <Button href="/recipes/" variant="ghost" iconRight="→">In the meantime: browse recipes</Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .planned {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .planned__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .planned__item:last-child { border-bottom: 0; }
+
+  .planned__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    color: var(--text-bright);
+  }
+
+  .planned__summary {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+  }
+</style>

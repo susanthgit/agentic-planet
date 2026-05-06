@@ -1,0 +1,164 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import HealthBoard from '@components/panels/HealthBoard.astro';
+import MetricTile from '@components/data/MetricTile.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+import mcpHealth from '@data/mcp-health.json';
+
+const rows = mcpHealth.rows;
+const totals = {
+  alive: rows.filter((r) => r.health === 'alive').length,
+  slowing: rows.filter((r) => r.health === 'slowing').length,
+  abandoned: rows.filter((r) => r.health === 'abandoned').length,
+};
+const categories = Array.from(new Set(rows.map((r) => r.category))).sort();
+const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
+---
+
+<BaseLayout
+  title="MCP Servers — health board, honest reviews, plain English"
+  description="The 30 MCP servers worth your time. Stars, weekly delta, last commit, status — refreshed every 6h. Plus honest reviews of each."
+>
+  <PillarHeader
+    code="M03"
+    color="cyan"
+    title="MCP Health Board · live signals."
+    description="The 30 MCP servers worth your time, with refreshed-every-6h signals: stars, weekly delta, last commit, status."
+    count={rows.length}
+    countLabel="servers tracked"
+    meta="REFRESH // 6H"
+    status="LIVE"
+  />
+
+  <section class="container-wide section">
+    <div class="metric-row">
+      <MetricTile label="Alive" value={totals.alive} variant="green" glow={true} />
+      <MetricTile label="Slowing" value={totals.slowing} variant="amber" />
+      <MetricTile label="Abandoned" value={totals.abandoned} variant="red" />
+      <MetricTile label="Total Stars" value={`${(totalStars / 1000).toFixed(1)}k`} variant="cyan" />
+      <MetricTile label="Categories" value={categories.length} variant="accent" />
+    </div>
+
+    <Panel
+      title="Live Health Board · all 30 servers"
+      kicker="LIVE"
+      meta={`Updated ${new Date(mcpHealth._lastUpdated).toUTCString().replace('GMT', 'UTC')}`}
+      live={true}
+      density="tight"
+      variant="cyan"
+    >
+      <HealthBoard rows={rows} />
+    </Panel>
+
+    <div class="filter-bar">
+      <span class="filter-bar__label mono">CATEGORY //</span>
+      {categories.map((c) => <Tag text={c} color="cyan" />)}
+    </div>
+
+    <div class="footer-actions">
+      <Button href="/mcp/build-your-own/" variant="ghost" iconLeft="◆">Build your own MCP</Button>
+      <Button href="/mcp/badges/" variant="ghost" iconLeft="◈">Embeddable badges</Button>
+      <Button href="/recipes/" variant="ghost" iconLeft="🍳">Recipes using MCPs</Button>
+    </div>
+
+    <div class="container-prose section">
+      <Panel kicker="HEALTH SIGNALS // DEFINITIONS" title="What the badges mean" density="loose">
+        <table class="signal-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Criteria</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="hb hb--alive">●&nbsp;Alive</span></td>
+              <td>Last commit &lt; 30 days, issue response &lt; 7 days</td>
+              <td>Safe to adopt</td>
+            </tr>
+            <tr>
+              <td><span class="hb hb--slowing">●&nbsp;Slowing</span></td>
+              <td>Last commit 30–90d OR issue response &gt; 14d</td>
+              <td>Adopt with caution; track upstream</td>
+            </tr>
+            <tr>
+              <td><span class="hb hb--abandoned">●&nbsp;Abandoned</span></td>
+              <td>Last commit &gt; 90d AND no issue response</td>
+              <td>Avoid; consider forking if you must</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="text-mute">Data refreshed every 6 hours via GitHub Actions cron. Dispute or correct → <a href="https://github.com/susanthgit/agentic-planet/issues">open an issue</a>.</p>
+      </Panel>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    margin-top: var(--space-6);
+  }
+
+  .filter-bar__label {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-right: var(--space-2);
+  }
+
+  .footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .signal-table th,
+  .signal-table td {
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  /* Inline health pill (used in signal definitions table) */
+  :global(.hb) {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px var(--space-2);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border: 1px solid currentColor;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  :global(.hb--alive) { color: var(--signal-green); }
+  :global(.hb--slowing) { color: var(--signal-amber); }
+  :global(.hb--abandoned) { color: var(--signal-red); opacity: 0.85; }
+</style>

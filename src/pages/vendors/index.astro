@@ -1,0 +1,237 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+const vendors = [
+  {
+    slug: 'microsoft',
+    name: 'Microsoft',
+    products: ['Copilot Studio', 'Foundry', 'Connectors', 'Agent 365', 'Declarative Agents', 'Apps SDK plugins'],
+    strategy: 'M365 / Azure-native enterprise agents. Tight integration into existing IT estate.',
+    color: 'cyan',
+    disclosure: 'Sush works at Microsoft. Independent take.',
+    populated: true,
+  },
+  {
+    slug: 'anthropic',
+    name: 'Anthropic',
+    products: ['Claude', 'MCP', 'Skills', 'Computer Use', 'Agent SDK'],
+    strategy: 'Protocol-led, capability-led, safety-led. Open ecosystem via MCP.',
+    color: 'amber',
+    populated: true,
+  },
+  {
+    slug: 'openai',
+    name: 'OpenAI',
+    products: ['GPTs', 'Apps SDK', 'Agents SDK', 'Operator', 'Realtime API'],
+    strategy: 'Platform + ecosystem. Massive consumer + developer reach.',
+    color: 'green',
+    populated: false,
+  },
+  {
+    slug: 'google',
+    name: 'Google',
+    products: ['Gemini', 'Vertex Agents', 'A2A', 'Notebook LM', 'AI Studio'],
+    strategy: 'Multi-modal, long-context, deep workspace integration.',
+    color: 'magenta',
+    populated: false,
+  },
+];
+---
+
+<BaseLayout
+  title="Vendors — Microsoft, Anthropic, OpenAI, Google compared honestly"
+  description="Side-by-side honest deep dives of the major agentic AI vendors. From someone who actually deploys this stuff for a living."
+>
+  <PillarHeader
+    code="V05"
+    color="amber"
+    title="Vendor deep-dives, no spin."
+    description="Microsoft, Anthropic, OpenAI, Google — what they're actually building, where they lead, where they lag. From someone who deploys this for a living."
+    count={vendors.filter((v) => v.populated).length}
+    countLabel="vendors live (4 planned)"
+    meta="DAY 1 // 2 OF 4"
+    status="EXPANDING"
+  />
+
+  <section class="container-wide section">
+    <div class="vendor-grid">
+      {vendors.map((v) => (
+        <article class:list={['vendor-card', `vendor-card--${v.color}`, !v.populated && 'vendor-card--coming']}>
+          <header class="vendor-card__head">
+            <span class="vendor-card__code mono">VID/{v.slug.toUpperCase()}</span>
+            <span class:list={['vendor-card__status', `vendor-card__status--${v.populated ? 'live' : 'soon'}`]}>
+              {v.populated ? '● LIVE' : '○ COMING SOON'}
+            </span>
+          </header>
+
+          <h2 class="vendor-card__name">{v.name}</h2>
+          <p class="vendor-card__strategy">{v.strategy}</p>
+
+          <div class="vendor-card__products">
+            <span class="vendor-card__label mono">PRODUCTS</span>
+            <div class="vendor-card__product-tags">
+              {v.products.map((p) => <Tag text={p} color={v.color as any} />)}
+            </div>
+          </div>
+
+          {v.disclosure && (
+            <div class="vendor-card__disclosure">
+              <span class="vendor-card__label mono">DISCLOSURE</span>
+              <span class="vendor-card__disclosure-text">{v.disclosure}</span>
+            </div>
+          )}
+
+          <div class="vendor-card__cta">
+            {v.populated ? (
+              <Button href={`/vendors/${v.slug}/`} variant="ghost" iconRight="→">Open vendor file</Button>
+            ) : (
+              <Button variant="ghost" disabled>Phase 2 launch</Button>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <Panel kicker="EDITORIAL POLICY" title="How we cover vendors" density="loose">
+      <ul>
+        <li><strong>Independent</strong> — no vendor controls what we publish about them</li>
+        <li><strong>Disclosed</strong> — Sush works at Microsoft. Microsoft pages disclose this. Other vendors disclosed if any relationship exists.</li>
+        <li><strong>Hands-on</strong> — we cover what we've actually deployed, not what we read in docs</li>
+        <li><strong>Versioned</strong> — vendor pages have last-reviewed dates; we revisit when they ship major updates</li>
+        <li><strong>Comparable</strong> — every vendor page covers the same axes (capabilities, ecosystem, pricing, lock-in, where they lead, where they lag)</li>
+      </ul>
+    </Panel>
+
+    <div class="cta-row">
+      <Button href="/standards/" variant="ghost" iconLeft="🏛️">Protocol war</Button>
+      <Button href="/landscape/" variant="ghost" iconLeft="🌍">Landscape</Button>
+      <Button href="/lab/" variant="ghost" iconLeft="🧪">Compare vendors</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .vendor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-12);
+  }
+
+  .vendor-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    position: relative;
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .vendor-card--cyan { color: var(--signal-cyan); }
+  .vendor-card--amber { color: var(--signal-amber); }
+  .vendor-card--green { color: var(--signal-green); }
+  .vendor-card--magenta { color: var(--signal-magenta); }
+
+  .vendor-card:hover {
+    border-color: currentColor;
+    box-shadow: 0 0 0 1px currentColor, 0 0 20px currentColor;
+  }
+
+  .vendor-card--coming {
+    opacity: 0.7;
+  }
+
+  .vendor-card--coming:hover {
+    box-shadow: none;
+    opacity: 0.85;
+  }
+
+  .vendor-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .vendor-card__code {
+    color: currentColor;
+    text-shadow: 0 0 8px currentColor;
+  }
+
+  .vendor-card__status {
+    color: var(--text-mute);
+  }
+
+  .vendor-card__status--live {
+    color: var(--signal-green);
+    text-shadow: var(--text-glow-green);
+  }
+
+  .vendor-card__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    margin: 0;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .vendor-card__strategy {
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--text-mute);
+    margin: 0;
+  }
+
+  .vendor-card__label {
+    display: block;
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-2);
+  }
+
+  .vendor-card__product-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1-5);
+  }
+
+  .vendor-card__disclosure {
+    padding: var(--space-2-5);
+    background: var(--bg-base);
+    border-left: 2px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .vendor-card__disclosure-text {
+    font-size: var(--fs-xs);
+    color: var(--text);
+    font-style: italic;
+  }
+
+  .vendor-card__cta {
+    margin-top: auto;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
+</style>

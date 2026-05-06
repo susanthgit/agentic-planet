@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import RecipeCard from '@components/panels/RecipeCard.astro';
+import Button from '@components/primitives/Button.astro';
+import Tag from '@components/primitives/Tag.astro';
+import recipesData from '@data/featured-recipes.json';
+
+const recipes = recipesData.recipes;
+const allComponents = Array.from(new Set(recipes.flatMap((r) => r.components)));
+---
+
+<BaseLayout
+  title="Recipes — chained workflows with measured before/after"
+  description="Real workflows combining multiple agents and MCPs. Measured before and after. The differentiation: nobody else does this."
+>
+  <PillarHeader
+    code="R02"
+    color="magenta"
+    title="Recipes that actually saved time."
+    description="Chained workflows. Multiple agents and MCPs working together. Every recipe has a measured before/after — no vibes, just numbers."
+    count={recipes.length}
+    countLabel="recipes ready"
+    meta="MEAS // BEFORE→AFTER"
+    status="LIVE"
+  />
+
+  <section class="container-wide section">
+    <div class="filter-bar">
+      <span class="filter-bar__label mono">FILTER //</span>
+      <Tag text="all" color="accent" variant="solid" />
+      {allComponents.slice(0, 8).map((c) => (
+        <Tag text={c} color="cyan" />
+      ))}
+    </div>
+
+    <div class="recipes-grid">
+      {recipes.map((r) => (
+        <RecipeCard
+          slug={r.slug}
+          title={r.title}
+          description={r.description}
+          components={r.components}
+          before={r.before}
+          after={r.after}
+          cost={r.cost}
+          status={r.status as 'production' | 'experimental' | 'draft'}
+        />
+      ))}
+    </div>
+
+    <div class="container-prose section">
+      <Panel kicker="WHAT MAKES A RECIPE" title="The format" density="loose">
+        <ol>
+          <li><strong>Outcome-focused title</strong> — "Automate X in Y minutes", not "Using Tool Z"</li>
+          <li><strong>The components</strong> — every agent, MCP, and API listed</li>
+          <li><strong>Architecture diagram</strong> — visual of how they chain</li>
+          <li><strong>Before/after table</strong> — measured numbers, no estimates</li>
+          <li><strong>Step-by-step build</strong> — actually run-able</li>
+          <li><strong>The catch</strong> — every workflow has one</li>
+          <li><strong>Cost</strong> — tokens, API, real money per run</li>
+          <li><strong>Sush's take</strong> — would I run this again?</li>
+        </ol>
+        <p class="text-mute">If a recipe doesn't have measurements, it's a draft. We don't ship vibes.</p>
+      </Panel>
+    </div>
+
+    <div class="cta-row">
+      <Button href="/mcp/" variant="ghost" iconLeft="🔌">Browse MCPs</Button>
+      <Button href="/tools/" variant="ghost" iconLeft="🛠️">Browse tools</Button>
+      <Button href="/templates/" variant="ghost" iconLeft="📐">Recipe templates</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-6);
+  }
+
+  .filter-bar__label {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-right: var(--space-2);
+  }
+
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
+</style>

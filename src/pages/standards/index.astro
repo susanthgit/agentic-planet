@@ -1,0 +1,247 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+const standards = [
+  {
+    slug: 'mcp',
+    name: 'MCP',
+    fullName: 'Model Context Protocol',
+    publisher: 'Anthropic',
+    color: 'amber',
+    summary: 'Open protocol for connecting AI agents to external tools, data sources, and apps. Become the de facto standard in 12 months.',
+    adoption: 'Established',
+    adoptionLevel: 95,
+    publishedAt: '2024-11',
+    why: 'If you\'re building agents in 2026, MCP is the most likely-to-stick way to give them tools.',
+  },
+  {
+    slug: 'a2a',
+    name: 'A2A',
+    fullName: 'Agent-to-Agent Protocol',
+    publisher: 'Google',
+    color: 'magenta',
+    summary: 'Protocol for agents to talk to other agents. Multi-agent systems, delegation, sub-task handoff.',
+    adoption: 'Emerging',
+    adoptionLevel: 40,
+    publishedAt: '2025',
+    why: 'Important if you\'re building multi-agent systems. Watch this space.',
+  },
+  {
+    slug: 'apps-sdk',
+    name: 'Apps SDK',
+    fullName: 'OpenAI Apps SDK',
+    publisher: 'OpenAI',
+    color: 'green',
+    summary: 'OpenAI\'s answer to MCP. Native integration into ChatGPT, with widget rendering support.',
+    adoption: 'Emerging',
+    adoptionLevel: 50,
+    publishedAt: '2025',
+    why: 'If your audience lives in ChatGPT, this is where you ship integrations.',
+  },
+  {
+    slug: 'agent-protocol',
+    name: 'Agent Protocol',
+    fullName: 'Open Agent Protocol',
+    publisher: 'AI Engineer Foundation',
+    color: 'cyan',
+    summary: 'Vendor-neutral REST API for invoking agents. Less momentum than MCP/A2A.',
+    adoption: 'Draft',
+    adoptionLevel: 20,
+    publishedAt: '2024',
+    why: 'Niche right now; could become relevant if vendor protocols fragment.',
+  },
+];
+---
+
+<BaseLayout
+  title="Standards — MCP, A2A, Apps SDK in plain English"
+  description="The protocols shaping the agentic era. What they are, who's behind them, when they matter, and which to bet on."
+>
+  <PillarHeader
+    code="P07"
+    color="accent"
+    title="The protocols shaping the agentic era."
+    description="MCP. A2A. Apps SDK. The protocol war is real, and the answer affects how you build for the next 5 years. Plain English, honest take."
+    count={standards.length}
+    countLabel="standards tracked"
+    meta="QUARTERLY REVIEW"
+    status="LIVE"
+  />
+
+  <section class="container-wide section">
+    <div class="standards-grid">
+      {standards.map((s) => (
+        <article class:list={['std', `std--${s.color}`]}>
+          <header class="std__head">
+            <span class="std__publisher mono">{s.publisher.toUpperCase()}</span>
+            <span class="std__published mono">EST. {s.publishedAt}</span>
+          </header>
+
+          <h2 class="std__name">{s.name}</h2>
+          <p class="std__fullname">{s.fullName}</p>
+          <p class="std__summary">{s.summary}</p>
+
+          <div class="std__adoption">
+            <div class="std__adoption-row">
+              <span class="std__adoption-label mono">ADOPTION</span>
+              <span class="std__adoption-status mono">{s.adoption.toUpperCase()}</span>
+            </div>
+            <div class="std__adoption-bar" aria-hidden="true">
+              <span class="std__adoption-fill" style={`width: ${s.adoptionLevel}%;`}></span>
+            </div>
+          </div>
+
+          <div class="std__why">
+            <span class="std__why-label mono">WHY YOU CARE</span>
+            <p>{s.why}</p>
+          </div>
+
+          <Button href={`/standards/${s.slug}/`} variant="ghost" size="sm" iconRight="→">
+            Open spec file
+          </Button>
+        </article>
+      ))}
+    </div>
+
+    <Panel kicker="THE PROTOCOL WAR" title="Should you care?" density="loose">
+      <p>
+        Multiple competing protocols. Multiple vendors. Each pushing their own. Familiar story.
+      </p>
+      <p>
+        <strong class="phosphor-accent">Honest take:</strong> MCP has the most momentum,
+        the cleanest spec, and the broadest cross-vendor support — including from Microsoft and OpenAI,
+        not just Anthropic. If you're building agents that need tools, default to MCP and only diverge
+        when you have a specific reason.
+      </p>
+      <p>
+        A2A is interesting if you're orchestrating multiple agents. Apps SDK is essential if your audience
+        is in ChatGPT. Don't over-think it; pick the one closest to your distribution channel and ship.
+      </p>
+      <Button href="/standards/protocol-war/" variant="primary" iconRight="→">
+        Read the full protocol war analysis
+      </Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .standards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .std {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid currentColor;
+  }
+
+  .std--amber { color: var(--signal-amber); }
+  .std--magenta { color: var(--signal-magenta); }
+  .std--green { color: var(--signal-green); }
+  .std--cyan { color: var(--signal-cyan); }
+
+  .std__head {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .std__publisher { color: currentColor; }
+
+  .std__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-shadow: 0 0 16px currentColor;
+  }
+
+  .std__fullname {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--text-mute);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .std__summary {
+    font-size: var(--fs-sm);
+    color: var(--text);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .std__adoption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+  }
+
+  .std__adoption-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--fs-2xs);
+  }
+
+  .std__adoption-label { color: var(--text-faint); }
+  .std__adoption-status { color: currentColor; font-weight: var(--fw-bold); }
+
+  .std__adoption-bar {
+    height: 4px;
+    background: var(--border-dim);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .std__adoption-fill {
+    display: block;
+    height: 100%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  .std__why {
+    padding: var(--space-2-5);
+    background: var(--bg-base);
+    border-left: 2px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .std__why-label {
+    display: block;
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: 2px;
+  }
+
+  .std__why p {
+    font-size: var(--fs-sm);
+    color: var(--text);
+    line-height: 1.5;
+    margin: 0;
+  }
+</style>

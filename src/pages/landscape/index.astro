@@ -1,0 +1,303 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+const events = [
+  { year: 2017, label: 'Transformer arch (Vaswani et al.)', kind: 'foundation' },
+  { year: 2020, label: 'GPT-3, large-context language models', kind: 'foundation' },
+  { year: 2022, label: 'ChatGPT — chatbot era kicks off', kind: 'consumer' },
+  { year: 2023, label: 'Tool calling, function calling, ReAct loops', kind: 'agentic' },
+  { year: 2023, label: 'GPTs, Custom GPTs, Anthropic Claude', kind: 'platform' },
+  { year: 2024, label: 'MCP introduced (Anthropic, Nov)', kind: 'protocol' },
+  { year: 2024, label: 'Computer Use API (Anthropic)', kind: 'agentic' },
+  { year: 2025, label: 'A2A protocol (Google), Apps SDK (OpenAI)', kind: 'protocol' },
+  { year: 2025, label: 'Claude Skills, Operator, Agent 365', kind: 'platform' },
+  { year: 2026, label: 'Multi-agent systems mainstream', kind: 'current' },
+];
+
+const vendors = [
+  { name: 'Microsoft', focus: 'Copilot Studio · Foundry · Connectors · Agent 365', strategy: 'M365 / Azure-native enterprise agents', color: 'cyan' },
+  { name: 'Anthropic', focus: 'Claude · MCP · Skills · Computer Use', strategy: 'Protocol-led, capability-led, safety-led', color: 'amber' },
+  { name: 'OpenAI', focus: 'GPTs · Apps SDK · Agents SDK · Operator', strategy: 'Platform + ecosystem', color: 'green' },
+  { name: 'Google', focus: 'Gemini · Vertex Agents · A2A · Notebook LM', strategy: 'Multi-modal, long-context, integration-led', color: 'magenta' },
+];
+---
+
+<BaseLayout
+  title="The Landscape — where agentic AI came from, where it's going"
+  description="Timeline of the agentic era. Vendor map. State-of-the-ecosystem snapshots. Plain English orientation map."
+>
+  <PillarHeader
+    code="L01"
+    color="violet"
+    title="The agentic landscape, mapped."
+    description="Where we came from. Who's leading. What's next. A plain-English orientation map for the agentic era."
+    meta="2026 · Q2 SNAPSHOT"
+    status="UPDATED QUARTERLY"
+  />
+
+  <section class="container-wide section">
+    <Panel kicker="TIMELINE // 2017→PRESENT" title="Where we came from" variant="default">
+      <div class="timeline">
+        {events.map((e) => (
+          <div class:list={['tl-item', `tl-item--${e.kind}`]}>
+            <div class="tl-item__year mono">{e.year}</div>
+            <div class="tl-item__dot" aria-hidden="true"></div>
+            <div class="tl-item__label">{e.label}</div>
+            <div class:list={['tl-item__kind', `tl-item__kind--${e.kind}`]}>{e.kind}</div>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <div class="section__head">
+      <span class="section__kicker mono">▸ VENDOR MAP // WHO'S BUILDING WHAT</span>
+      <h2 class="section__title">The big four agentic platforms.</h2>
+    </div>
+
+    <div class="vendor-grid">
+      {vendors.map((v) => (
+        <Panel
+          title={v.name}
+          kicker="VENDOR PROFILE"
+          variant={v.color === 'cyan' ? 'cyan' : 'default'}
+        >
+          <div class="vendor-card">
+            <div class="vendor-card__row">
+              <span class="vendor-card__label mono">FOCUS</span>
+              <span>{v.focus}</span>
+            </div>
+            <div class="vendor-card__row">
+              <span class="vendor-card__label mono">STRATEGY</span>
+              <span>{v.strategy}</span>
+            </div>
+            <div class="vendor-card__cta">
+              <Button href={`/vendors/${v.name.toLowerCase()}/`} variant="ghost" size="sm" iconRight="→">
+                Open vendor file
+              </Button>
+            </div>
+          </div>
+        </Panel>
+      ))}
+    </div>
+  </section>
+
+  <section class="container-wide section">
+    <Panel
+      kicker="STATE OF · 2026 Q2"
+      title="What's actually shipping right now"
+      variant="default"
+      density="loose"
+    >
+      <div class="state-grid">
+        <div>
+          <h3 class="state-h">▲ Trending up</h3>
+          <ul>
+            <li>MCP adoption — 348 servers and growing</li>
+            <li>Computer Use APIs (Anthropic, OpenAI Operator)</li>
+            <li>Agent SDKs from every major vendor</li>
+            <li>Self-hosted agents (Ollama + LM Studio + Open WebUI)</li>
+            <li>Multi-agent orchestration (LangGraph, CrewAI)</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="state-h">▼ Cooling off</h3>
+          <ul>
+            <li>"Single agent does everything" pitch</li>
+            <li>AutoGPT-style infinite loop demos</li>
+            <li>Prompt-engineering-as-a-job</li>
+            <li>Older agentic frameworks (AutoGen archived)</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="state-h">◎ To watch</h3>
+          <ul>
+            <li>Protocol war: MCP vs A2A vs Apps SDK</li>
+            <li>Agent-to-agent payments + commerce</li>
+            <li>On-device agents (Apple Intelligence, Phi)</li>
+            <li>Standards consolidation</li>
+            <li>Specialised agents replacing horizontal SaaS</li>
+          </ul>
+        </div>
+      </div>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .section__head {
+    margin-bottom: var(--space-6);
+  }
+
+  .section__kicker {
+    display: block;
+    font-size: var(--fs-2xs);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-2);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .section__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    line-height: 1.15;
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
+  }
+
+  /* Timeline */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 80px 32px 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2-5) 0;
+    position: relative;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .tl-item:last-child { border-bottom: 0; }
+
+  .tl-item__year {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .tl-item__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent-glow);
+    justify-self: center;
+    position: relative;
+  }
+
+  .tl-item__dot::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: 100vh;
+    background: var(--border-dim);
+    transform: translate(-50%, -50%);
+    z-index: -1;
+  }
+
+  .tl-item--current .tl-item__dot {
+    background: var(--signal-green);
+    box-shadow: 0 0 10px var(--signal-green-glow);
+    animation: pulse var(--pulse-duration) var(--ease-in-out) infinite;
+  }
+
+  .tl-item__label {
+    font-size: var(--fs-sm);
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .tl-item__kind {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--text-mute);
+    padding: 2px var(--space-2);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+  }
+
+  .tl-item__kind--foundation { color: var(--text-mute); border-color: var(--border); }
+  .tl-item__kind--consumer { color: var(--signal-cyan); border-color: var(--signal-cyan); }
+  .tl-item__kind--agentic { color: var(--accent-hi); border-color: var(--accent); }
+  .tl-item__kind--platform { color: var(--signal-magenta); border-color: var(--signal-magenta); }
+  .tl-item__kind--protocol { color: var(--signal-amber); border-color: var(--signal-amber); }
+  .tl-item__kind--current { color: var(--signal-green); border-color: var(--signal-green); }
+
+  /* Vendor grid */
+  .vendor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .vendor-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .vendor-card__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    font-size: var(--fs-sm);
+  }
+
+  .vendor-card__label {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .vendor-card__cta {
+    margin-top: var(--space-2);
+  }
+
+  /* State grid */
+  .state-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  .state-h {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--accent-hi);
+    margin-bottom: var(--space-3);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .state-grid ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .state-grid li {
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-dim);
+    font-size: var(--fs-sm);
+    color: var(--text);
+  }
+
+  .state-grid li:last-child { border-bottom: 0; }
+
+  @media (max-width: 800px) {
+    .state-grid { grid-template-columns: 1fr; }
+    .tl-item { grid-template-columns: 70px 24px 1fr; }
+    .tl-item__kind { grid-column: 3; justify-self: flex-start; margin-top: var(--space-1); }
+  }
+</style>

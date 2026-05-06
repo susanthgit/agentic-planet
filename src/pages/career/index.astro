@@ -1,0 +1,145 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+const skills2026 = [
+  { skill: 'MCP fluency', why: 'Most likely-to-stick protocol. Build at least one MCP server.' },
+  { skill: 'Multi-agent orchestration', why: 'Single agents are old news. Two-agent workflows are the new baseline.' },
+  { skill: 'Prompt-aware testing', why: 'Test agents the way you test code — with assertions and CI.' },
+  { skill: 'Cost-aware design', why: 'Tokens × calls × time = real money. Architect for it.' },
+  { skill: 'Privacy / data flow analysis', why: 'You\'ll be asked "what does this agent touch?". Have an answer.' },
+  { skill: 'Vendor evaluation', why: 'Lock-in is real. Know how to compare vendors honestly.' },
+];
+
+const roles = [
+  { role: 'Agent Operations Engineer', emerging: true, summary: 'Productionising, monitoring, and scaling agentic systems. Adjacent to MLOps but with new failure modes.' },
+  { role: 'Agent Designer / UX Engineer', emerging: true, summary: 'Designing the human-agent interaction. Tool-call visibility, trust mechanisms, error recovery UX.' },
+  { role: 'Agent Security / Red Teamer', emerging: true, summary: 'Prompt injection, data exfiltration paths, agent jailbreaking. Security-engineering specialisation.' },
+  { role: 'Prompt Engineer', emerging: false, summary: 'Mostly absorbed into other roles. Pure prompt engineering as a job is rare now — it\'s a skill, not a title.' },
+  { role: 'Solutions Engineer (Agentic)', emerging: true, summary: 'Pre-sales for agentic platforms. Hot field if you can demo + architect + close.' },
+];
+---
+
+<BaseLayout
+  title="Career — what to learn, where to go in agentic AI"
+  description="Skills to learn in 2026, emerging roles, honest career advice for techies in the agentic era."
+>
+  <PillarHeader
+    code="C12"
+    color="violet"
+    title="Skills, roles, paths."
+    description="What to learn this year. Which roles are emerging. Honest career advice for techies positioning themselves in the agentic era."
+    count={skills2026.length}
+    countLabel="core skills"
+    meta="ANNUAL REVIEW"
+    status="PHASE 3"
+  />
+
+  <section class="container-wide section">
+    <Panel kicker="2026 SKILLS // CORE STACK" title="Skills worth your hours">
+      <ul class="skills">
+        {skills2026.map((s) => (
+          <li class="skill">
+            <h3 class="skill__name">{s.skill}</h3>
+            <p class="skill__why">{s.why}</p>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="EMERGING ROLES" title="Where the new jobs are">
+      <ul class="roles">
+        {roles.map((r) => (
+          <li class:list={['role', !r.emerging && 'role--legacy']}>
+            <div class="role__head">
+              <h3 class="role__name">{r.role}</h3>
+              <span class:list={['role__tag', r.emerging ? 'role__tag--emerging' : 'role__tag--legacy']}>
+                {r.emerging ? 'EMERGING' : 'FADED'}
+              </span>
+            </div>
+            <p class="role__summary">{r.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+
+    <Panel kicker="HONEST CAREER FAQ" title="The questions everyone asks" density="loose">
+      <ul>
+        <li><strong>Is my job safe?</strong> Mostly. Specifics depend on which job. Phase 3 has detailed answers.</li>
+        <li><strong>Should I become an "AI engineer"?</strong> The title is meaningless; the skills matter. Focus on shipping.</li>
+        <li><strong>Do I need a PhD?</strong> No. Most agentic AI work is engineering, not research.</li>
+        <li><strong>Should I learn Python or TypeScript?</strong> Both. Python for prototyping, TS for production agents in MCP/Apps SDK ecosystems.</li>
+      </ul>
+      <p class="text-mute">Phase 3 ships path-specific career guides for IT pros, devs, and architects.</p>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .skills, .roles {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .skill, .role {
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .skill:last-child, .role:last-child { border-bottom: 0; }
+
+  .skill__name, .role__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0 0 var(--space-1) 0;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .skill__why, .role__summary {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .role__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .role__tag {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .role__tag--emerging {
+    color: var(--signal-green);
+    border: 1px solid var(--signal-green);
+    text-shadow: var(--text-glow-green);
+  }
+
+  .role__tag--legacy {
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .role--legacy { opacity: 0.7; }
+</style>

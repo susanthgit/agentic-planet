@@ -1,0 +1,173 @@
+---
+/**
+ * PillarHeader — consistent header for all pillar landing pages.
+ * Hero-style but smaller. Cockpit aesthetic with code, scan accent, metrics.
+ */
+
+import Kicker from '@components/primitives/Kicker.astro';
+import LiveDot from '@components/data/LiveDot.astro';
+
+export interface Props {
+  code: string;
+  title: string;
+  description: string;
+  meta?: string;
+  count?: number;
+  countLabel?: string;
+  color?: 'accent' | 'cyan' | 'green' | 'amber' | 'red' | 'magenta' | 'violet';
+  status?: string;
+}
+
+const {
+  code,
+  title,
+  description,
+  meta,
+  count,
+  countLabel,
+  color = 'accent',
+  status = 'OPERATIONAL',
+} = Astro.props;
+---
+
+<header class:list={['ph', `ph--${color}`]}>
+  <div class="ph__scan" aria-hidden="true"></div>
+  <div class="ph__inner container-wide">
+    <div class="ph__head">
+      <span class="ph__code mono">PILLAR_{code}</span>
+      <Kicker text={status} color={color === 'accent' ? 'accent' : (color as any)} />
+      {meta && <span class="ph__meta mono">{meta}</span>}
+    </div>
+
+    <h1 class="ph__title">{title}</h1>
+    <p class="ph__desc">{description}</p>
+
+    {count !== undefined && countLabel && (
+      <div class="ph__count">
+        <span class="ph__count-num">{count.toLocaleString()}</span>
+        <span class="ph__count-label">{countLabel}</span>
+        <LiveDot color={color === 'accent' ? 'accent' : color === 'red' ? 'red' : color === 'amber' ? 'amber' : color === 'cyan' ? 'cyan' : 'green'} />
+      </div>
+    )}
+
+    <slot name="aside" />
+  </div>
+</header>
+
+<style>
+  .ph {
+    position: relative;
+    padding: var(--space-10) 0 var(--space-8);
+    border-bottom: 1px solid var(--border-dim);
+    overflow: hidden;
+    background: var(--bg-base);
+  }
+
+  .ph::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 0% 0%, currentColor, transparent 60%);
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .ph__scan {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: 0.7;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  .ph--accent { color: var(--accent-hi); }
+  .ph--cyan { color: var(--signal-cyan); }
+  .ph--green { color: var(--signal-green); }
+  .ph--amber { color: var(--signal-amber); }
+  .ph--red { color: var(--signal-red); }
+  .ph--magenta { color: var(--signal-magenta); }
+  .ph--violet { color: var(--signal-violet); }
+
+  .ph__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ph__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .ph__code {
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    color: currentColor;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    padding: 2px var(--space-2);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs);
+    text-shadow: 0 0 8px currentColor;
+  }
+
+  .ph__meta {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin-left: auto;
+  }
+
+  .ph__title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin-bottom: var(--space-3);
+    max-width: 1100px;
+    text-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  .ph__desc {
+    font-family: var(--font-body);
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--text-mute);
+    max-width: 720px;
+    margin-bottom: var(--space-6);
+  }
+
+  .ph__count {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+  }
+
+  .ph__count-num {
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: currentColor;
+    line-height: 1;
+    text-shadow: 0 0 12px currentColor;
+  }
+
+  .ph__count-label {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+</style>

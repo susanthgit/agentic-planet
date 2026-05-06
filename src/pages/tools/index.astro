@@ -1,0 +1,198 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+const tools = [
+  { slug: 'cursor', name: 'Cursor', category: 'coding-agent', summary: 'AI-first code editor (VS Code fork). Best-in-class for autonomous coding.', pricing: '$20/mo Pro', verdict: 'Worth it if you live in your editor' },
+  { slug: 'claude-code', name: 'Claude Code', category: 'coding-agent', summary: 'Anthropic\'s terminal coding agent. CLI-first.', pricing: '$20/mo Pro+', verdict: 'Excellent for shell-heavy workflows' },
+  { slug: 'cline', name: 'Cline', category: 'coding-agent', summary: 'Open-source autonomous coding agent (VS Code extension).', pricing: 'Free + your API keys', verdict: 'Most powerful free option' },
+  { slug: 'github-copilot-cli', name: 'GitHub Copilot CLI', category: 'coding-agent', summary: 'Microsoft\'s terminal coding agent.', pricing: 'GH Copilot subscription', verdict: 'Solid if you\'re on GitHub Copilot already' },
+  { slug: 'continue', name: 'Continue', category: 'coding-agent', summary: 'Open-source customisable IDE assistant.', pricing: 'Free', verdict: 'Strong if you want full control' },
+  { slug: 'aider', name: 'Aider', category: 'coding-agent', summary: 'Git-aware AI pair programming in the terminal.', pricing: 'Free + your API keys', verdict: 'Best for git workflows' },
+  { slug: 'claude-desktop', name: 'Claude Desktop', category: 'general-agent', summary: 'Anthropic\'s desktop client with MCP support.', pricing: 'Free + Pro $20/mo', verdict: 'Default for non-coding agentic work' },
+  { slug: 'chatgpt', name: 'ChatGPT', category: 'general-agent', summary: 'OpenAI\'s flagship — supports GPTs, Apps SDK, Operator.', pricing: 'Free + Plus $20/mo', verdict: 'Massive ecosystem; quality varies' },
+  { slug: 'm365-copilot', name: 'M365 Copilot', category: 'general-agent', summary: 'Microsoft\'s Office-integrated agent platform.', pricing: '$30/user/mo', verdict: 'Worth it if your org lives in M365' },
+  { slug: 'operator', name: 'Operator', category: 'browser-agent', summary: 'OpenAI\'s autonomous browser-control agent.', pricing: 'Plus included', verdict: 'Promising; still rough edges' },
+  { slug: 'browser-use', name: 'Browser Use', category: 'browser-agent', summary: 'Open-source browser automation for agents.', pricing: 'Free', verdict: 'Best OSS browser agent' },
+  { slug: 'n8n', name: 'n8n', category: 'orchestration', summary: 'Workflow automation with strong agentic node support.', pricing: 'Free self-hosted', verdict: 'Best for visual workflows' },
+];
+
+const categories = Array.from(new Set(tools.map((t) => t.category)));
+---
+
+<BaseLayout
+  title="Tools — honest reviews of agents techies actually use"
+  description="Cursor, Cline, Claude Code, Operator, n8n, and more. Honest reviews from a non-vendor lens."
+>
+  <PillarHeader
+    code="T04"
+    color="green"
+    title="Tools we actually use."
+    description="Honest reviews of coding agents, browser agents, orchestration tools, and self-hosted alternatives. No sponsored content."
+    count={tools.length}
+    countLabel="reviewed"
+    meta="REVIEWED // INDEPENDENT"
+    status="UPDATED MONTHLY"
+  />
+
+  <section class="container-wide section">
+    <div class="filter-bar">
+      <span class="filter-bar__label mono">CATEGORY //</span>
+      {categories.map((c) => <Tag text={c} color="green" />)}
+    </div>
+
+    <div class="tools-grid">
+      {tools.map((t) => (
+        <a class="tool-card" href={`/tools/${t.slug}/`}>
+          <div class="tool-card__head">
+            <span class="tool-card__cat mono">{t.category}</span>
+            <h3 class="tool-card__name">{t.name}</h3>
+          </div>
+          <p class="tool-card__summary">{t.summary}</p>
+          <div class="tool-card__verdict">
+            <span class="tool-card__verdict-label mono">VERDICT</span>
+            <span class="tool-card__verdict-text">{t.verdict}</span>
+          </div>
+          <div class="tool-card__foot">
+            <span class="tool-card__price mono">{t.pricing}</span>
+            <span class="tool-card__chev">→</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <Panel kicker="REVIEW METHODOLOGY" title="How we review" density="loose">
+      <ul>
+        <li><strong>We use it in real workflows</strong> — not just docs reading</li>
+        <li><strong>We measure</strong> — setup time, learning curve, real cost</li>
+        <li><strong>We disclose</strong> — vendor relationships if any</li>
+        <li><strong>We say "no" sometimes</strong> — better alternative exists, here it is</li>
+        <li><strong>We update</strong> — reviews are versioned, last-updated visible on every page</li>
+      </ul>
+      <p class="text-mute">If we haven't tested a tool, we don't review it. We may list it in a category index, but a review requires real usage.</p>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .section { padding: var(--space-8) 0; }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-6);
+  }
+
+  .filter-bar__label {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-12);
+  }
+
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    border-bottom: 1px solid var(--border-dim);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .tool-card:hover {
+    border-color: var(--signal-green);
+    background: var(--bg-elevated);
+    transform: translateY(-2px);
+  }
+
+  .tool-card__cat {
+    display: inline-block;
+    font-size: var(--fs-2xs);
+    color: var(--signal-green);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid var(--signal-green);
+    border-radius: var(--radius-xs);
+  }
+
+  .tool-card__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: var(--space-2) 0 0 0;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .tool-card__summary {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .tool-card__verdict {
+    padding: var(--space-2-5);
+    background: var(--bg-base);
+    border-left: 2px solid var(--signal-green);
+    border-radius: var(--radius-xs);
+  }
+
+  .tool-card__verdict-label {
+    font-size: 9px;
+    color: var(--signal-green);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .tool-card__verdict-text {
+    font-size: var(--fs-xs);
+    color: var(--text-bright);
+    line-height: 1.4;
+  }
+
+  .tool-card__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--border-dim);
+  }
+
+  .tool-card__price {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+  }
+
+  .tool-card__chev {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+  }
+
+  .tool-card:hover .tool-card__chev {
+    color: var(--signal-green);
+  }
+</style>
