@@ -1,0 +1,42 @@
+name: MCP Health Data Refresh
+
+on:
+  schedule:
+    # Every 6 hours — refreshes mcp-health.json from GitHub API
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Refresh MCP health data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/refresh-mcp-health.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "agentic-planet-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain src/data/mcp-health.json)" ]]; then
+            git add src/data/mcp-health.json
+            git commit -m "chore: refresh MCP health data [skip ci]
+
+            Auto-refreshed by GitHub Actions cron."
+            git push
+          else
+            echo "No changes to MCP health data."
+          fi
