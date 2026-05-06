@@ -8,6 +8,7 @@
 import StatusBar from '@components/StatusBar.astro';
 import Nav from '@components/Nav.astro';
 import Footer from '@components/Footer.astro';
+import CommandPalette from '@components/interactive/CommandPalette.tsx';
 import '@styles/global.css';
 
 export interface Props {
@@ -82,14 +83,10 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
 
   <Footer />
 
+  <CommandPalette client:load />
+
   <script>
-    // Command palette: ⌘K / Ctrl+K — for now, navigates to glossary
-    document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        window.location.href = '/learn/glossary/';
-      }
-    });
+    // ⌘K is handled by CommandPalette React island. No fallback navigation.
   </script>
 </body>
 </html>

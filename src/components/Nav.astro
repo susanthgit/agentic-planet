@@ -55,14 +55,14 @@ function isActive(href: string): boolean {
     </nav>
 
     <div class="nav__actions">
-      <a href="/learn/glossary/" class="nav__search" aria-label="Browse glossary (search Phase 2)">
+      <button class="nav__search" type="button" data-cmdk-trigger aria-label="Open command palette (Ctrl+K or /)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <span class="nav__search-text">Glossary</span>
-        <kbd class="nav__search-kbd">A–Z</kbd>
-      </a>
+        <span class="nav__search-text">Search</span>
+        <kbd class="nav__search-kbd">⌘K</kbd>
+      </button>
     </div>
 
     <button class="nav__menu-toggle" type="button" data-mobile-menu-toggle aria-label="Toggle menu" aria-expanded="false">
@@ -288,6 +288,14 @@ function isActive(href: string): boolean {
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     const toggle = target.closest('[data-mobile-menu-toggle]');
+    const cmdkTrigger = target.closest('[data-cmdk-trigger]');
+
+    if (cmdkTrigger) {
+      // Synthesise Ctrl+K to open the palette
+      const ev = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true });
+      document.dispatchEvent(ev);
+      return;
+    }
 
     if (toggle) {
       const links = document.querySelector('.nav__links');
@@ -297,13 +305,11 @@ function isActive(href: string): boolean {
       return;
     }
 
-    // Close on outside click
     if (!target.closest('.nav')) {
       closeMobileMenu();
       return;
     }
 
-    // Close on link selection
     if (target.closest('.nav__link')) {
       closeMobileMenu();
     }
