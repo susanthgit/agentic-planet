@@ -14,10 +14,13 @@
     "dev": "astro dev --port 4323",
     "start": "astro dev --port 4323",
     "build": "astro build && pagefind --site dist",
+    "build:no-search": "astro build",
     "preview": "astro preview --port 4323",
     "astro": "astro",
     "check": "astro check",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "npm run build:no-search && node scripts/deploy.mjs",
+    "deploy:nobuild": "node scripts/deploy.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
