@@ -1,0 +1,100 @@
+---
+/**
+ * StackHealthStrip — system health one-liner.
+ * Below the hero, above pillars. Tells you at a glance:
+ * deploy state, cron freshness, search readiness, MCP coverage,
+ * recipe count, glossary depth.
+ */
+
+import LiveDot from '@components/data/LiveDot.astro';
+import Icon from '@components/primitives/Icon.astro';
+
+interface Item {
+  label: string;
+  value: string;
+  status: 'green' | 'amber' | 'red' | 'neutral';
+  hint?: string;
+}
+
+export interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+
+const colorMap = {
+  green: 'phosphor-green',
+  amber: 'phosphor-amber',
+  red: 'phosphor-red',
+  neutral: 'mono',
+};
+---
+
+<div class="shs">
+  <span class="shs__label mono">
+    <Icon name="cpu" size={11} />
+    <span>SYSTEM</span>
+  </span>
+  {items.map((item) => (
+    <span class={`shs__cell shs__cell--${item.status}`} title={item.hint || ''}>
+      <LiveDot color={item.status === 'green' ? 'green' : item.status === 'amber' ? 'amber' : item.status === 'red' ? 'red' : 'cyan'} size="sm" silent={item.status !== 'green'} />
+      <span class={`shs__cell-label mono`}>{item.label}</span>
+      <span class={`shs__cell-value mono ${colorMap[item.status]}`}>{item.value}</span>
+    </span>
+  ))}
+</div>
+
+<style>
+  .shs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    overflow-x: auto;
+  }
+
+  .shs::-webkit-scrollbar { display: none; }
+
+  .shs__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    padding: 3px var(--space-2);
+    background: var(--bg-elevated);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-xs);
+    color: var(--accent-hi);
+    text-shadow: var(--text-glow-accent);
+    font-weight: var(--fw-bold);
+    flex-shrink: 0;
+  }
+
+  .shs__cell {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    padding: 0 var(--space-2);
+    border-right: 1px solid var(--border-dim);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .shs__cell:last-child { border-right: 0; }
+
+  .shs__cell-label {
+    color: var(--text-faint);
+    font-weight: var(--fw-medium);
+  }
+
+  .shs__cell-value {
+    font-weight: var(--fw-bold);
+  }
+</style>

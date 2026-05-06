@@ -10,6 +10,8 @@ import LiveDot from '@components/data/LiveDot.astro';
 import PulseRail from '@components/panels/PulseRail.astro';
 import ThisWeekPanel from '@components/panels/ThisWeekPanel.astro';
 import AgenticStackDiagram from '@components/panels/AgenticStackDiagram.astro';
+import StackHealthStrip from '@components/panels/StackHealthStrip.astro';
+import CoverageMatrix from '@components/panels/CoverageMatrix.astro';
 
 import mcpHealth from '@data/mcp-health.json';
 import pulseData from '@data/pulse.json';
@@ -38,6 +40,36 @@ const faqs = [
 const featuredPillarSlugs = ['R02', 'M03'];
 const featured = pillars.filter((p) => featuredPillarSlugs.includes(p.code));
 const standard = pillars.filter((p) => !featuredPillarSlugs.includes(p.code));
+
+// Cron freshness for the System Health Strip
+const cronAgeMs = Date.now() - new Date(mcpHealth._lastUpdated).getTime();
+const cronAgeHours = Math.round(cronAgeMs / (1000 * 60 * 60));
+const cronLabel = cronAgeHours < 1 ? '<1h ago' : `${cronAgeHours}h ago`;
+const cronStatus: 'green' | 'amber' | 'red' = cronAgeHours < 12 ? 'green' : cronAgeHours < 48 ? 'amber' : 'red';
+
+const healthItems = [
+  { label: 'DEPLOY', value: 'LIVE', status: 'green' as const, hint: 'Cloudflare Pages — direct upload via REST API' },
+  { label: 'CRON', value: cronLabel, status: cronStatus, hint: `MCP health refresh — ${mcpHealth._lastUpdated}` },
+  { label: 'PALETTE', value: 'READY', status: 'green' as const, hint: 'Cmd+K command palette indexed' },
+  { label: 'MCPs', value: `${totals.mcps} TRACKED`, status: 'green' as const },
+  { label: 'RECIPES', value: `${totals.recipes} READY`, status: 'amber' as const, hint: 'Building toward 5 measured workflows' },
+  { label: 'GLOSSARY', value: '26 TERMS', status: 'green' as const },
+  { label: 'SPONSORED', value: '0', status: 'green' as const, hint: 'No paid placement, ever' },
+];
+
+// Coverage matrix data — per-pillar progress
+const coverage = [
+  { code: 'L01', title: 'Landscape', href: '/landscape/', current: 1, target: 4, color: 'violet' as const, icon: 'globe' as const, status: 'Q2 SNAPSHOT' },
+  { code: 'R02', title: 'Recipes', href: '/recipes/', current: 1, target: 5, color: 'magenta' as const, icon: 'flask' as const, status: 'PHASE 1' },
+  { code: 'M03', title: 'MCP Servers', href: '/mcp/', current: 2, target: 30, color: 'cyan' as const, icon: 'plug' as const, status: 'EXPANDING' },
+  { code: 'T04', title: 'Tools', href: '/tools/', current: 0, target: 12, color: 'green' as const, icon: 'wrench' as const, status: 'PHASE 2' },
+  { code: 'V05', title: 'Vendors', href: '/vendors/', current: 2, target: 4, color: 'amber' as const, icon: 'building' as const, status: 'EXPANDING' },
+  { code: 'S06', title: 'Safety', href: '/safety/', current: 14, target: 14, color: 'red' as const, icon: 'shield' as const, status: 'V1 DONE' },
+  { code: 'P07', title: 'Standards', href: '/standards/', current: 4, target: 4, color: 'accent' as const, icon: 'book' as const, status: 'V1 DONE' },
+  { code: 'L08', title: 'Learn', href: '/learn/', current: 5, target: 10, color: 'cyan' as const, icon: 'brain' as const, status: 'PHASE 1' },
+  { code: 'X09', title: 'Lab', href: '/lab/', current: 1, target: 6, color: 'magenta' as const, icon: 'beaker' as const, status: 'PHASE 1' },
+  { code: 'Q10', title: 'FAQ', href: '/faq/', current: 4, target: 10, color: 'amber' as const, icon: 'help' as const, status: 'PHASE 1' },
+];
 ---
 
 <BaseLayout
@@ -86,6 +118,11 @@ const standard = pillars.filter((p) => !featuredPillarSlugs.includes(p.code));
     </div>
   </section>
 
+  <!-- SYSTEM HEALTH STRIP — below hero, above pillars -->
+  <section class="container-wide section section--ultra-tight">
+    <StackHealthStrip items={healthItems} />
+  </section>
+
   <section class="container-wide section section--tight">
     <header class="section-head">
       <span class="section-kicker mono">▸ TEN PILLARS // SYSTEM SURFACES</span>
@@ -114,6 +151,11 @@ const standard = pillars.filter((p) => !featuredPillarSlugs.includes(p.code));
   <!-- AGENTIC STACK — signature visual -->
   <section class="container-wide section">
     <AgenticStackDiagram />
+  </section>
+
+  <!-- COVERAGE MATRIX — scope/progress per pillar -->
+  <section class="container-wide section">
+    <CoverageMatrix pillars={coverage} />
   </section>
 
   <section class="container-wide section">
@@ -301,6 +343,7 @@ const standard = pillars.filter((p) => !featuredPillarSlugs.includes(p.code));
 <style>
   .section { padding: var(--space-5) 0; }
   .section--tight { padding: var(--space-3) 0; }
+  .section--ultra-tight { padding: var(--space-2) 0; }
 
   .section-head { margin-bottom: var(--space-3); max-width: 720px; }
   .section-kicker {
