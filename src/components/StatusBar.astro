@@ -55,16 +55,10 @@ const version = packageJson.version;
         <span class="statusbar__value mono" data-utc-clock>00:00:00</span>
       </span>
       <span class="statusbar__sep" aria-hidden="true">│</span>
-      <button
-        class="statusbar__toggle"
-        type="button"
-        data-theme-toggle
-        aria-label="Toggle theme"
-        title="Toggle theme"
-      >
-        <span class="statusbar__toggle-icon">◐</span>
-        <span class="statusbar__label">THEME</span>
-      </button>
+      <span class="statusbar__item">
+        <span class="statusbar__label">VER</span>
+        <span class="statusbar__value mono">v{version}</span>
+      </span>
     </div>
   </div>
 </aside>

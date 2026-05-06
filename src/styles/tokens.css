@@ -169,10 +169,11 @@
   /* ──────────────────────────────────────────────────────
      LAYOUT
      ────────────────────────────────────────────────────── */
-  --container-max: 1440px;
+  --container-max: 1400px;
   --container-prose: 720px;
-  --container-wide: 1680px;
+  --container-wide: 1480px;
   --gutter: var(--space-6);
+  --frame-inset: var(--space-8);  /* visible margin on viewport edges */
 
   --header-height: 56px;
   --footer-height: 80px;
@@ -199,39 +200,6 @@
   --grid-pattern: linear-gradient(var(--border-grid) 1px, transparent 1px),
                   linear-gradient(90deg, var(--border-grid) 1px, transparent 1px);
   --grid-size: 32px;
-}
-
-/* ──────────────────────────────────────────────────────
-   LIGHT MODE — secondary, daytime use only.
-   ────────────────────────────────────────────────────── */
-[data-theme="light"] {
-  --void: #FAFAF9;
-  --bg-base: #FFFFFF;
-  --bg-panel: #F8FAFC;
-  --bg-elevated: #F1F5F9;
-  --bg-overlay: #E2E8F0;
-
-  --border-dim: #E2E8F0;
-  --border: #CBD5E1;
-  --border-active: #94A3B8;
-  --border-grid: #ECEFF3;
-
-  --text: #0F172A;
-  --text-bright: #000000;
-  --text-mute: #475569;
-  --text-dim: #64748B;
-  --text-faint: #94A3B8;
-
-  --accent-glow: rgba(99, 102, 241, 0.2);
-  --signal-cyan-glow: rgba(8, 145, 178, 0.25);
-  --signal-green-glow: rgba(5, 150, 105, 0.25);
-  --signal-amber-glow: rgba(217, 119, 6, 0.25);
-  --signal-red-glow: rgba(220, 38, 38, 0.25);
-
-  --code-bg: #F1F5F9;
-  --code-text: #0F172A;
-
-  --shadow-panel: 0 0 0 1px var(--border-dim), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 @media (prefers-reduced-motion: reduce) {

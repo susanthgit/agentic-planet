@@ -1,113 +1,96 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import Hero from '@components/panels/Hero.astro';
 import Panel from '@components/primitives/Panel.astro';
 import Button from '@components/primitives/Button.astro';
+import Icon from '@components/primitives/Icon.astro';
+import Tag from '@components/primitives/Tag.astro';
 import TickerStrip from '@components/panels/TickerStrip.astro';
 import HealthBoard from '@components/panels/HealthBoard.astro';
-import RecipeCard from '@components/panels/RecipeCard.astro';
 import PillarTile from '@components/panels/PillarTile.astro';
 import MetricTile from '@components/data/MetricTile.astro';
-import Sparkline from '@components/data/Sparkline.astro';
 import LiveDot from '@components/data/LiveDot.astro';
-import Tag from '@components/primitives/Tag.astro';
 
 import mcpHealth from '@data/mcp-health.json';
 import pulseData from '@data/pulse.json';
 import recipesData from '@data/featured-recipes.json';
 import pillarsData from '@data/pillars.json';
 
-const topMcps = mcpHealth.rows.slice(0, 6);
-const featuredRecipes = recipesData.recipes.slice(0, 4);
+const topMcps = mcpHealth.rows.slice(0, 5);
+const featuredRecipes = recipesData.recipes.slice(0, 3);
 const pillars = pillarsData.pillars;
 
 const totals = {
   recipes: recipesData.recipes.length,
   mcps: mcpHealth.rows.length,
   alive: mcpHealth.rows.filter((r) => r.health === 'alive').length,
-  slowing: mcpHealth.rows.filter((r) => r.health === 'slowing').length,
-  abandoned: mcpHealth.rows.filter((r) => r.health === 'abandoned').length,
 };
 
-// Synthetic trend for sparkline visualisation; will be replaced with real
-// time-series data once the GitHub Actions cron has run for several weeks.
-const healthTrend = [
-  Math.max(1, totals.mcps - 6),
-  Math.max(1, totals.mcps - 5),
-  Math.max(1, totals.mcps - 4),
-  Math.max(1, totals.mcps - 3),
-  Math.max(1, totals.mcps - 2),
-  Math.max(1, totals.mcps - 1),
-  totals.mcps,
+const vendors = [
+  { slug: 'microsoft', name: 'Microsoft', focus: 'Copilot Studio · Foundry · Agent 365', live: true },
+  { slug: 'anthropic', name: 'Anthropic', focus: 'Claude · MCP · Skills · Computer Use', live: true },
+  { slug: 'openai', name: 'OpenAI', focus: 'GPTs · Apps SDK · Operator', live: false },
+  { slug: 'google', name: 'Google', focus: 'Gemini · Vertex Agents · A2A', live: false },
 ];
 
-const trendDelta = healthTrend.at(-1)! - healthTrend[0];
-const trendDeltaLabel =
-  trendDelta > 0 ? `+${trendDelta}` :
-  trendDelta < 0 ? `−${Math.abs(trendDelta)}` :
-  '±0';
+const faqs = [
+  { slug: 'is-agentic-ai-hype', q: 'Is agentic AI hype?', hint: 'Some of it. Here is how to tell.' },
+  { slug: 'will-mcp-survive', q: 'Will MCP survive 18 months?', hint: 'Probably yes. Here is why.' },
+  { slug: 'build-with-zero-dollars', q: 'What can I build with $0?', hint: 'More than you think.' },
+  { slug: 'why-still-hallucinate', q: 'Why do agents still hallucinate?', hint: 'Pattern completion vs truth.' },
+];
 ---
 
 <BaseLayout
   title="The Agentic Planet"
   description="Tools, MCPs, recipes, and honest reviews for techies building with agents. Plain English. No vendor spin."
 >
-  <Hero
-    kicker="AGENTS // FIELD GUIDE"
-    title="A field guide for building with agents."
-    subtitle="Tools, MCPs, recipes, and honest reviews for techies building with agents. Plain English. No vendor spin. Built by someone who actually ships this stuff for a living."
-    meta="STATUS: ONLINE"
-  >
-    <Fragment slot="cta">
-      <Button href="/recipes/" variant="primary" iconLeft="◉">Browse Recipes</Button>
-      <Button href="/mcp/" variant="ghost" iconLeft="◐">MCP Health Board</Button>
-      <Button href="/landscape/" variant="ghost" iconLeft="▣">Explore Landscape</Button>
-    </Fragment>
+  <section class="hero container-wide">
+    <div class="hero__scan" aria-hidden="true"></div>
 
-    <Fragment slot="panels">
-      <div class="hero-stats">
-        <MetricTile
-          label="Pillars"
-          value={pillars.length}
-          variant="accent"
-          glow={true}
-          deltaLabel="active surfaces"
-        />
-        <MetricTile
-          label="Recipes"
-          value={totals.recipes}
-          variant="cyan"
-          deltaLabel="workflows scaffolded"
-        />
-        <MetricTile
-          label="MCPs Tracked"
-          value={totals.mcps}
-          variant="green"
-          deltaLabel="seed catalog"
-        />
-        <MetricTile
-          label="Sponsored Posts"
-          value="0"
-          variant="amber"
-          deltaLabel="no paid placement"
-        />
+    <div class="hero__top">
+      <span class="hero__kicker mono">
+        <LiveDot color="green" />
+        <span>AGENTS // FIELD GUIDE // CHANNEL OPEN</span>
+      </span>
+      <span class="hero__count mono">{pillars.length} PILLARS · {totals.mcps} MCPs · {totals.recipes} RECIPES</span>
+    </div>
+
+    <div class="hero__main">
+      <div class="hero__left">
+        <h1 class="hero__title">
+          <span class="hero__line">A field guide for</span>
+          <span class="hero__line hero__line--accent">building with agents.</span><span class="hero__cursor" aria-hidden="true">▌</span>
+        </h1>
+        <p class="hero__subtitle">
+          Tools, MCPs, recipes, and honest reviews for techies. Plain English. No vendor spin. Built by someone who actually ships this stuff for a living.
+        </p>
+        <div class="hero__cta">
+          <Button href="/recipes/" variant="primary"><Icon name="flask" size={14} /> Browse Recipes</Button>
+          <Button href="/mcp/" variant="ghost"><Icon name="plug" size={14} /> MCP Health Board</Button>
+          <Button href="/landscape/" variant="ghost"><Icon name="globe" size={14} /> Landscape</Button>
+        </div>
       </div>
-    </Fragment>
-  </Hero>
 
-  <section class="container-wide section">
+      <div class="hero__right">
+        <div class="hero-stats">
+          <MetricTile label="Pillars" value={pillars.length} variant="accent" glow={true} deltaLabel="active surfaces" />
+          <MetricTile label="Recipes" value={totals.recipes} variant="cyan" deltaLabel="workflows" />
+          <MetricTile label="MCPs Tracked" value={totals.mcps} variant="green" deltaLabel="seed catalog" />
+          <MetricTile label="Sponsored Posts" value={0} variant="amber" deltaLabel="no paid placement" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-wide section section--tight">
     <TickerStrip items={pulseData.items} />
   </section>
 
-  <section class="container-wide section">
-    <header class="section__head">
-      <span class="section__kicker">▸ TEN PILLARS // SYSTEM SURFACES</span>
-      <h2 class="section__title">Everything we cover, by surface.</h2>
-      <p class="section__lede">
-        Each pillar is a self-contained surface. Click a tile to land in its cockpit.
-      </p>
+  <section class="container-wide section section--tight">
+    <header class="section-head">
+      <span class="section-kicker mono">▸ TEN PILLARS // SYSTEM SURFACES</span>
+      <h2 class="section-title">Everything we cover, by surface.</h2>
     </header>
-
     <div class="pillars-grid">
       {pillars.map((p) => (
         <PillarTile
@@ -125,345 +108,433 @@ const trendDeltaLabel =
   </section>
 
   <section class="container-wide section">
-    <header class="section__head">
-      <span class="section__kicker">▸ FEATURED // RECIPE BAY</span>
-      <h2 class="section__title">Real workflows. Measured before / after.</h2>
-      <p class="section__lede">
-        Other sites give you tool lists. We give you chained workflows that actually saved time.
-      </p>
-    </header>
-
-    <div class="recipes-grid">
-      {featuredRecipes.map((r) => (
-        <RecipeCard
-          slug={r.slug}
-          title={r.title}
-          description={r.description}
-          components={r.components}
-          before={r.before}
-          after={r.after}
-          cost={r.cost}
-          status={r.status as 'production' | 'experimental' | 'draft'}
-        />
-      ))}
-    </div>
-
-    <div class="section__actions">
-      <Button href="/recipes/" variant="ghost" iconRight="→">All recipes</Button>
-    </div>
-  </section>
-
-  <section class="container-wide section">
-    <header class="section__head">
-      <span class="section__kicker">▸ MCP HEALTH BOARD // SEED CATALOG</span>
-      <h2 class="section__title">
-        <LiveDot color="green" />
-        MCP servers worth your time.
-      </h2>
-      <p class="section__lede">
-        Stars, weekly delta, last commit, status. Currently {totals.alive + totals.slowing + totals.abandoned} servers in the seed catalog — auto-refresh pipeline activates on the next scheduled run.
-      </p>
-    </header>
-
-    <Panel
-      title="MCP Health Board · top 6 by stars"
-      kicker="SEED"
-      meta={`Seed updated ${new Date(mcpHealth._lastUpdated).toUTCString().replace('GMT', 'UTC')}`}
-      live={false}
-      density="tight"
-      variant="cyan"
-    >
-      <HealthBoard rows={topMcps} compact />
-      <div slot="footer" class="board-footer">
-        <Button href="/mcp/" variant="ghost" iconRight="→">Full board</Button>
-        <Button variant="ghost" disabled>Embeddable badges (Phase 2)</Button>
-      </div>
-    </Panel>
-
-    <div class="health-summary">
-      <MetricTile label="Alive" value={totals.alive} variant="green" glow={true} />
-      <MetricTile label="Slowing" value={totals.slowing} variant="amber" />
-      <MetricTile label="Abandoned" value={totals.abandoned} variant="red" />
-      <Panel title="Tracked Trend · 7 weeks" kicker="DELTA" density="tight">
-        <div class="trend-row">
-          <Sparkline data={healthTrend} stroke="cyan" width={220} height={60} />
-          <div class="trend-meta">
-            <span class="trend-meta__label mono">{trendDeltaLabel} servers</span>
-            <span class="trend-meta__sub mono">illustrative · pre-cron</span>
+    <div class="bento bento--60-40">
+      <div class="bento__cell">
+        <Panel
+          title={`MCP Health Board · top ${topMcps.length}`}
+          kicker="SEED"
+          meta={`Updated ${new Date(mcpHealth._lastUpdated).toUTCString().replace('GMT', 'UTC')}`}
+          variant="cyan"
+          density="tight"
+        >
+          <HealthBoard rows={topMcps} compact />
+          <div slot="footer" class="bento__footer">
+            <Button href="/mcp/" variant="ghost" size="sm">Full board <Icon name="arrow-right" size={12} /></Button>
           </div>
-        </div>
-      </Panel>
+        </Panel>
+      </div>
+
+      <div class="bento__cell">
+        <Panel kicker="MOAT" title="Top Recipes" variant="default" density="tight">
+          <div class="rstack">
+            {featuredRecipes.map((r) => (
+              <a class="rmini" href={`/recipes/${r.slug}/`}>
+                <div class="rmini__head">
+                  <Icon name="flask" size={14} />
+                  <h4 class="rmini__title">{r.title}</h4>
+                </div>
+                <div class="rmini__metrics">
+                  <span class="rmini__before">{r.before}</span>
+                  <Icon name="arrow-right" size={10} />
+                  <span class="rmini__after phosphor-green mono">{r.after}</span>
+                  {r.cost && <span class="rmini__cost mono">· {r.cost}</span>}
+                </div>
+                <div class="rmini__tags">
+                  {r.components.slice(0, 3).map((c) => <Tag text={c} color="cyan" />)}
+                </div>
+              </a>
+            ))}
+          </div>
+          <div slot="footer" class="bento__footer">
+            <Button href="/recipes/" variant="ghost" size="sm">All recipes <Icon name="arrow-right" size={12} /></Button>
+          </div>
+        </Panel>
+      </div>
     </div>
   </section>
 
   <section class="container-wide section">
-    <header class="section__head">
-      <span class="section__kicker">▸ HONEST FAQ // BIG QUESTIONS</span>
-      <h2 class="section__title">No vendor spin. Plain English.</h2>
+    <div class="bento bento--50-50">
+      <div class="bento__cell">
+        <Panel kicker="HONEST FAQ" title="Big questions" variant="default" density="tight">
+          <div class="faq-stack">
+            {faqs.map((f, i) => (
+              <a class="qline" href={`/faq/${f.slug}/`}>
+                <span class="qline__num mono">Q.{String(i + 1).padStart(2, '0')}</span>
+                <span class="qline__main">
+                  <span class="qline__q">{f.q}</span>
+                  <span class="qline__hint">{f.hint}</span>
+                </span>
+                <Icon name="chevron-right" size={14} />
+              </a>
+            ))}
+          </div>
+          <div slot="footer" class="bento__footer">
+            <Button href="/faq/" variant="ghost" size="sm">All FAQ answers <Icon name="arrow-right" size={12} /></Button>
+          </div>
+        </Panel>
+      </div>
+
+      <div class="bento__cell">
+        <Panel kicker="VENDOR FILES" title="Side-by-side, no spin" variant="default" density="tight">
+          <div class="vendor-stack">
+            {vendors.map((v) => (
+              <a class:list={['vline', !v.live && 'vline--soon']} href={v.live ? `/vendors/${v.slug}/` : '/vendors/'}>
+                <Icon name="building" size={14} />
+                <span class="vline__main">
+                  <span class="vline__name">{v.name}</span>
+                  <span class="vline__focus mono">{v.focus}</span>
+                </span>
+                {v.live ? (
+                  <span class="vline__status mono phosphor-green">LIVE</span>
+                ) : (
+                  <span class="vline__status mono">SOON</span>
+                )}
+              </a>
+            ))}
+          </div>
+          <div slot="footer" class="bento__footer">
+            <Button href="/vendors/" variant="ghost" size="sm">All vendors <Icon name="arrow-right" size={12} /></Button>
+          </div>
+        </Panel>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-wide section">
+    <header class="section-head">
+      <span class="section-kicker mono">▸ EXPLAINERS // PLAIN ENGLISH</span>
+      <h2 class="section-title">Concepts in plain English, with diagrams.</h2>
     </header>
-
-    <div class="faq-grid">
-      <a href="/faq/is-agentic-ai-hype/" class="faq-card">
-        <span class="faq-card__num mono">Q.01</span>
-        <h3 class="faq-card__title">Is agentic AI hype?</h3>
-        <p class="faq-card__hint">Some of it. Here's how to tell.</p>
+    <div class="explainer-row">
+      <a class="exline" href="/learn/mcp-in-90-seconds/">
+        <Icon name="brain" size={14} />
+        <span class="exline__title">MCP in 90 seconds</span>
+        <span class="exline__depth mono">90s</span>
       </a>
-      <a href="/faq/will-mcp-survive/" class="faq-card">
-        <span class="faq-card__num mono">Q.02</span>
-        <h3 class="faq-card__title">Will MCP survive 18 months?</h3>
-        <p class="faq-card__hint">Probably. But watch the protocol war.</p>
+      <a class="exline" href="/learn/what-is-an-agent/">
+        <Icon name="brain" size={14} />
+        <span class="exline__title">What is an agent?</span>
+        <span class="exline__depth mono">5m</span>
       </a>
-      <a href="/faq/build-with-zero-dollars/" class="faq-card">
-        <span class="faq-card__num mono">Q.03</span>
-        <h3 class="faq-card__title">What can I build with $0?</h3>
-        <p class="faq-card__hint">More than you think. Here's a starter stack.</p>
+      <a class="exline" href="/learn/agentic-loops/">
+        <Icon name="brain" size={14} />
+        <span class="exline__title">How agentic loops work</span>
+        <span class="exline__depth mono">DEEP</span>
       </a>
-      <a href="/faq/" class="faq-card faq-card--more">
-        <span class="faq-card__num mono">+ 7</span>
-        <h3 class="faq-card__title">All ten honest answers →</h3>
-        <p class="faq-card__hint">Real questions, no marketing voice.</p>
+      <a class="exline" href="/learn/tool-calling-vs-mcp/">
+        <Icon name="brain" size={14} />
+        <span class="exline__title">Tool calling vs MCP</span>
+        <span class="exline__depth mono">5m</span>
+      </a>
+      <a class="exline" href="/learn/what-is-agentic/">
+        <Icon name="brain" size={14} />
+        <span class="exline__title">What "agentic" means</span>
+        <span class="exline__depth mono">5m</span>
+      </a>
+      <a class="exline" href="/learn/glossary/">
+        <Icon name="search" size={14} />
+        <span class="exline__title">Glossary (26 terms)</span>
+        <span class="exline__depth mono">A–Z</span>
       </a>
     </div>
   </section>
 
   <section class="container-wide section">
-    <Panel
-      title="Manifesto"
-      kicker="WHY THIS EXISTS"
-      density="loose"
-      variant="default"
-    >
+    <Panel title="Manifesto" kicker="WHY THIS EXISTS" variant="default" density="loose">
       <div class="manifesto">
         <p>
-          The agentic AI space is exploding — and most of what's written about it is either
-          marketing fluff, vendor-funded "thought leadership", or surface-level hype on social.
+          The agentic AI space is exploding — and most of what's written about it is either marketing fluff, vendor-funded "thought leadership", or surface-level hype on social.
         </p>
         <p>
-          <strong>The Agentic Planet</strong> is the antidote: opinionated curation, plain English,
-          honest reviews, and recipes you can actually run. Built by an engineer who deploys
-          this stuff every day for a living — and writes about it because the gap is real.
+          <strong>The Agentic Planet</strong> is the antidote: opinionated curation, plain English, honest reviews, and recipes you can actually run. Built by an engineer who deploys this stuff every day for a living — and writes about it because the gap is real.
         </p>
-        <p class="mono manifesto__signature">
-          — Sush · Copilot Solution Engineer · Auckland, NZ
-        </p>
+        <p class="manifesto__sig mono">— Sush · Copilot Solution Engineer · Auckland, NZ</p>
       </div>
     </Panel>
   </section>
 </BaseLayout>
 
 <style>
-  .section {
-    padding: var(--space-12) 0;
-  }
+  .section { padding: var(--space-6) 0; }
+  .section--tight { padding: var(--space-4) 0; }
 
-  .section__head {
-    margin-bottom: var(--space-8);
-    max-width: 720px;
-  }
+  .section-head { margin-bottom: var(--space-4); max-width: 720px; }
 
-  .section__kicker {
+  .section-kicker {
     display: inline-block;
-    font-family: var(--font-mono);
     font-size: var(--fs-2xs);
     font-weight: var(--fw-semibold);
     color: var(--accent-hi);
     text-transform: uppercase;
     letter-spacing: var(--tracking-widest);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-2);
     text-shadow: var(--text-glow-accent);
   }
 
-  .section__title {
+  .section-title {
     font-family: var(--font-display);
-    font-size: clamp(28px, 4vw, var(--fs-2xl));
+    font-size: clamp(20px, 2.5vw, var(--fs-xl));
     font-weight: var(--fw-semibold);
     color: var(--text-bright);
     line-height: 1.15;
     letter-spacing: var(--tracking-tight);
-    margin-bottom: var(--space-3);
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  .section__lede {
-    font-size: var(--fs-md);
-    color: var(--text-mute);
-    line-height: 1.5;
     margin: 0;
   }
 
-  .section__actions {
-    display: flex;
-    justify-content: center;
-    margin-top: var(--space-8);
-  }
-
-  /* Hero stats panel */
-  .hero-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--space-3);
-  }
-
-  /* Pillars grid */
-  .pillars-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--space-3);
-  }
-
-  /* Recipes grid */
-  .recipes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--space-4);
-  }
-
-  /* Health summary */
-  .health-summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--space-3);
+  .hero {
+    position: relative;
     margin-top: var(--space-4);
-  }
-
-  .health-summary > :last-child {
-    grid-column: span 2;
-    min-width: 0;
-  }
-
-  @media (max-width: 700px) {
-    .health-summary > :last-child {
-      grid-column: span 1;
-    }
-  }
-
-  .trend-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-4);
-    min-width: 0;
-  }
-
-  .trend-row :global(svg) {
-    width: 100%;
-    max-width: 220px;
-  }
-
-  @media (max-width: 600px) {
-    .trend-row {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .trend-meta {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .trend-meta__label {
-    color: var(--signal-cyan);
-    font-size: var(--fs-md);
-    font-weight: var(--fw-bold);
-    text-shadow: var(--text-glow-cyan);
-  }
-
-  .trend-meta__sub {
-    color: var(--text-faint);
-    font-size: var(--fs-2xs);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-  }
-
-  .board-footer {
-    display: flex;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    border-top: 1px solid var(--border-dim);
-    background: var(--bg-elevated);
-    flex-wrap: wrap;
-  }
-
-  /* FAQ cards */
-  .faq-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: var(--space-3);
-  }
-
-  .faq-card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-4);
-    background: var(--bg-panel);
+    padding: var(--space-6) var(--gutter) var(--space-6);
+    background:
+      radial-gradient(ellipse 60% 40% at 0% 0%, rgba(99, 102, 241, 0.10), transparent 60%),
+      var(--bg-panel);
     border: 1px solid var(--border-dim);
-    border-radius: var(--radius-sm);
-    color: var(--text);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .hero__scan {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--signal-cyan), transparent);
+    opacity: 0.7;
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .hero__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--border-dim);
-    transition: all var(--duration-fast) var(--ease-out);
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
-  .faq-card:hover {
-    border-color: var(--accent);
-    background: var(--bg-elevated);
-    transform: translateY(-2px);
-  }
-
-  .faq-card__num {
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     font-size: var(--fs-2xs);
     color: var(--accent-hi);
     text-transform: uppercase;
     letter-spacing: var(--tracking-widest);
+    font-weight: var(--fw-semibold);
   }
 
-  .faq-card__title {
+  .hero__count {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .hero__main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (max-width: 900px) { .hero__main { grid-template-columns: 1fr; } }
+
+  .hero__title {
     font-family: var(--font-display);
-    font-size: var(--fs-md);
+    font-size: clamp(32px, 4.5vw, 56px);
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hero__line { display: block; }
+  .hero__line--accent { color: var(--accent-hi); text-shadow: 0 0 16px var(--accent-glow); }
+
+  .hero__cursor {
+    display: inline-block;
+    color: var(--accent-hi);
+    animation: blink 1.1s infinite step-start;
+    text-shadow: var(--text-glow-accent);
+    margin-left: 4px;
+    line-height: 1;
+  }
+
+  .hero__subtitle {
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--text-mute);
+    margin: 0 0 var(--space-4) 0;
+    max-width: 540px;
+  }
+
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+  .hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+
+  .pillars-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-2); }
+
+  @media (max-width: 1100px) { .pillars-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (max-width: 800px)  { .pillars-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .bento { display: grid; gap: var(--space-3); }
+  .bento--60-40 { grid-template-columns: 1.5fr 1fr; }
+  .bento--50-50 { grid-template-columns: 1fr 1fr; }
+
+  @media (max-width: 1000px) { .bento--60-40, .bento--50-50 { grid-template-columns: 1fr; } }
+
+  .bento__cell { min-width: 0; }
+
+  .bento__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--space-2) var(--space-3);
+    border-top: 1px solid var(--border-dim);
+    background: var(--bg-elevated);
+  }
+
+  .rstack { display: flex; flex-direction: column; gap: var(--space-2); }
+
+  .rmini {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    padding: var(--space-2-5);
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    border-left: 2px solid var(--signal-magenta);
+    color: var(--text);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .rmini:hover { border-color: var(--signal-magenta); background: var(--bg-elevated); }
+
+  .rmini__head { display: flex; align-items: center; gap: var(--space-2); color: var(--signal-magenta); }
+
+  .rmini__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
     font-weight: var(--fw-semibold);
     color: var(--text-bright);
     margin: 0;
-    line-height: 1.25;
+    line-height: 1.2;
     letter-spacing: var(--tracking-tight);
   }
 
-  .faq-card__hint {
-    font-size: var(--fs-sm);
-    color: var(--text-mute);
-    line-height: 1.4;
-    margin: 0;
-  }
+  .rmini__metrics { display: flex; align-items: center; gap: var(--space-1-5); font-family: var(--font-mono); font-size: 11px; }
 
-  .faq-card--more {
-    background: var(--bg-base);
-  }
+  .rmini__before { color: var(--text-mute); text-decoration: line-through; text-decoration-color: var(--signal-red); }
+  .rmini__after { font-weight: var(--fw-semibold); }
+  .rmini__cost { color: var(--text-faint); margin-left: auto; }
 
-  /* Manifesto */
-  .manifesto {
-    max-width: 720px;
-  }
+  .rmini__tags { display: flex; flex-wrap: wrap; gap: 4px; }
 
-  .manifesto p {
-    font-size: var(--fs-md);
-    line-height: 1.6;
+  .faq-stack { display: flex; flex-direction: column; }
+
+  .qline {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2-5) 0;
+    border-bottom: 1px solid var(--border-dim);
     color: var(--text);
-    margin-bottom: var(--space-4);
+    transition: all var(--duration-fast) var(--ease-out);
   }
 
-  .manifesto strong {
+  .qline:last-child { border-bottom: 0; }
+
+  .qline:hover {
+    background: var(--bg-elevated);
+    margin: 0 calc(-1 * var(--space-3));
+    padding: var(--space-2-5) var(--space-3);
     color: var(--text-bright);
   }
 
-  .manifesto__signature {
-    font-size: var(--fs-xs);
+  .qline__num { font-size: var(--fs-2xs); color: var(--signal-amber); text-transform: uppercase; letter-spacing: var(--tracking-widest); text-shadow: var(--text-glow-amber); font-weight: var(--fw-bold); }
+  .qline__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .qline__q { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-bright); line-height: 1.2; }
+  .qline__hint { font-size: var(--fs-xs); color: var(--text-mute); }
+  .qline > :global(.icon) { color: var(--text-faint); }
+  .qline:hover > :global(.icon) { color: var(--signal-amber); }
+
+  .vendor-stack { display: flex; flex-direction: column; }
+
+  .vline {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2-5) 0;
+    border-bottom: 1px solid var(--border-dim);
+    color: var(--text);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .vline:last-child { border-bottom: 0; }
+
+  .vline:hover {
+    background: var(--bg-elevated);
+    margin: 0 calc(-1 * var(--space-3));
+    padding: var(--space-2-5) var(--space-3);
+  }
+
+  .vline--soon { opacity: 0.55; }
+  .vline > :global(.icon:first-child) { color: var(--signal-amber); }
+  .vline__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .vline__name { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-bright); font-weight: var(--fw-semibold); }
+  .vline__focus { font-size: var(--fs-2xs); color: var(--text-mute); letter-spacing: var(--tracking-wide); }
+  .vline__status { font-size: var(--fs-2xs); color: var(--text-faint); text-transform: uppercase; letter-spacing: var(--tracking-widest); font-weight: var(--fw-bold); }
+
+  .explainer-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-2); }
+
+  .exline {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-2-5);
+    padding: var(--space-2-5) var(--space-3);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    border-left: 2px solid var(--signal-cyan);
+    color: var(--text);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .exline:hover { border-color: var(--signal-cyan); background: var(--bg-elevated); transform: translateX(2px); }
+  .exline > :global(.icon) { color: var(--signal-cyan); }
+  .exline__title { font-size: var(--fs-sm); color: var(--text-bright); line-height: 1.3; }
+  .exline__depth {
+    font-size: 9px;
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px 5px;
+    border: 1px solid var(--signal-cyan);
+    border-radius: var(--radius-xs);
+    font-weight: var(--fw-bold);
+  }
+
+  .manifesto { max-width: 720px; }
+  .manifesto p { font-size: var(--fs-sm); line-height: 1.6; color: var(--text); margin-bottom: var(--space-3); }
+  .manifesto strong { color: var(--text-bright); }
+  .manifesto__sig {
+    font-size: var(--fs-2xs);
     color: var(--text-dim);
     text-transform: uppercase;
     letter-spacing: var(--tracking-wider);
     border-top: 1px dashed var(--border-dim);
-    padding-top: var(--space-4);
-    margin-top: var(--space-6);
+    padding-top: var(--space-3);
+    margin-top: var(--space-4);
   }
 </style>

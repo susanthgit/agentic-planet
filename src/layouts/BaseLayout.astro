@@ -36,7 +36,7 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
 ---
 
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -64,23 +64,10 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />
 
   <meta name="theme-color" content="#0A0E14" />
-  <meta name="color-scheme" content="dark light" />
+  <meta name="color-scheme" content="dark" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <script is:inline>
-    // Theme: respect saved preference, default to dark (cockpit)
-    (function () {
-      try {
-        const saved = localStorage.getItem('theme');
-        const theme = saved || 'dark';
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch (_) {
-        // ignore
-      }
-    })();
-  </script>
 </head>
 
 <body class={bodyClass}>
@@ -96,18 +83,6 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   <Footer />
 
   <script>
-    // Theme toggle handler
-    document.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest('[data-theme-toggle]');
-      if (!btn) return;
-      e.preventDefault();
-      const html = document.documentElement;
-      const current = html.getAttribute('data-theme') || 'dark';
-      const next = current === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', next);
-      try { localStorage.setItem('theme', next); } catch (_) {}
-    });
-
     // Command palette: ⌘K / Ctrl+K — for now, navigates to glossary
     document.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {

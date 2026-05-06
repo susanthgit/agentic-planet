@@ -2,15 +2,15 @@
   "_note": "Pillar metadata — counts/percentages for homepage tiles.",
   "_lastUpdated": "2026-05-06T22:30:00Z",
   "pillars": [
-    { "code": "L01", "title": "Landscape", "href": "/landscape/", "description": "Where the agentic ecosystem came from, where it's going.", "count": 5, "fillPercent": 100, "color": "violet", "icon": "🌍" },
-    { "code": "R02", "title": "Recipes", "href": "/recipes/", "description": "Real workflows. Multiple agents chained. Measured before / after.", "count": 5, "fillPercent": 50, "color": "magenta", "icon": "🍳" },
-    { "code": "M03", "title": "MCP Servers", "href": "/mcp/", "description": "30 servers worth your time, with live health signals.", "count": 30, "fillPercent": 100, "color": "cyan", "icon": "🔌" },
-    { "code": "T04", "title": "Tools", "href": "/tools/", "description": "Honest reviews of agents techies actually use.", "count": 12, "fillPercent": 40, "color": "green", "icon": "🛠️" },
-    { "code": "V05", "title": "Vendors", "href": "/vendors/", "description": "Microsoft, Anthropic, OpenAI, Google — side-by-side, no spin.", "count": 2, "fillPercent": 40, "color": "amber", "icon": "💼" },
-    { "code": "S06", "title": "Safety", "href": "/safety/", "description": "What does this agent actually access? Plain English risk lens.", "count": 8, "fillPercent": 80, "color": "red", "icon": "🛡️" },
-    { "code": "P07", "title": "Standards", "href": "/standards/", "description": "MCP, A2A, Apps SDK — what they are, when they matter.", "count": 4, "fillPercent": 80, "color": "accent", "icon": "🏛️" },
-    { "code": "L08", "title": "Learn", "href": "/learn/", "description": "Explainers + glossary. Concepts in plain English with diagrams.", "count": 10, "fillPercent": 100, "color": "cyan", "icon": "📚" },
-    { "code": "X09", "title": "Lab", "href": "/lab/", "description": "Calculators, comparators, wizards. Tools that answer real questions.", "count": 1, "fillPercent": 16, "color": "magenta", "icon": "🧪" },
-    { "code": "Q10", "title": "FAQ", "href": "/faq/", "description": "Big questions answered without vendor spin. Trust-building.", "count": 10, "fillPercent": 100, "color": "amber", "icon": "❓" }
+    { "code": "L01", "title": "Landscape", "href": "/landscape/", "description": "Where the agentic ecosystem came from, where it's going.", "count": 5, "fillPercent": 100, "color": "violet", "icon": "globe" },
+    { "code": "R02", "title": "Recipes", "href": "/recipes/", "description": "Real workflows. Multiple agents chained. Measured before / after.", "count": 5, "fillPercent": 50, "color": "magenta", "icon": "flask" },
+    { "code": "M03", "title": "MCP Servers", "href": "/mcp/", "description": "Servers worth your time, with live health signals.", "count": 13, "fillPercent": 80, "color": "cyan", "icon": "plug" },
+    { "code": "T04", "title": "Tools", "href": "/tools/", "description": "Honest reviews of agents techies actually use.", "count": 12, "fillPercent": 40, "color": "green", "icon": "wrench" },
+    { "code": "V05", "title": "Vendors", "href": "/vendors/", "description": "Microsoft, Anthropic, OpenAI, Google — side-by-side, no spin.", "count": 2, "fillPercent": 40, "color": "amber", "icon": "building" },
+    { "code": "S06", "title": "Safety", "href": "/safety/", "description": "What does this agent actually access? Plain English risk lens.", "count": 14, "fillPercent": 80, "color": "red", "icon": "shield" },
+    { "code": "P07", "title": "Standards", "href": "/standards/", "description": "MCP, A2A, Apps SDK — what they are, when they matter.", "count": 4, "fillPercent": 80, "color": "accent", "icon": "book" },
+    { "code": "L08", "title": "Learn", "href": "/learn/", "description": "Explainers + glossary. Concepts in plain English with diagrams.", "count": 10, "fillPercent": 100, "color": "cyan", "icon": "brain" },
+    { "code": "X09", "title": "Lab", "href": "/lab/", "description": "Calculators, comparators, wizards. Tools that answer real questions.", "count": 1, "fillPercent": 16, "color": "magenta", "icon": "beaker" },
+    { "code": "Q10", "title": "FAQ", "href": "/faq/", "description": "Big questions answered without vendor spin. Trust-building.", "count": 10, "fillPercent": 100, "color": "amber", "icon": "help" }
   ]
 }
