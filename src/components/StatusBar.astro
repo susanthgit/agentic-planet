@@ -34,9 +34,12 @@ const version = packageJson.version;
         <span class="statusbar__value phosphor-green">ONLINE</span>
       </span>
       <span class="statusbar__sep" aria-hidden="true">│</span>
-      <span class="statusbar__item">
+      <span
+        class="statusbar__item statusbar__item--build"
+        title={`Built: ${buildIso}\nGit SHA: ${gitSha}\nBranch: main\nDeployed via direct upload to Cloudflare Pages`}
+      >
         <span class="statusbar__label">BUILD</span>
-        <span class="statusbar__value mono" title={buildIso}>v{version}-{gitSha}</span>
+        <span class="statusbar__value mono">v{version}-{gitSha}</span>
       </span>
       <span class="statusbar__sep" aria-hidden="true">│</span>
       <span class="statusbar__item">

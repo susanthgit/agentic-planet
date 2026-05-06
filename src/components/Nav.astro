@@ -7,16 +7,16 @@
 const pathname = Astro.url.pathname;
 
 const links = [
-  { href: '/landscape/', label: 'Landscape', code: 'L01' },
-  { href: '/recipes/', label: 'Recipes', code: 'R02' },
-  { href: '/mcp/', label: 'MCPs', code: 'M03' },
-  { href: '/tools/', label: 'Tools', code: 'T04' },
-  { href: '/vendors/', label: 'Vendors', code: 'V05' },
-  { href: '/safety/', label: 'Safety', code: 'S06' },
-  { href: '/standards/', label: 'Standards', code: 'P07' },
-  { href: '/learn/', label: 'Learn', code: 'L08' },
-  { href: '/lab/', label: 'Lab', code: 'X09' },
-  { href: '/faq/', label: 'FAQ', code: 'Q10' },
+  { href: '/landscape/', label: 'Landscape', code: 'L01', shortcut: 'G L' },
+  { href: '/recipes/', label: 'Recipes', code: 'R02', shortcut: 'G R' },
+  { href: '/mcp/', label: 'MCPs', code: 'M03', shortcut: 'G M' },
+  { href: '/tools/', label: 'Tools', code: 'T04', shortcut: 'G T' },
+  { href: '/vendors/', label: 'Vendors', code: 'V05', shortcut: 'G V' },
+  { href: '/safety/', label: 'Safety', code: 'S06', shortcut: 'G S' },
+  { href: '/standards/', label: 'Standards', code: 'P07', shortcut: 'G P' },
+  { href: '/learn/', label: 'Learn', code: 'L08', shortcut: 'G H' },
+  { href: '/lab/', label: 'Lab', code: 'X09', shortcut: 'G X' },
+  { href: '/faq/', label: 'FAQ', code: 'Q10', shortcut: 'G Q' },
 ];
 
 function isActive(href: string): boolean {
@@ -47,6 +47,7 @@ function isActive(href: string): boolean {
           href={link.href}
           class:list={['nav__link', { 'nav__link--active': isActive(link.href) }]}
           aria-current={isActive(link.href) ? 'page' : undefined}
+          title={`Shortcut: ${link.shortcut}`}
         >
           <span class="nav__link-code">{link.code}</span>
           <span class="nav__link-label">{link.label}</span>
@@ -153,8 +154,9 @@ function isActive(href: string): boolean {
 
   .nav__link {
     display: inline-flex;
-    align-items: center;
-    gap: var(--space-1-5);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
     padding: var(--space-2) var(--space-3);
     color: var(--text-mute);
     font-family: var(--font-mono);
@@ -166,6 +168,7 @@ function isActive(href: string): boolean {
     border-bottom: 1px solid transparent;
     transition: all var(--duration-fast) var(--ease-out);
     white-space: nowrap;
+    position: relative;
   }
 
   .nav__link:hover {
@@ -181,14 +184,23 @@ function isActive(href: string): boolean {
 
   .nav__link--active::before {
     content: "▸";
+    position: absolute;
+    left: -2px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--accent-hi);
-    margin-right: 2px;
+    font-size: 10px;
   }
 
   .nav__link-code {
     color: var(--text-faint);
-    font-size: 9px;
+    font-size: 8px;
     letter-spacing: 0;
+    line-height: 1;
+  }
+
+  .nav__link-label {
+    line-height: 1.1;
   }
 
   .nav__link--active .nav__link-code {

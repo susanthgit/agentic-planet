@@ -9,6 +9,7 @@ import PillarTile from '@components/panels/PillarTile.astro';
 import LiveDot from '@components/data/LiveDot.astro';
 import PulseRail from '@components/panels/PulseRail.astro';
 import ThisWeekPanel from '@components/panels/ThisWeekPanel.astro';
+import AgenticStackDiagram from '@components/panels/AgenticStackDiagram.astro';
 
 import mcpHealth from '@data/mcp-health.json';
 import pulseData from '@data/pulse.json';
@@ -108,6 +109,11 @@ const standard = pillars.filter((p) => !featuredPillarSlugs.includes(p.code));
         </div>
       ))}
     </div>
+  </section>
+
+  <!-- AGENTIC STACK — signature visual -->
+  <section class="container-wide section">
+    <AgenticStackDiagram />
   </section>
 
   <section class="container-wide section">
