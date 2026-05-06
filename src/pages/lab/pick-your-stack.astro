@@ -1,0 +1,119 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import PickYourStack from '@components/interactive/PickYourStack.tsx';
+---
+
+<BaseLayout
+  title="Pick Your Stack — agentic AI stack recommender"
+  description="5 questions, your recommended agent + LLM + tools + hosting stack. Client-side, no login, no email capture."
+>
+  <header class="ph">
+    <div class="container-wide">
+      <nav class="breadcrumb mono">
+        <a href="/lab/">Lab</a>
+        <span aria-hidden="true">/</span>
+        <span>Pick Your Stack</span>
+      </nav>
+
+      <span class="kicker mono">▸ LAB / X.01</span>
+      <h1 class="ph__title">Pick Your Stack.</h1>
+      <p class="ph__desc">
+        Five questions. Your recommended LLM, host, MCPs, framework, and hosting choices —
+        tailored to what you're actually building. Pure client-side. No login, no email, no tracking.
+      </p>
+    </div>
+  </header>
+
+  <section class="container-wide section">
+    <div class="wizard-wrapper">
+      <PickYourStack client:load />
+    </div>
+
+    <Panel kicker="HOW THIS WORKS" title="The opinion behind the wizard" density="loose">
+      <p>
+        Every recommendation in this wizard reflects an opinionated take — based on what we'd actually
+        build for that combination of constraints. It's not a marketplace. It's not paid placement.
+        We say "Claude Sonnet" or "Llama 3.3 local" because that's the right answer for the inputs.
+      </p>
+      <p>
+        The wizard runs entirely in your browser. Your answers never leave your device.
+      </p>
+    </Panel>
+
+    <div class="cta-row">
+      <Button href="/lab/" variant="ghost" iconLeft="←">Back to Lab</Button>
+      <Button href="/recipes/" variant="ghost" iconRight="→">Browse recipes</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ph {
+    padding: var(--space-10) 0;
+    border-bottom: 1px solid var(--border-dim);
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 0%, rgba(236, 72, 153, 0.1), transparent 60%),
+      var(--bg-base);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-4);
+  }
+
+  .breadcrumb a {
+    color: var(--signal-magenta);
+    border-bottom: 0;
+  }
+
+  .kicker {
+    display: inline-block;
+    font-size: var(--fs-2xs);
+    color: var(--signal-magenta);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+    text-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+  }
+
+  .ph__title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: var(--space-3);
+  }
+
+  .ph__desc {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    line-height: 1.5;
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .section { padding: var(--space-10) 0; }
+
+  .wizard-wrapper {
+    max-width: 720px;
+    margin: 0 auto var(--space-8);
+  }
+
+  .cta-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+  }
+</style>

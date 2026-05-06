@@ -1,0 +1,98 @@
+---
+title: "What can I actually build with $0?"
+question: "What can I build with $0?"
+summary: "More than you think. A starter stack that costs nothing."
+category: "cost"
+sushReviewNeeded: true
+lastReviewedAt: 2026-05-06
+---
+
+# What can I build with $0?
+
+**More than you think.** With careful tool choice you can build a real, useful agentic system without spending a cent.
+
+Here's the actual stack and what it can do.
+
+## The $0 stack
+
+**LLM:** Local with [Ollama](https://ollama.com/). Run Llama 3.3, Qwen, or Mistral on your laptop. Zero token costs.
+
+**Agent host:** [Claude Desktop](https://claude.ai/download) free tier (limited) **or** open-source [Open WebUI](https://github.com/open-webui/open-webui) on top of Ollama. Both free.
+
+**Tool layer:** Free MCP servers — filesystem, GitHub (with your own PAT), web search via Brave Search free tier, Slack via free workspace.
+
+**Code editor:** [Cline](https://github.com/cline/cline) (free, OSS) on VS Code + your local Ollama as the model. Done.
+
+**Browser automation:** [Playwright](https://playwright.dev) MCP server. Open source, runs locally.
+
+**Hosting:** Cloudflare Pages free tier (500 builds/month, unlimited bandwidth, custom domain).
+
+**Storage:** Cloudflare R2 free tier (10GB) or just local disk.
+
+**Total monthly cost: $0.**
+
+## What you can actually build
+
+With this stack, real things you can ship:
+
+### 1. Personal coding agent
+- Cline + Ollama (local Llama 3.3 70B) + filesystem MCP + GitHub MCP
+- Performance: slower than Claude Code, but free. Good enough for refactors, small features, bug fixes.
+
+### 2. Research / summarisation agent
+- Open WebUI + local model + web search MCP + filesystem MCP
+- Drops result into local markdown files
+
+### 3. Personal automation bot
+- Playwright MCP + cron + custom Node script
+- Schedule it to do daily tasks: "check this site, save changes, email me"
+- Email via the free tier of any SMTP provider (Brevo, Mailjet)
+
+### 4. Self-hosted PR triage
+- GitHub MCP + Slack MCP (or webhook) + local LLM
+- Auto-labels, summarises PRs, posts to Slack
+
+### 5. Documentation chat
+- RAG over your own docs (local embeddings via Ollama nomic-embed-text)
+- Frontend deployed on Cloudflare Pages
+- Vector store: SQLite with sqlite-vec extension, all local
+
+## Where free hits limits
+
+Be honest about where $0 stops working:
+
+**Quality.** Local Llama 3.3 70B is around GPT-4 level for many tasks but worse than Claude Sonnet 4.5 / GPT-5 on hard reasoning. For simple workflows, fine. For complex multi-step agents, you'll feel it.
+
+**Speed.** Local LLMs on a Mac M3 do 10-30 tokens/sec. Cloud APIs do 100+. For interactive use, latency adds up.
+
+**Browser-Use / Operator-grade automation.** Free tools work for simple flows but the production-grade browser agents are paid. Your own Playwright + LLM works for moderate complexity.
+
+**Multi-modal.** Vision models are catching up locally but still a step behind paid (Claude Sonnet, GPT-5o, Gemini).
+
+**Reliability at scale.** Running LLMs locally is fine for one user. Hosting them for production traffic gets non-trivial fast.
+
+## When to start spending
+
+You'll know it's time to spend when:
+
+- You're hitting rate limits on free tiers regularly
+- Latency is breaking UX
+- Quality of local model is the bottleneck on results
+- You're spending hours debugging local infra time that paid services would just solve
+
+The first $20/mo (Claude Pro or ChatGPT Plus) is usually a step-change in productivity. After that, marginal returns flatten until you hit $100+/mo.
+
+## My recommended starting path
+
+1. **Week 1:** Install Ollama + Llama 3.3 70B + Cline + filesystem MCP. Use it on real work.
+2. **Week 2:** Add GitHub MCP + try a code review agent.
+3. **Week 3:** Build one workflow — pick a recipe from this site, adapt it.
+4. **Week 4:** Decide what to pay for based on what's actually limiting you.
+
+You'll have a working agentic system before spending a cent. Then you spend with intent, not on faith.
+
+## What to read next
+
+- [Tools — the $0 picks](/tools/) — filtered to free tools
+- [Recipes — easy starts](/recipes/) — beginner-friendly workflows
+- [Self-hosted practical?](/faq/self-hosted-practical/) — the deeper version of this question

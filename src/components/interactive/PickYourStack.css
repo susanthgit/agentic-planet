@@ -1,0 +1,360 @@
+.pys {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.pys__progress {
+  position: relative;
+  height: 36px;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-dim);
+  overflow: hidden;
+}
+
+.pys__progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--signal-magenta));
+  box-shadow: 0 0 12px var(--accent-glow);
+  transition: width 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.25;
+}
+
+.pys__progress-label {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  text-align: center;
+  line-height: 36px;
+  font-weight: 600;
+}
+
+.pys__step {
+  padding: 32px 40px;
+}
+
+.pys__kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--signal-magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  text-shadow: var(--text-glow-cyan);
+  margin-bottom: 12px;
+}
+
+.pys__prompt {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-bright);
+  margin: 0 0 12px 0;
+}
+
+.pys__helper {
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--text-mute);
+  margin: 0 0 24px 0;
+}
+
+.pys__options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pys__option {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: all 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  position: relative;
+}
+
+.pys__option:hover {
+  border-color: var(--signal-magenta);
+  background: var(--bg-elevated);
+  transform: translateX(4px);
+  box-shadow: 0 0 16px rgba(236, 72, 153, 0.15);
+}
+
+.pys__option--selected {
+  border-color: var(--signal-magenta);
+  background: var(--bg-elevated);
+  box-shadow: 0 0 0 1px var(--signal-magenta);
+}
+
+.pys__option-label {
+  font-weight: 500;
+  color: var(--text-bright);
+  display: block;
+}
+
+.pys__option-hint {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-mute);
+  margin-top: 4px;
+}
+
+.pys__option-arrow {
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+  font-size: var(--fs-md);
+  align-self: center;
+  grid-row: 1 / -1;
+  grid-column: 2;
+  transition: all 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pys__option:hover .pys__option-arrow {
+  color: var(--signal-magenta);
+  transform: translateX(4px);
+  text-shadow: 0 0 6px var(--signal-magenta);
+}
+
+.pys__back {
+  margin-top: 24px;
+}
+
+.pys__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid;
+}
+
+.pys__btn--primary {
+  background: var(--signal-magenta);
+  color: var(--bg-base);
+  border-color: var(--signal-magenta);
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.4);
+}
+
+.pys__btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+}
+
+.pys__btn--ghost {
+  background: transparent;
+  color: var(--text-mute);
+  border-color: var(--border);
+}
+
+.pys__btn--ghost:hover {
+  color: var(--text-bright);
+  border-color: var(--border-active);
+}
+
+/* Result */
+.pys__result {
+  padding: 32px 40px;
+}
+
+.pys__result-head {
+  margin-bottom: 24px;
+}
+
+.pys__result-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text-bright);
+  margin: 12px 0 0 0;
+}
+
+.pys__result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.pys__rec {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 20px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid currentColor;
+}
+
+.pys__rec--accent { color: var(--accent-hi); }
+.pys__rec--cyan { color: var(--signal-cyan); }
+.pys__rec--green { color: var(--signal-green); }
+.pys__rec--amber { color: var(--signal-amber); }
+.pys__rec--magenta { color: var(--signal-magenta); }
+
+.pys__rec-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.pys__rec-val {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-bright);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.pys__rec-reason {
+  font-size: var(--fs-sm);
+  color: var(--text-mute);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pys__rec-alt {
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.pys__tools {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pys__tools li {
+  margin: 0;
+}
+
+.pys__tools code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: currentColor;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
+}
+
+.pys__notes,
+.pys__answers-summary {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+}
+
+.pys__notes-h {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  color: var(--accent-hi);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin: 0 0 12px 0;
+}
+
+.pys__notes ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pys__notes li {
+  font-size: var(--fs-sm);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.pys__notes li:last-child {
+  border-bottom: 0;
+}
+
+.pys__answers-summary dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pys__answer-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.pys__answer-row:last-child {
+  border-bottom: 0;
+}
+
+.pys__answer-row dt {
+  font-size: var(--fs-sm);
+  color: var(--text-mute);
+}
+
+.pys__answer-row dd {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--signal-cyan);
+  text-align: right;
+  margin: 0;
+}
+
+.pys__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 600px) {
+  .pys__step,
+  .pys__result {
+    padding: 24px 20px;
+  }
+}

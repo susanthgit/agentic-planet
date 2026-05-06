@@ -1,0 +1,136 @@
+---
+title: "How agentic loops work"
+summary: "ReAct, plan-and-execute, reflexion — the three core patterns."
+depth: "deep"
+concept: "Agent loop"
+sushReviewNeeded: true
+---
+
+# How agentic loops work
+
+The loop is what makes an agent an agent. Three patterns dominate in 2026: **ReAct**, **plan-and-execute**, and **reflexion**. Each fits a different shape of problem.
+
+## The basic loop
+
+Every agent loop has the same shape underneath:
+
+```
+while not done:
+    thought = LLM(prompt + history)
+    if thought.is_final_answer:
+        return thought
+    action = thought.action          # tool call + arguments
+    observation = run(action)        # run the tool, get result
+    history.append(thought, action, observation)
+```
+
+That's it. The variation is in *how* the model is prompted to think, and what data is in `history`.
+
+## Pattern 1: ReAct
+
+ReAct = **Re**asoning + **Act**ing. Most common pattern in 2026. The LLM is prompted to alternate between reasoning ("thoughts") and tool calls.
+
+```
+Thought 1: I need to find Sush's email. I'll search GitHub.
+Action 1:  github_search(user="susanthgit", field="email")
+Result 1:  "susanth.ss@gmail.com"
+
+Thought 2: Got it. Now I'll draft the email.
+Action 2:  draft_email(to="susanth.ss@gmail.com", ...)
+Result 2:  "Draft created with id 7f3b"
+
+Thought 3: Done. The user can now review the draft.
+Final answer: I created a draft for you to review.
+```
+
+**When to use ReAct:** Most general-purpose agents. Default choice. Robust across many problem types.
+
+**Failure modes:**
+- Loops forever if no clear "done" criterion
+- Drifts from the original goal if context grows
+- Sometimes generates "thoughts" but doesn't actually call tools (hallucinated reasoning)
+
+## Pattern 2: Plan-and-Execute
+
+The model first writes out a plan, then executes each step. Often two different LLM calls (or two prompts to the same LLM).
+
+```
+Plan:
+  1. Find Sush's email
+  2. Compose draft
+  3. Add screenshot attachment
+  4. Save to drafts folder
+
+Step 1: github_search(...) → "susanth.ss@gmail.com"
+Step 2: compose_email(to=..., subject=..., body=...)
+Step 3: capture_screenshot() → /tmp/img.png
+Step 4: save_draft(email, attachment="/tmp/img.png")
+
+Done.
+```
+
+**When to use Plan-and-Execute:**
+- Multi-step tasks where the steps are clear up front
+- When you want auditability (the plan is readable before execution)
+- When users need to approve the plan before running
+
+**Failure modes:**
+- Brittle if a step fails — needs fallback handling
+- Doesn't adapt well if intermediate results contradict the plan
+
+## Pattern 3: Reflexion
+
+After a failed attempt, the agent reflects on what went wrong and tries again with the lesson learned.
+
+```
+Attempt 1:
+  Thought: I'll use API X to do Y.
+  Action: api_X(params)
+  Result: 401 Unauthorized
+
+Reflection: API X needs auth. I should grab the token first.
+
+Attempt 2:
+  Thought: Get the token, then call API X.
+  Action: get_token() → "abc123"
+  Action: api_X(params, token="abc123")
+  Result: success
+```
+
+**When to use Reflexion:**
+- Tasks that have a clear feedback signal (test pass/fail, API error, validation result)
+- When you can afford the extra LLM calls
+- Coding agents, especially
+
+**Failure modes:**
+- Reflection without action — the agent reasons but doesn't change behaviour
+- Loop on the same failure if reflection is shallow
+
+## Common mistakes when implementing loops
+
+**Mistake 1: No termination.** Agents loop forever if "I'm done" isn't a clear option. Always include a "no more tool calls needed" path.
+
+**Mistake 2: Unbounded context.** Each iteration adds to the conversation. After 30 steps, you've exceeded context. Use sliding windows or summarisation.
+
+**Mistake 3: Missing observability.** When agents misbehave, you need every thought, every action, every result logged. Not optional.
+
+**Mistake 4: Overconfidence in tool errors.** Agents often say "I called X and got Y" when X actually errored. Always pass tool errors back as observations the model can see.
+
+**Mistake 5: One LLM for everything.** Sometimes the planner should be a smaller/cheaper model and the executor a more capable one. Mixing models is often a 30%+ cost win.
+
+## Choosing a pattern
+
+| Problem shape | Pattern |
+|---|---|
+| General-purpose, unknown task structure | **ReAct** |
+| Clear sequence, want auditability | **Plan-and-Execute** |
+| Iterative with clear failure signals (e.g., coding) | **Reflexion** |
+| Long-running, complex orchestration | **Multi-agent** (separate post) |
+
+Most teams ship ReAct first, then refactor specific subsystems to plan-and-execute or reflexion when ReAct's failure modes show up.
+
+## What to read next
+
+- [What is an agent?](/learn/what-is-an-agent/) — the basics
+- [Multi-agent systems](/learn/multi-agent-systems/) — when more than one agent is useful
+- [Tool calling vs function calling vs MCP](/learn/tool-calling-vs-mcp/) — the layer below the loop

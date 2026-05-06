@@ -1,0 +1,246 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+interface GlossaryTerm {
+  term: string;
+  short: string;
+  long?: string;
+  related?: string[];
+}
+
+const terms: GlossaryTerm[] = [
+  { term: 'Agent', short: 'Software that can plan, call tools, and act on a goal — not just respond. The keyword is "loop": observe → plan → act → observe.', related: ['Agentic', 'Tool calling', 'ReAct'] },
+  { term: 'Agentic', short: 'Software that does things on your behalf, often via tool calls and multi-step loops. Marketing uses it loosely; engineers mean: LLM + tools + loop.', related: ['Agent'] },
+  { term: 'Apps SDK', short: 'OpenAI\'s framework for building rich apps inside ChatGPT. The OpenAI answer to MCP. Includes UI widget rendering.', related: ['MCP', 'OpenAI'] },
+  { term: 'A2A', short: 'Agent-to-Agent protocol from Google. Lets agents discover and delegate to each other. Useful for multi-agent systems.', related: ['MCP', 'Multi-agent'] },
+  { term: 'Chain-of-thought', short: 'Asking the model to "show its working" before answering. Improves reasoning on complex tasks at the cost of tokens.', related: ['Reasoning'] },
+  { term: 'Context window', short: 'How much text the model can "see" at once. Bigger ≠ always better — there\'s a "lost in the middle" problem.', related: ['Long context', 'Token'] },
+  { term: 'Copilot Studio', short: 'Microsoft\'s low-code platform for building agents inside M365 / Power Platform. Tightly integrated into corporate IT estate.', related: ['Microsoft', 'Declarative agent'] },
+  { term: 'Declarative agent', short: 'An agent defined by a JSON manifest (no code). Microsoft\'s pattern for M365 Copilot extensibility.', related: ['Copilot Studio'] },
+  { term: 'Embedding', short: 'A vector representation of text. Used for semantic search, similarity, and RAG. "Closer in vector space" ≈ "more similar in meaning".', related: ['RAG', 'Vector DB'] },
+  { term: 'Function calling', short: 'When an LLM produces structured JSON describing which function to invoke. The mechanism behind tool calling.', related: ['Tool calling'] },
+  { term: 'Hallucination', short: 'When a model confidently produces wrong information. Most-cited LLM failure mode. Reduced — not eliminated — by RAG, grounding, and tool calls.', related: ['Grounding', 'RAG'] },
+  { term: 'JSON Mode', short: 'Constrained-generation mode where the model only produces valid JSON. Useful when you need a parseable response.', related: ['Function calling'] },
+  { term: 'Long context', short: '100K+ tokens, sometimes millions. Doesn\'t mean the model uses it well — see "lost in the middle".', related: ['Context window'] },
+  { term: 'Lost in the middle', short: 'Phenomenon where models pay less attention to information in the middle of long contexts. Strong performance at start + end.', related: ['Context window'] },
+  { term: 'MCP', short: 'Model Context Protocol — Anthropic\'s open spec for connecting AI agents to tools, data, and apps. The most-likely-to-stick tool protocol of 2026.', related: ['Tool calling', 'A2A', 'Apps SDK'] },
+  { term: 'MoE', short: 'Mixture of Experts — model architecture where only some "expert" sub-networks fire per token. Powers Mixtral, GPT-4, etc.', related: ['Architecture'] },
+  { term: 'Multi-agent', short: 'Two or more agents collaborating, often with role specialisation (planner / worker / reviewer). Useful when, but not always.', related: ['Agent', 'Orchestration'] },
+  { term: 'Orchestration', short: 'The coordination layer that decides which agent runs when, with what input. Examples: LangGraph, CrewAI, AutoGen.', related: ['Multi-agent'] },
+  { term: 'Prompt injection', short: 'When attacker text overrides the system prompt. Direct (in user input) or indirect (via fetched content). The #1 agent security concern.', related: ['Safety'] },
+  { term: 'RAG', short: 'Retrieval-Augmented Generation — fetch relevant docs before answering. Reduces hallucinations on factual questions.', related: ['Embedding', 'Vector DB'] },
+  { term: 'ReAct', short: 'Reasoning + Acting — agent loop pattern: thought → action → observation → thought... Most common modern agent loop.', related: ['Agent loop', 'Tool calling'] },
+  { term: 'Skill', short: 'Anthropic\'s name for a packaged set of agent capabilities (instructions + files + tools). Marketplace launched 2025.', related: ['Anthropic', 'Agent'] },
+  { term: 'System prompt', short: 'The "operating instructions" given to the model, hidden from end users, sets behaviour and constraints.', related: ['Prompt'] },
+  { term: 'Tool calling', short: 'When an LLM decides which tool to use, generates arguments, the runtime executes it, and the result is fed back. Foundation of agentic behaviour.', related: ['Function calling', 'MCP'] },
+  { term: 'Token', short: 'Unit of text the model sees. Roughly 0.75 of a word in English. Pricing and context limits are measured in tokens.', related: ['Context window'] },
+  { term: 'Vector DB', short: 'Database optimised for similarity search over embeddings. Examples: Pinecone, Qdrant, Weaviate, pgvector.', related: ['Embedding', 'RAG'] },
+];
+
+const grouped: Record<string, GlossaryTerm[]> = {};
+for (const t of terms) {
+  const letter = t.term[0].toUpperCase();
+  if (!grouped[letter]) grouped[letter] = [];
+  grouped[letter].push(t);
+}
+const letters = Object.keys(grouped).sort();
+---
+
+<BaseLayout
+  title="Glossary — agentic AI jargon decoded"
+  description="Every buzzword translated to plain English. Searchable, growing, and honest about which terms are real engineering vs marketing fluff."
+>
+  <header class="ph">
+    <div class="container-wide">
+      <span class="kicker mono">▸ DICT // PLAIN ENGLISH</span>
+      <h1 class="ph__title">Glossary.</h1>
+      <p class="ph__desc">
+        Every buzzword in agentic AI translated into plain English. {terms.length} terms and growing.
+      </p>
+    </div>
+  </header>
+
+  <section class="container-wide section">
+    <div class="letter-bar">
+      {letters.map((l) => (
+        <a href={`#${l}`} class="letter-bar__link mono">{l}</a>
+      ))}
+    </div>
+
+    {letters.map((l) => (
+      <section id={l} class="letter-section">
+        <h2 class="letter-heading mono">{l}</h2>
+        <div class="terms-grid">
+          {grouped[l].map((t) => (
+            <article class="term">
+              <h3 class="term__name">{t.term}</h3>
+              <p class="term__def">{t.short}</p>
+              {t.related && t.related.length > 0 && (
+                <div class="term__related">
+                  <span class="term__related-label mono">SEE ALSO</span>
+                  {t.related.map((r) => <a href={`#${r[0].toUpperCase()}`} class="term__related-link mono">{r}</a>)}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <div class="back">
+      <Button href="/learn/" variant="ghost" iconLeft="←">Back to Learn</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ph {
+    padding: var(--space-10) 0;
+    border-bottom: 1px solid var(--border-dim);
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 0%, var(--signal-cyan-glow), transparent 60%),
+      var(--bg-base);
+  }
+
+  .kicker {
+    display: inline-block;
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+    text-shadow: var(--text-glow-cyan);
+  }
+
+  .ph__title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: var(--space-3);
+  }
+
+  .ph__desc {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .section { padding: var(--space-8) 0; }
+
+  .letter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-8);
+    position: sticky;
+    top: calc(var(--header-height) + var(--statusbar-height));
+    z-index: 5;
+  }
+
+  .letter-bar__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 var(--space-2);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    color: var(--signal-cyan);
+    border-bottom: 1px solid var(--border-dim);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .letter-bar__link:hover {
+    background: var(--signal-cyan);
+    color: var(--bg-base);
+  }
+
+  .letter-section {
+    margin-bottom: var(--space-12);
+  }
+
+  .letter-heading {
+    font-size: var(--fs-2xl);
+    color: var(--signal-cyan);
+    margin-bottom: var(--space-4);
+    text-shadow: var(--text-glow-cyan);
+    letter-spacing: -0.02em;
+    border-bottom: 1px solid var(--border-dim);
+    padding-bottom: var(--space-2);
+  }
+
+  .terms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .term {
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-left: 2px solid var(--signal-cyan);
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .term:hover {
+    border-color: var(--signal-cyan);
+    background: var(--bg-elevated);
+  }
+
+  .term__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0 0 var(--space-2) 0;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .term__def {
+    font-size: var(--fs-sm);
+    color: var(--text);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .term__related {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1-5);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--border-dim);
+  }
+
+  .term__related-label {
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .term__related-link {
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    border-bottom: 1px dotted var(--signal-cyan);
+  }
+
+  .back {
+    margin-top: var(--space-10);
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+title: "Will MCP survive 18 months?"
+question: "Will MCP survive 18 months or get replaced?"
+summary: "Probably yes. Here's why — and what could kill it."
+category: "protocol"
+sushReviewNeeded: true
+lastReviewedAt: 2026-05-06
+---
+
+# Will MCP survive 18 months?
+
+**Short answer:** Probably yes. The momentum is real, the spec is clean, and the cross-vendor support is unprecedented for an Anthropic-led standard. Microsoft and OpenAI have both adopted it.
+
+But survival isn't guaranteed. Here's the honest read.
+
+## Why MCP is likely to stick
+
+**1. Cross-vendor adoption.** Microsoft Copilot Studio, OpenAI Apps SDK (interop), and Anthropic Claude all support MCP today. That's a level of cross-vendor agreement we rarely see.
+
+**2. Open spec.** Not vendor-controlled. Anyone can implement it. That makes it harder for any single player to break it.
+
+**3. Real ecosystem.** 348+ MCP servers in registries, with dozens added weekly. Network effects are kicking in.
+
+**4. Practical design.** The protocol solves real problems (stateful context, tool discovery, permissions). It's not academic.
+
+**5. No clear competitor at the same scale.** A2A is younger and narrower. Apps SDK is OpenAI-only. Open Agent Protocol has minimal traction.
+
+## What could kill it
+
+Honest list of survival risks:
+
+**Risk 1: Microsoft or OpenAI fork it.** If a major vendor decides MCP doesn't fit their roadmap and they have leverage, they could ship "MCP++" or "MCP for X". This has killed open standards before.
+
+**Risk 2: A simpler protocol emerges.** MCP is currently auth-heavy and stateful. If a leaner alternative ships and gets adoption, MCP becomes the JavaScript-frameworks-of-2014 — too many features, ready for replacement.
+
+**Risk 3: A breaking change in v2.** MCP v2 is being drafted. If the breaking changes are too aggressive, ecosystem fragmentation is real. We've seen this kill standards.
+
+**Risk 4: Anthropic loses momentum.** If Anthropic the company stumbles (acquisition, regulatory issues, etc.), MCP doesn't have an independent foundation yet. It would need to find a neutral home fast.
+
+**Risk 5: Major security incident.** A high-profile MCP-mediated breach could trigger overreaction and ecosystem panic.
+
+## My probability estimate
+
+If you forced me to put a number on it:
+
+| Outcome | 18-month probability |
+|---|---|
+| MCP is still the dominant agent-tool protocol | ~70% |
+| MCP coexists with 1-2 alternatives without dominating | ~20% |
+| MCP fragments / replaced by an alternative | ~10% |
+
+Whatever happens, **the ideas in MCP** (open tool-server architecture, host-server separation, structured context) will persist. The specific spec might evolve.
+
+## What to do regardless
+
+**Don't bet your entire stack on the spec being permanent.** Bet on the patterns being permanent.
+
+That means:
+- Build MCP servers because the work is portable even if the protocol changes
+- Use MCP-aware hosts (Claude Desktop, Cursor, etc.) because they'll likely adopt successors
+- Avoid deep MCP-specific UI/UX coupling that would be hard to migrate
+- Watch the v2 RFC closely — that's where the next 18 months get decided
+
+## My honest editorial take
+
+MCP is the cleanest agent protocol we've ever had. I would build on it today without hesitation. If something better comes along in 18 months, the migration cost will be modest because the patterns transfer.
+
+The bigger risk than "MCP dies" is "you spent 18 months waiting for the protocol to settle and your competitors shipped".
+
+## What to read next
+
+- [MCP in 90 seconds](/learn/mcp-in-90-seconds/) — what MCP is
+- [Standards](/standards/) — full protocol war analysis
+- [Protocol war FAQ](/faq/anthropic-vs-openai/) — picking a vendor

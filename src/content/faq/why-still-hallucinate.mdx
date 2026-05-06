@@ -1,0 +1,90 @@
+---
+title: "Why do agents still hallucinate?"
+question: "Why do agents still hallucinate?"
+summary: "It's not solved. Here's the engineering reality."
+category: "technical"
+sushReviewNeeded: true
+lastReviewedAt: 2026-05-06
+---
+
+# Why do agents still hallucinate?
+
+**Because LLMs are pattern-completion engines, not truth oracles.** They generate plausible-sounding text. "Plausible" and "true" are correlated but not identical. That gap is what we call hallucination.
+
+Eight years into the modern LLM era, hallucination is reduced but not eliminated. Here's why, and what you do about it in agents.
+
+## Where hallucinations come from
+
+**1. The training objective.** LLMs are trained to predict the next token given the previous ones. They optimise for coherent-looking continuations, not factual ones. When the model isn't sure, it hedges — and the hedge often sounds like confident wrong information.
+
+**2. Compression artefacts.** A 100B-parameter model has compressed millions of documents. Some details are lost. When asked, the model fills the gaps with plausible-but-wrong content rather than refusing.
+
+**3. Training distribution shifts.** Models are trained on past data. Ask about anything after the cutoff and they'll often produce plausible-sounding fiction rather than say "I don't know".
+
+**4. RLHF reward bias.** Models are reward-tuned to be confident and helpful. "I don't know" rarely scores well in RLHF rounds. Result: confidence inflation.
+
+## Why agents make hallucination worse, not better
+
+You'd think tool calls would solve hallucination. They don't always:
+
+**Hallucinated tool results.** The model occasionally generates "I called the function and got Y" when the function wasn't actually called or returned different data. Common in long contexts.
+
+**Hallucinated tool calls.** Sometimes the model hallucinates the existence of a tool that wasn't provided.
+
+**Compounding errors.** If step 3 of a 10-step plan hallucinates, every later step works on the bad data. By step 10, you're far from reality.
+
+**Context drift.** As context grows, the model attends less to early grounding and more to recent generated text. By turn 30, the conversation can have lost the grounding from turn 1.
+
+## Mitigations that actually work
+
+These work, in order of effectiveness:
+
+**1. Grounding via tools.** Force the agent to look up information before answering. Tool-call failure becomes a signal, not a hidden error.
+
+**2. RAG.** Retrieve specific documents before generating. Constrains the model to a narrow corpus.
+
+**3. Validation tools.** Add a "validate" tool that checks claims against a source of truth. Make the agent call it before finalising.
+
+**4. Citations.** Force the model to produce citations. Drop responses without valid citations.
+
+**5. Constrained decoding / JSON mode.** When you can express the answer as a structured value, do. Less freeform = less hallucination.
+
+**6. Smaller, faster context.** Long contexts hallucinate more. Aggressive summarisation or sliding windows help.
+
+**7. Confidence calibration.** Some models can self-report confidence. Reject low-confidence answers.
+
+**8. Multi-model agreement.** Ask two different models. If they disagree, flag.
+
+## Mitigations that don't really work
+
+- **Just prompt it nicely.** "Don't hallucinate" doesn't work. Models can't follow instructions about their own internals reliably.
+- **Bigger models.** GPT-5 still hallucinates. Larger ≠ truthful. It does shift *which* things they hallucinate about.
+- **Adding "if you don't know, say so".** Helps a bit. Models still confidently wrong-answer plenty.
+- **Chain of thought alone.** Doesn't fix factual errors; sometimes generates more.
+
+## The honest engineering answer
+
+You can't eliminate hallucination today. You can:
+
+1. Reduce its frequency by 5-10x with the mitigations above
+2. Detect it post-hoc with validation gates
+3. Limit its blast radius with sandboxing and approval steps
+4. Accept it as a probability, not a bug — and design for it
+
+Production agents in 2026 are built like distributed systems with unreliable nodes. The agent will sometimes lie. Your architecture has to assume that and check.
+
+## My one rule
+
+**Never let an agent take action on hallucinated information without a human gate.**
+
+Read-only? Hallucinations are annoying.
+Write actions? Hallucinations are dangerous.
+Financial / security / health? Catastrophic.
+
+Calibrate the human-in-the-loop based on the cost of being wrong.
+
+## What to read next
+
+- [Safety — failure modes](/safety/) — full failure-mode catalog
+- [Agentic loops](/learn/agentic-loops/) — where compounding errors come from
+- [What is an agent?](/learn/what-is-an-agent/) — the basics

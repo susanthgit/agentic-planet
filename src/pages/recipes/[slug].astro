@@ -1,0 +1,375 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('recipes');
+  return all.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const {
+  title,
+  description,
+  components,
+  before,
+  after,
+  cost,
+  status,
+  domain,
+  runs,
+  risk,
+  sushVerdictNeeded,
+} = entry.data;
+
+const statusColor = status === 'production' ? 'green' : status === 'experimental' ? 'amber' : 'red';
+const riskColor = risk === 'low' ? 'green' : risk === 'medium' ? 'amber' : 'red';
+---
+
+<BaseLayout title={`${title} — Recipe`} description={description}>
+  <article class="recipe">
+    <header class="recipe__head">
+      <div class="recipe__head-inner container-wide">
+        <nav class="breadcrumb mono">
+          <a href="/recipes/">Recipes</a>
+          <span aria-hidden="true">/</span>
+          <span>{title}</span>
+        </nav>
+
+        <span class="recipe__icon" aria-hidden="true">🍳</span>
+
+        <h1 class="recipe__title">{title}</h1>
+        <p class="recipe__lede">{description}</p>
+
+        <div class="recipe__meta">
+          <span class={`recipe__status recipe__status--${statusColor}`}>
+            <span class="recipe__status-dot"></span>
+            {status?.toUpperCase()}
+          </span>
+          {risk && (
+            <span class={`recipe__risk recipe__risk--${riskColor}`}>RISK: {risk?.toUpperCase()}</span>
+          )}
+          {runs !== undefined && (
+            <span class="recipe__runs mono">{runs.toLocaleString()} runs measured</span>
+          )}
+        </div>
+
+        <div class="recipe__metrics">
+          <div class="recipe__metric">
+            <span class="recipe__metric-label mono">BEFORE</span>
+            <span class="recipe__metric-val recipe__metric-val--before">{before}</span>
+          </div>
+          <span class="recipe__arrow" aria-hidden="true">→</span>
+          <div class="recipe__metric">
+            <span class="recipe__metric-label mono">AFTER</span>
+            <span class="recipe__metric-val phosphor-green">{after}</span>
+          </div>
+          {cost && (
+            <div class="recipe__metric recipe__metric--cost">
+              <span class="recipe__metric-label mono">COST / RUN</span>
+              <span class="recipe__metric-val mono">{cost}</span>
+            </div>
+          )}
+        </div>
+
+        <div class="recipe__components">
+          <span class="recipe__components-label mono">COMPONENTS:</span>
+          {components.map((c) => <Tag text={c} color="cyan" />)}
+        </div>
+
+        {sushVerdictNeeded && (
+          <div class="banner">
+            <span class="banner__label mono">⚠ SUSH VERDICT NEEDED</span>
+            <span>This recipe is scaffolded with placeholder numbers. Sush\'s real measurements pending.</span>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <div class="recipe__body container-wide">
+      <Content />
+    </div>
+
+    <footer class="recipe__foot container-wide">
+      <Panel kicker="USEFUL?" title="Adapt this recipe" density="loose">
+        <p>
+          This recipe is licensed under CC BY 4.0. Fork it, adapt it, ship your own version — just keep attribution.
+        </p>
+        <div class="recipe__foot-actions">
+          <Button href="/recipes/" variant="primary" iconLeft="←">All recipes</Button>
+          <Button href={`https://github.com/susanthgit/agentic-planet/blob/main/src/content/recipes/${entry.id}.mdx`} variant="ghost" iconRight="→" target="_blank" rel="noopener">View source</Button>
+        </div>
+      </Panel>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .recipe {
+    padding: 0 0 var(--space-12);
+  }
+
+  .recipe__head {
+    padding: var(--space-10) 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 0% 0%, rgba(236, 72, 153, 0.1), transparent 60%),
+      var(--bg-base);
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-6);
+  }
+
+  .breadcrumb a {
+    color: var(--signal-magenta);
+    border-bottom: 0;
+  }
+
+  .recipe__icon {
+    font-size: 48px;
+    line-height: 1;
+    display: inline-block;
+    margin-bottom: var(--space-3);
+  }
+
+  .recipe__title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: var(--fw-bold);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3) 0;
+    max-width: 1100px;
+    text-shadow: 0 0 30px var(--signal-magenta-glow);
+  }
+
+  .recipe__lede {
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--text-mute);
+    max-width: 720px;
+    margin: 0 0 var(--space-6) 0;
+  }
+
+  .recipe__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-6);
+  }
+
+  .recipe__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .recipe__status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: currentColor;
+  }
+
+  .recipe__status--green { color: var(--signal-green); }
+  .recipe__status--amber { color: var(--signal-amber); }
+  .recipe__status--red { color: var(--signal-red); }
+
+  .recipe__risk {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .recipe__risk--green { color: var(--signal-green); }
+  .recipe__risk--amber { color: var(--signal-amber); }
+  .recipe__risk--red { color: var(--signal-red); }
+
+  .recipe__runs {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .recipe__metrics {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .recipe__metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .recipe__metric-label {
+    font-size: 9px;
+    font-weight: var(--fw-bold);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .recipe__metric-val {
+    font-family: var(--font-mono);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+  }
+
+  .recipe__metric-val--before {
+    color: var(--text-mute);
+    text-decoration: line-through;
+    text-decoration-color: var(--signal-red);
+  }
+
+  .recipe__arrow {
+    color: var(--signal-magenta);
+    font-size: var(--fs-xl);
+    text-shadow: var(--text-glow-cyan);
+  }
+
+  .recipe__components {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .recipe__components-label {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .banner {
+    margin-top: var(--space-6);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--signal-amber);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--fs-sm);
+  }
+
+  .banner__label {
+    color: var(--signal-amber);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .recipe__body {
+    padding: var(--space-10) 0;
+    font-size: var(--fs-md);
+    line-height: 1.7;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .recipe__body :global(h2) {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    color: var(--text-bright);
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-dim);
+    letter-spacing: -0.02em;
+  }
+
+  .recipe__body :global(h2)::before {
+    content: "▸ ";
+    color: var(--signal-magenta);
+  }
+
+  .recipe__body :global(h3) {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    color: var(--text-bright);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-2);
+  }
+
+  .recipe__body :global(p) {
+    margin-bottom: var(--space-4);
+  }
+
+  .recipe__body :global(strong) { color: var(--text-bright); }
+
+  .recipe__body :global(blockquote) {
+    border-left: 3px solid var(--signal-magenta);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-panel);
+    color: var(--text);
+    margin: var(--space-4) 0;
+    font-style: italic;
+  }
+
+  .recipe__body :global(pre) {
+    background: var(--code-bg);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    overflow-x: auto;
+    margin: var(--space-4) 0;
+  }
+
+  .recipe__body :global(table) {
+    margin: var(--space-4) 0;
+  }
+
+  .recipe__foot {
+    padding-top: var(--space-12);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .recipe__foot-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-top: var(--space-4);
+  }
+</style>

@@ -1,0 +1,178 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Button from '@components/primitives/Button.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('faq');
+  return all.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, summary, category, sushReviewNeeded, lastReviewedAt } = entry.data;
+---
+
+<BaseLayout title={`Q: ${title}`} description={summary}>
+  <article class="faq-page">
+    <header class="faq-page__head container-prose">
+      <nav class="breadcrumb mono">
+        <a href="/faq/">FAQ</a>
+        <span aria-hidden="true">/</span>
+        <span>{category.toUpperCase()}</span>
+      </nav>
+
+      <span class="faq-page__qmark mono">Q</span>
+      <h1 class="faq-page__title">{title}</h1>
+      <p class="faq-page__summary">{summary}</p>
+
+      {sushReviewNeeded && (
+        <div class="banner">
+          <span class="banner__label mono">⚠ SUSH REVIEW</span>
+          <span>Drafted in Sush\'s style. Pending human voice pass.</span>
+        </div>
+      )}
+    </header>
+
+    <div class="faq-page__body container-prose">
+      <Content />
+    </div>
+
+    <footer class="faq-page__foot container-prose">
+      <div class="faq-page__foot-actions">
+        <Button href="/faq/" variant="ghost" iconLeft="←">All FAQs</Button>
+        <Button href="/" variant="ghost" iconRight="→">Home</Button>
+      </div>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .faq-page { padding: var(--space-12) 0; }
+
+  .faq-page__head { margin-bottom: var(--space-8); }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-4);
+  }
+
+  .breadcrumb a {
+    color: var(--signal-amber);
+    border-bottom: 0;
+  }
+
+  .faq-page__qmark {
+    display: inline-block;
+    font-size: var(--fs-4xl);
+    color: var(--signal-amber);
+    text-shadow: var(--text-glow-amber);
+    line-height: 1;
+    font-weight: var(--fw-bold);
+    margin-bottom: var(--space-2);
+  }
+
+  .faq-page__title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: var(--fw-bold);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text-bright);
+    margin-bottom: var(--space-4);
+  }
+
+  .faq-page__summary {
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--text-mute);
+    margin: 0;
+    border-left: 2px solid var(--signal-amber);
+    padding-left: var(--space-3);
+  }
+
+  .banner {
+    margin-top: var(--space-6);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--signal-amber);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--fs-sm);
+  }
+
+  .banner__label {
+    color: var(--signal-amber);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .faq-page__body {
+    font-size: var(--fs-md);
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .faq-page__body :global(h2) {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    color: var(--text-bright);
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-dim);
+  }
+
+  .faq-page__body :global(h2)::before {
+    content: "▸ ";
+    color: var(--signal-amber);
+  }
+
+  .faq-page__body :global(h3) {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    color: var(--text-bright);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-2);
+  }
+
+  .faq-page__body :global(p) {
+    margin-bottom: var(--space-4);
+  }
+
+  .faq-page__body :global(strong) { color: var(--text-bright); }
+
+  .faq-page__body :global(blockquote) {
+    border-left: 3px solid var(--signal-amber);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-panel);
+    color: var(--text-mute);
+    margin: var(--space-4) 0;
+    font-style: italic;
+  }
+
+  .faq-page__foot {
+    margin-top: var(--space-12);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-dim);
+  }
+
+  .faq-page__foot-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

@@ -1,0 +1,105 @@
+---
+title: "Tool calling vs function calling vs MCP"
+summary: "Three things people conflate. We disentangle them."
+depth: "5-min"
+concept: "Tool calling"
+sushReviewNeeded: true
+---
+
+# Tool calling vs function calling vs MCP
+
+These three terms get used interchangeably. They aren't the same. Here's the disentanglement.
+
+## The short version
+
+| Term | What it is | Where it lives |
+|---|---|---|
+| **Function calling** | The mechanism — LLM produces structured JSON describing a function to invoke | Inside the LLM API |
+| **Tool calling** | The pattern — using function calling to invoke tools | Inside your application |
+| **MCP** | The protocol — standardising how tools (servers) connect to agents (hosts) | Across applications |
+
+In layered order: function calling is the wire format. Tool calling is what you do with it. MCP is how you ship reusable tools to other people.
+
+## Function calling — the wire format
+
+When you send a request to GPT-4, Claude, or Gemini with `tools=[...]`, the LLM may respond with structured output like:
+
+```json
+{
+  "tool_calls": [
+    {
+      "name": "search_flights",
+      "arguments": { "origin": "AKL", "destination": "SYD", "max_price": 300 }
+    }
+  ]
+}
+```
+
+That JSON is **function calling output**. The model doesn't actually call the function. It just describes which function to call and with what arguments.
+
+Your code then takes that JSON, runs the actual `search_flights(...)` function, gets the result, and feeds it back to the model.
+
+Function calling is a feature of the LLM API. It's the wire format.
+
+## Tool calling — the pattern
+
+Tool calling is what you do with function calling. You:
+
+1. Define a set of tools you want the agent to be able to use.
+2. Pass them to the LLM in the API call.
+3. Loop:
+   - LLM generates a function-calling response.
+   - You execute the function.
+   - You feed the result back to the LLM.
+   - Repeat until the LLM produces a final answer (no more tool calls).
+
+This loop is the foundation of agentic behaviour. The "tool" is your code. The "tool call" is the function-calling output the LLM produced.
+
+> **The naming is confusing.** "Tool calling" is *both* a pattern (the loop) and a synonym for function calling. Industry hasn't settled this.
+
+## MCP — the protocol
+
+MCP solves a problem function calling doesn't: **distribution**.
+
+Without MCP, every agent + tool integration is bespoke. If you write a brilliant GitHub-tool integration for your own ChatGPT app, no one else can use it without rebuilding it.
+
+With MCP:
+
+1. You package your GitHub integration as an **MCP server**.
+2. You publish it as a process or service.
+3. Any **MCP host** (Claude Desktop, Cursor, Continue, custom apps) can install your server and gain those tools.
+4. Internally, the host still uses function calling on the LLM. But the *available tools* come from the MCP server.
+
+So MCP is a layer **above** function calling. Function calling makes one model capable of calling tools. MCP makes those tools portable across models, hosts, and applications.
+
+## Picture in one diagram
+
+```
+┌──────────────────────────────────────────────┐
+│ MCP — protocol for portable tool servers     │
+│  (GitHub server, filesystem server, etc.)    │
+├──────────────────────────────────────────────┤
+│ Tool calling — your loop, your code          │
+│  (call tool → get result → loop)             │
+├──────────────────────────────────────────────┤
+│ Function calling — LLM API feature           │
+│  (model produces structured JSON to call X)  │
+└──────────────────────────────────────────────┘
+                     ▲
+              Each layer uses
+              the layer below.
+```
+
+## When you'd use each
+
+- **Function calling only** — quick prototypes; one app, one LLM, custom tools.
+- **Tool calling pattern** — production agents inside a single app.
+- **MCP** — when you want to write a tool integration once and have it work in Claude Desktop, Cursor, Continue, ChatGPT (via Apps SDK bridge), and anywhere else MCP is supported.
+
+For new agentic projects in 2026, the default stack is: **MCP servers (for tools) + function calling (under the hood) + your own loop logic (the agent)**.
+
+## What to read next
+
+- [MCP in 90 seconds](/learn/mcp-in-90-seconds/) — protocol overview
+- [Agentic loops](/learn/agentic-loops/) — how the loop actually runs
+- [The agentic stack](/learn/agentic-stack/) — where each layer lives

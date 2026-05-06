@@ -1,0 +1,235 @@
+---
+import { getCollection } from 'astro:content';
+import { render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('explainers');
+  return all.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, summary, depth, sushReviewNeeded } = entry.data;
+
+const depthColor = depth === '90-sec' ? 'green' : depth === '5-min' ? 'cyan' : 'magenta';
+---
+
+<BaseLayout title={title} description={summary}>
+  <article class="explainer">
+    <header class="explainer__head container-prose">
+      <nav class="breadcrumb mono">
+        <a href="/learn/">Learn</a>
+        <span aria-hidden="true">/</span>
+        <span>{title}</span>
+      </nav>
+
+      <div class="explainer__meta">
+        <span class={`explainer__depth explainer__depth--${depthColor}`}>{depth.toUpperCase()}</span>
+        <span class="explainer__type mono">EXPLAINER</span>
+      </div>
+
+      <h1 class="explainer__title">{title}</h1>
+      <p class="explainer__summary">{summary}</p>
+
+      {sushReviewNeeded && (
+        <div class="banner banner--review">
+          <span class="banner__label mono">⚠ SUSH REVIEW</span>
+          <span>Drafted by AI in Sush\'s style. Pending human voice pass.</span>
+        </div>
+      )}
+    </header>
+
+    <div class="explainer__body container-prose">
+      <Content />
+    </div>
+
+    <footer class="explainer__foot container-prose">
+      <div class="explainer__foot-actions">
+        <Button href="/learn/" variant="ghost" iconLeft="←">Back to Learn</Button>
+        <Button href="/learn/glossary/" variant="ghost" iconRight="→">Glossary</Button>
+      </div>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .explainer {
+    padding: var(--space-12) 0;
+  }
+
+  .explainer__head {
+    margin-bottom: var(--space-8);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-4);
+  }
+
+  .breadcrumb a {
+    color: var(--accent-hi);
+    border-bottom: 0;
+  }
+
+  .explainer__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .explainer__depth {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px var(--space-2);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .explainer__depth--green { color: var(--signal-green); }
+  .explainer__depth--cyan { color: var(--signal-cyan); }
+  .explainer__depth--magenta { color: var(--signal-magenta); }
+
+  .explainer__type {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .explainer__title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: var(--fw-bold);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin-bottom: var(--space-4);
+  }
+
+  .explainer__summary {
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--text-mute);
+    margin: 0;
+  }
+
+  .banner {
+    margin-top: var(--space-6);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--fs-sm);
+  }
+
+  .banner--review {
+    border-left: 3px solid var(--signal-amber);
+    color: var(--text);
+  }
+
+  .banner__label {
+    color: var(--signal-amber);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .explainer__body {
+    font-size: var(--fs-md);
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .explainer__body :global(h2) {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    color: var(--text-bright);
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-dim);
+    letter-spacing: -0.02em;
+  }
+
+  .explainer__body :global(h2)::before {
+    content: "▸ ";
+    color: var(--accent-hi);
+  }
+
+  .explainer__body :global(h3) {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    color: var(--text-bright);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-2);
+  }
+
+  .explainer__body :global(p) {
+    margin-bottom: var(--space-4);
+    color: var(--text);
+  }
+
+  .explainer__body :global(ul), .explainer__body :global(ol) {
+    margin-bottom: var(--space-4);
+  }
+
+  .explainer__body :global(li) {
+    margin-bottom: var(--space-2);
+  }
+
+  .explainer__body :global(blockquote) {
+    border-left: 3px solid var(--signal-cyan);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-panel);
+    color: var(--text-mute);
+    margin: var(--space-4) 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-style: italic;
+  }
+
+  .explainer__body :global(strong) { color: var(--text-bright); }
+
+  .explainer__body :global(pre) {
+    background: var(--code-bg);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    overflow-x: auto;
+    margin: var(--space-4) 0;
+  }
+
+  .explainer__body :global(table) {
+    margin: var(--space-4) 0;
+  }
+
+  .explainer__foot {
+    margin-top: var(--space-12);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-dim);
+  }
+
+  .explainer__foot-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

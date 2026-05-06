@@ -1,0 +1,89 @@
+---
+title: "What 'agentic' actually means"
+summary: "The marketing version vs the engineering reality. Hint: it's about loops + tools, not buzzwords."
+depth: "5-min"
+concept: "Agentic"
+sushReviewNeeded: true
+---
+
+# What "agentic" actually means
+
+The word "agentic" is doing a lot of heavy lifting in 2026. Vendors slap it on anything LLM-shaped to sound future-facing. Most usages are wrong.
+
+Here's the engineering version.
+
+## The marketing version
+
+When marketing says "agentic AI", they usually mean one of:
+
+- "An AI that does stuff" (vague)
+- "An AI that's autonomous" (also vague)
+- "Our product, but updated" (let's be honest)
+- "AI that uses tools" (closer — but also true of basic ChatGPT)
+
+It's a feeling, not a definition.
+
+## The engineering version
+
+In engineering, **"agentic"** describes a system that has all three of:
+
+1. **A goal** — given by a human or another system, not "respond to this message"
+2. **Tools / actions** — ability to do things in the world (call APIs, run code, query databases, browse, etc.)
+3. **A loop** — the system decides, after each action, what to do next
+
+If a system has all three, it's agentic. If any one is missing, it isn't.
+
+## Why the loop is the keyword
+
+The loop is what differentiates an agent from anything else AI-shaped:
+
+- A **chatbot** has no loop. You speak, it speaks back, you speak, it speaks back.
+- An **assistant** has a tiny loop (one tool call at most).
+- An **agent** has a real loop. The system observes, plans, acts, observes again, plans again, etc.
+
+The loop is also the source of every interesting failure mode in agents: getting stuck, looping forever, drifting from the goal, exhausting context. Those failures don't exist in chatbots because there's no loop to malfunction.
+
+## Concrete example
+
+| Task | Agentic? | Why |
+|---|---|---|
+| "Translate this paragraph" | ❌ | No loop, no goal — just a transformation |
+| "Use the calculator to add 2+2" | ❌ | One tool call, no decision-making |
+| "Summarise these 10 PDFs" | ⚠ | Could be one shot OR a loop |
+| "Plan a 5-day Tokyo trip in budget X" | ✅ | Goal + multiple tool calls + decisions |
+| "Triage my open PRs and label them" | ✅ | Loop, decisions, real action |
+| "Run my YouTube SEO workflow monthly" | ✅ | Goal + planning + multiple agents/tools |
+
+## Things "agentic" is NOT
+
+- **Not "any LLM with tool calls".** Tool calls without a loop is just function calling.
+- **Not "autonomous AI".** That word is loaded with sci-fi baggage. Agents aren't autonomous in any meaningful sense — they're programs running inside guard-rails.
+- **Not "AGI lite".** Agents are deterministic in their structure (loop) and probabilistic in their decisions (LLM). They're nowhere near general intelligence.
+- **Not synonymous with "AI".** Most AI products are not agentic.
+
+## How to spot real agentic systems
+
+Three quick checks:
+
+1. **Goal vs message.** Is it given a goal that takes multiple steps, or just a message?
+2. **Multiple tool invocations.** Does it call tools more than once based on intermediate results?
+3. **Decisions about flow.** Does it choose its next step at runtime, or follow a hard-coded script?
+
+If yes to all three → agentic. Otherwise, it's a different (often simpler, often more reliable) pattern.
+
+## Why the distinction matters
+
+Calling a chatbot "agentic" sets the wrong expectations:
+
+- Users expect agents to do things → chatbots don't do, they respond
+- Developers expect to handle loop-failure modes → not relevant for chatbots
+- Security expects long-running tool access → chatbots have none
+- Cost models expect bursts of tokens → chatbots have predictable usage
+
+When marketing blurs the lines, real agentic projects get stuck explaining what they really are.
+
+## What to read next
+
+- [What is an agent?](/learn/what-is-an-agent/) — agent vs chatbot vs copilot
+- [Agentic loops](/learn/agentic-loops/) — how the loop works
+- [The agentic stack](/learn/agentic-stack/) — every layer in detail

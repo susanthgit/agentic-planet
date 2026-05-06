@@ -1,0 +1,62 @@
+---
+title: "MCP in 90 seconds"
+summary: "Model Context Protocol explained without the spec jargon. The 'why' before the 'what'."
+depth: "90-sec"
+concept: "MCP"
+sushReviewNeeded: true
+---
+
+# MCP in 90 seconds
+
+Imagine your AI agent is a smart but newly-hired analyst. They're brilliant — but they don't know your data, can't open your apps, and have no permissions in your systems.
+
+**MCP is the standard hiring contract** that gives that analyst access to specific tools and data — without giving them the keys to everything.
+
+## The 30-second version
+
+MCP (Model Context Protocol) is an **open spec**, published by Anthropic in November 2024, that lets AI agents talk to tools and data sources in a standard way.
+
+Before MCP, every agent integration was bespoke. With MCP, you write an integration once and any MCP-aware agent can use it.
+
+It's like USB for agents. Plug in any tool, any agent picks it up.
+
+## Why it matters
+
+- **Reusable integrations.** Write an MCP server for GitHub once → Claude, Cursor, Continue, and every other MCP-aware agent can use it.
+- **Standardised security.** Permissions, scopes, and revocation in one model.
+- **Vendor-neutral.** Microsoft, Anthropic, and OpenAI all now support MCP. The most likely-to-stick protocol of 2026.
+
+## The 90-second mental model
+
+There are three roles:
+
+1. **MCP Host** — the AI app (Claude Desktop, Cursor, etc.)
+2. **MCP Server** — exposes a tool or data source (a GitHub MCP server, a filesystem MCP server, etc.)
+3. **MCP Protocol** — the spec that defines how they talk
+
+When you ask Claude to "summarise the open issues in repo X", here's what happens:
+
+1. Claude (the host) sees you connected the GitHub MCP server.
+2. Claude calls a function on the GitHub MCP server: `list_issues(repo: 'X')`.
+3. The MCP server returns the issues.
+4. Claude reads them and summarises.
+
+You don't write any of that wiring code. The protocol handles it.
+
+## The catch
+
+MCP is still maturing. Auth flows are being refined (OAuth 2.0 support is improving fast), streaming is in v2 RFC, and permission models vary by host.
+
+If you're building today, **prefer MCP servers from official vendors** (GitHub, Cloudflare, Anthropic, etc.) over random hobby implementations. The spec changes; official servers track changes faster.
+
+## What to do next
+
+- Read the [MCP spec](/standards/mcp/) (we summarise it in plain English).
+- Browse the [MCP Health Board](/mcp/) — top 30 servers worth your time.
+- Try [Claude Desktop](/tools/claude-desktop/) — easiest way to see MCP working in practice.
+
+## Want more?
+
+- [Agentic loops in plain English](/learn/agentic-loops/)
+- [Tool calling vs function calling vs MCP](/learn/tool-calling-vs-mcp/)
+- [The agentic stack](/learn/agentic-stack/)

@@ -1,0 +1,95 @@
+---
+title: "What is an agent?"
+summary: "Agent vs chatbot vs copilot vs assistant. The words are abused. Here's the real difference."
+depth: "5-min"
+concept: "Agent"
+sushReviewNeeded: true
+---
+
+# What is an agent?
+
+Five years from now, the word "agent" will mean what it actually means. Right now, it's a marketing buzzword smeared across anything AI-shaped. Let's unpack the real difference.
+
+## The four labels people use interchangeably
+
+You'll hear "agent", "chatbot", "copilot", and "assistant" used as if they're all the same thing. They're not — and the differences matter when you're choosing how to build.
+
+| Label | What it actually does |
+|---|---|
+| **Chatbot** | Responds. Single-turn or short-turn conversation. No tools, no memory beyond the chat. |
+| **Assistant** | Responds + helps. May have basic tool use ("translate this", "summarise this"). |
+| **Copilot** | Pairs with you in a specific app. Aware of context. Can act inside that app's surface. |
+| **Agent** | Plans + acts on a goal. Loops: observe → plan → act → observe → repeat. Multi-step. Tool-heavy. |
+
+## The defining trait of an agent: the loop
+
+A chatbot answers your question. An agent **takes your goal and works toward it through multiple steps**, deciding each step what to do next.
+
+That decision-making loop is the difference. Without a loop, you have a smart Q&A. With a loop, you have something that behaves agentically.
+
+```
+USER: "Find me three flights to Sydney under $300, then add them to a comparison doc"
+
+CHATBOT  : "Here are some flight search websites you could try."  (responds, done)
+
+ASSISTANT: "I searched and found these flights: ..."             (one tool call, done)
+
+AGENT    : Search → filter → search again → fetch prices → 
+           open doc → write rows → verify → report.              (loops)
+```
+
+## Why the distinction matters
+
+- **Failure modes are different.** Chatbots hallucinate. Agents loop, lose context, take wrong actions, burn budget. Different bugs need different mitigations.
+- **Permissions matter.** A chatbot reading docs is harmless. An agent with write access is a security surface.
+- **Cost is different.** Chatbots = one round-trip. Agents = many round-trips (sometimes hundreds).
+- **UX is different.** Agents need progress visibility, intermediate state, intervention points.
+
+## "Agentic" — what it actually means
+
+If you hear someone say "agentic AI", they could mean any of:
+
+1. **An LLM that can call tools.** Loose definition. Honestly, this is just "tool use".
+2. **An LLM that loops.** Tighter — it's making multi-step decisions.
+3. **A multi-agent system.** Several LLMs collaborating.
+4. **Anything AI-related.** Marketing. Ignore.
+
+When in doubt, ask: *"Does it loop and decide what to do next, or does it just respond?"*
+
+## The agent stack (mental model)
+
+Every agent has these layers, even if you build them by hand:
+
+```
+┌─────────────────────────────────┐
+│ UI / Trigger / Goal-setting     │  ← User interface, API, scheduled trigger
+├─────────────────────────────────┤
+│ Orchestration / Planner         │  ← What to do next? Often the same LLM.
+├─────────────────────────────────┤
+│ LLM (the brain)                 │  ← Claude, GPT, Gemini, etc.
+├─────────────────────────────────┤
+│ Tools / MCP servers             │  ← Read GitHub, write to disk, call APIs
+├─────────────────────────────────┤
+│ Memory (short / long term)      │  ← Conversation history, persistent state
+└─────────────────────────────────┘
+```
+
+That's it. There's nothing magical underneath. An agent is just an LLM in a loop with tools and (optionally) memory.
+
+## When you don't need an agent
+
+If your task is single-step, an agent is overkill. Use the smallest pattern that works:
+
+- One question → one answer? **Chatbot.**
+- Question + one tool call? **Assistant.**
+- In-app help? **Copilot.**
+- Multi-step goal that requires deciding-as-you-go? **Now you need an agent.**
+
+The biggest mistake people make in 2026 is shipping an agent for what should have been a one-shot LLM call. More moving parts = more things to break.
+
+## What to read next
+
+- [Agentic loops in plain English](/learn/agentic-loops/) — how the loop actually works
+- [The agentic stack](/learn/agentic-stack/) — every layer in detail
+- [MCP in 90 seconds](/learn/mcp-in-90-seconds/) — how agents talk to tools
+- [Multi-agent systems](/learn/multi-agent-systems/) — when more than one agent is useful

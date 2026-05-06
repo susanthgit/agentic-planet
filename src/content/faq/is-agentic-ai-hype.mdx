@@ -1,0 +1,67 @@
+---
+title: "Is agentic AI hype?"
+question: "Is agentic AI hype?"
+summary: "Some of it. Here's how to tell signal from noise."
+category: "big-picture"
+sushReviewNeeded: true
+lastReviewedAt: 2026-05-06
+---
+
+# Is agentic AI hype?
+
+**Honest answer: about half of what gets called "agentic AI" is hype, and about half is real.** Here's how to tell which is which.
+
+## The hype side
+
+When the word "agentic" is sold to executives, here's what's usually missing:
+
+- **Production deployments.** Demo videos do not equal production.
+- **Reliability data.** "Sometimes it works, sometimes it doesn't" gets dressed up as "exciting frontier capabilities".
+- **Cost transparency.** $0.40 a run sounds tiny. At 10,000 runs a day, that's $4,000/day.
+- **Failure mode clarity.** Most pitches don't tell you what happens when the agent goes wrong (which is often).
+- **Real users.** Beta = some users tried it. Production = users depend on it.
+
+## The signal side
+
+Where it's genuinely working — and where I see it work in customer engagements every week:
+
+- **Coding agents** (Cursor, Cline, Claude Code, GitHub Copilot CLI) — for narrow, well-defined tasks like "fix this bug" or "add this test", they save real time. **Verified production tooling.**
+- **Customer support triage** — categorisation, routing, draft replies. Not full automation; assistive layer.
+- **Internal IT bots** — HR FAQs, password resets, status checks. Boring but valuable.
+- **Document workflows** — extract, summarise, classify, route. Mature pattern.
+- **Code review + PR triage** — agentic, repeatable, measurable.
+
+## How to spot hype quickly
+
+When you see a vendor pitch about agentic AI, ask:
+
+1. **Show me a production user.** Not "we have customers"; specifically: a named customer running this in production for a meaningful workload.
+2. **What's the failure rate?** Real agents fail 5-20% of attempts depending on task. If they say "it just works", they're lying or they're shallow.
+3. **What does it cost per run?** Tokens × calls × time. If they don't know, they haven't measured.
+4. **What happens when it gets stuck?** Real agents loop, time out, hallucinate. The answer should mention guard-rails, not "it doesn't get stuck".
+5. **Who else does this?** If the answer is "we're the only ones", it's either genuinely innovative or a red flag.
+
+## What I think is real but oversold
+
+- **Multi-agent systems.** Real, but most teams ship a single agent first and don't need multi-agent yet.
+- **Voice agents.** Latency is finally OK; UX still rough.
+- **Browser agents.** Genuinely useful for narrow tasks (data extraction, form filling); not yet for broad autonomy.
+- **Workflow agents.** Useful, but often a hand-coded workflow + small LLM calls beats an "agent".
+
+## What I think is real and underrated
+
+- **Specialised agents replacing horizontal SaaS.** A purpose-built support agent is starting to outperform Zendesk-with-AI for narrow segments. Watch this space.
+- **Agentic data pipelines.** ETL agents that adapt to schema changes are quietly working.
+- **Agent observability tools.** Boring infrastructure, but indispensable.
+
+## My one-line answer
+
+> Agentic AI is real engineering with real wins, surrounded by a haze of marketing that's overselling it. Treat it like any other tech: ignore the haze, look at the production deployments, measure the cost, and ship the small reliable thing first.
+
+Don't let hype talk you out of it. Don't let hype talk you into it either.
+
+## What to read next
+
+- [What is an agent?](/learn/what-is-an-agent/) — the actual definition
+- [Will MCP survive 18 months?](/faq/will-mcp-survive/) — protocol-war honest take
+- [Build with $0](/faq/build-with-zero-dollars/) — what's possible without spending
