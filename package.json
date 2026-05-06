@@ -1,0 +1,39 @@
+{
+  "name": "agentic-planet",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The Agentic Planet — tools, MCPs, recipes and honest reviews for techies building with agents. Plain English.",
+  "homepage": "https://agents.aguidetocloud.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/susanthgit/agentic-planet.git"
+  },
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --port 4323",
+    "start": "astro dev --port 4323",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview --port 4323",
+    "astro": "astro",
+    "check": "astro check",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "astro": "^5.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "pagefind": "^1.1.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
