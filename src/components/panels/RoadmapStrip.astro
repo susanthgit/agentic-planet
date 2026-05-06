@@ -1,0 +1,182 @@
+---
+/**
+ * RoadmapStrip — three phases at a glance.
+ * Shows what's shipped, what's next, what's later.
+ */
+
+interface Phase {
+  label: string;
+  title: string;
+  items: string[];
+  state: 'shipped' | 'in-progress' | 'planned';
+}
+
+const phases: Phase[] = [
+  {
+    label: 'PHASE 1',
+    title: 'Cockpit Foundation',
+    state: 'shipped',
+    items: ['10 pillar surfaces', '5 explainers · 4 FAQ · 1 recipe', 'MCP cron pipeline', 'Cmd+K palette', 'Stack diagram + coverage matrix'],
+  },
+  {
+    label: 'PHASE 2',
+    title: 'Recipe Moat',
+    state: 'in-progress',
+    items: ['5 measured recipes', '30 MCP reviews', 'Vendor expansion (OpenAI + Google)', 'Search index (Pagefind)', 'Public health badges'],
+  },
+  {
+    label: 'PHASE 3',
+    title: 'Standalone Property',
+    state: 'planned',
+    items: ['Dedicated domain (agentic.dev or similar)', 'Templates pillar with public repos', 'Career pillar', 'Lab tools (cost calc, comparator)', '30+ Excalidraw diagrams'],
+  },
+];
+
+const stateLabels = {
+  shipped: { label: 'SHIPPED', color: 'green' },
+  'in-progress': { label: 'IN-PROGRESS', color: 'amber' },
+  planned: { label: 'PLANNED', color: 'cyan' },
+};
+---
+
+<div class="rmap">
+  <header class="rmap__head">
+    <span class="rmap__kicker mono">▸ ROADMAP // THREE PHASES</span>
+    <span class="rmap__sub mono">SHIP DATES INTENTIONALLY OMITTED</span>
+  </header>
+
+  <div class="rmap__phases">
+    {phases.map((phase) => {
+      const meta = stateLabels[phase.state];
+      return (
+        <article class={`rphase rphase--${meta.color}`}>
+          <header class="rphase__head">
+            <span class="rphase__label mono">{phase.label}</span>
+            <span class={`rphase__state mono`}>● {meta.label}</span>
+          </header>
+          <h3 class="rphase__title">{phase.title}</h3>
+          <ul class="rphase__items">
+            {phase.items.map((item) => <li>{item}</li>)}
+          </ul>
+        </article>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  .rmap {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .rmap__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .rmap__kicker {
+    color: var(--accent-hi);
+    font-weight: var(--fw-semibold);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .rmap__sub { color: var(--text-mute); }
+
+  .rmap__phases {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  @media (max-width: 800px) {
+    .rmap__phases { grid-template-columns: 1fr; }
+  }
+
+  .rphase {
+    padding: var(--space-3);
+    border-right: 1px solid var(--border-dim);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .rphase:last-child { border-right: 0; }
+
+  @media (max-width: 800px) {
+    .rphase {
+      border-right: 0;
+      border-bottom: 1px solid var(--border-dim);
+    }
+    .rphase:last-child { border-bottom: 0; }
+  }
+
+  .rphase--green { border-top: 2px solid var(--signal-green); }
+  .rphase--amber { border-top: 2px solid var(--signal-amber); }
+  .rphase--cyan { border-top: 2px solid var(--signal-cyan); }
+
+  .rphase__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .rphase__label {
+    color: var(--text-faint);
+    font-weight: var(--fw-bold);
+  }
+
+  .rphase__state {
+    font-weight: var(--fw-bold);
+  }
+
+  .rphase--green .rphase__state { color: var(--signal-green); text-shadow: var(--text-glow-green); }
+  .rphase--amber .rphase__state { color: var(--signal-amber); text-shadow: var(--text-glow-amber); }
+  .rphase--cyan .rphase__state { color: var(--signal-cyan); text-shadow: var(--text-glow-cyan); }
+
+  .rphase__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .rphase__items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rphase__items li {
+    font-size: var(--fs-xs);
+    color: var(--text-mute);
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--border-dim);
+    line-height: 1.4;
+  }
+
+  .rphase__items li:last-child { border-bottom: 0; }
+
+  .rphase--green .rphase__items li::before { content: '✓ '; color: var(--signal-green); margin-right: 2px; }
+  .rphase--amber .rphase__items li::before { content: '◎ '; color: var(--signal-amber); margin-right: 2px; }
+  .rphase--cyan .rphase__items li::before { content: '◆ '; color: var(--signal-cyan); margin-right: 2px; }
+</style>

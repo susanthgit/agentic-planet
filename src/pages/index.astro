@@ -12,6 +12,11 @@ import ThisWeekPanel from '@components/panels/ThisWeekPanel.astro';
 import AgenticStackDiagram from '@components/panels/AgenticStackDiagram.astro';
 import StackHealthStrip from '@components/panels/StackHealthStrip.astro';
 import CoverageMatrix from '@components/panels/CoverageMatrix.astro';
+import TotalStarsMetric from '@components/panels/TotalStarsMetric.astro';
+import ActivityHeatmap from '@components/panels/ActivityHeatmap.astro';
+import MiniTerminal from '@components/panels/MiniTerminal.astro';
+import RoadmapStrip from '@components/panels/RoadmapStrip.astro';
+import DidYouKnow from '@components/panels/DidYouKnow.astro';
 
 import mcpHealth from '@data/mcp-health.json';
 import pulseData from '@data/pulse.json';
@@ -148,14 +153,28 @@ const coverage = [
     </div>
   </section>
 
-  <!-- AGENTIC STACK — signature visual -->
+  <!-- AGENT ARCH + COVERAGE MATRIX — side-by-side -->
   <section class="container-wide section">
-    <AgenticStackDiagram />
+    <div class="bento bento--55-45">
+      <div class="bento__cell">
+        <AgenticStackDiagram />
+      </div>
+      <div class="bento__cell">
+        <CoverageMatrix pillars={coverage} />
+      </div>
+    </div>
   </section>
 
-  <!-- COVERAGE MATRIX — scope/progress per pillar -->
+  <!-- TOTAL STARS + ACTIVITY HEATMAP -->
   <section class="container-wide section">
-    <CoverageMatrix pillars={coverage} />
+    <div class="bento bento--50-50">
+      <div class="bento__cell">
+        <TotalStarsMetric rows={mcpHealth.rows} />
+      </div>
+      <div class="bento__cell">
+        <ActivityHeatmap days={14} />
+      </div>
+    </div>
   </section>
 
   <section class="container-wide section">
@@ -245,6 +264,18 @@ const coverage = [
     </div>
   </section>
 
+  <!-- MINI TERMINAL + ROADMAP STRIP -->
+  <section class="container-wide section">
+    <div class="bento bento--50-50">
+      <div class="bento__cell">
+        <MiniTerminal />
+      </div>
+      <div class="bento__cell">
+        <RoadmapStrip />
+      </div>
+    </div>
+  </section>
+
   <section class="container-wide section">
     <div class="bento bento--60-40">
       <div class="bento__cell">
@@ -303,6 +334,11 @@ const coverage = [
         </Panel>
       </div>
     </div>
+  </section>
+
+  <!-- DID YOU KNOW — single-line trust filler -->
+  <section class="container-wide section section--ultra-tight">
+    <DidYouKnow />
   </section>
 </BaseLayout>
 
@@ -456,8 +492,9 @@ const coverage = [
 
   .bento { display: grid; gap: var(--space-3); }
   .bento--60-40 { grid-template-columns: 1.5fr 1fr; }
+  .bento--55-45 { grid-template-columns: 1.22fr 1fr; }
   .bento--50-50 { grid-template-columns: 1fr 1fr; }
-  @media (max-width: 1000px) { .bento--60-40, .bento--50-50 { grid-template-columns: 1fr; } }
+  @media (max-width: 1100px) { .bento--60-40, .bento--55-45, .bento--50-50 { grid-template-columns: 1fr; } }
   .bento__cell { min-width: 0; }
   .bento__footer {
     display: flex; justify-content: flex-end;

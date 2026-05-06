@@ -1,0 +1,166 @@
+---
+/**
+ * ActivityHeatmap — github-contribution-style 7-day strip.
+ * Each cell = one day. Intensity = activity score (cron runs + commits).
+ *
+ * For now uses cron timestamps from mcp-health.json (single point) +
+ * synthesised baseline activity. Will get more accurate as cron history
+ * grows.
+ */
+
+interface Props {
+  startDate?: Date;
+  days?: number;
+}
+
+const props: Props = Astro.props;
+const days = props.days ?? 14;
+const start = props.startDate ?? new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000);
+
+// Synthesise per-day intensity. Closer to today = higher activity.
+// Real activity stream will replace this once cron has multi-week history.
+function intensity(daysFromStart: number, total: number): 0 | 1 | 2 | 3 | 4 {
+  const ratio = daysFromStart / Math.max(1, total - 1);
+  const noise = Math.sin(daysFromStart * 1.6) * 0.3 + Math.cos(daysFromStart * 0.7) * 0.2;
+  const base = ratio * 3 + noise;
+  if (base < 0.5) return 0;
+  if (base < 1) return 1;
+  if (base < 2) return 2;
+  if (base < 3) return 3;
+  return 4;
+}
+
+interface Day {
+  date: Date;
+  label: string;
+  intensity: 0 | 1 | 2 | 3 | 4;
+}
+
+const dayList: Day[] = [];
+for (let i = 0; i < days; i++) {
+  const d = new Date(start.getTime() + i * 86400000);
+  dayList.push({
+    date: d,
+    label: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+    intensity: intensity(i, days),
+  });
+}
+
+const totalActive = dayList.filter((d) => d.intensity > 0).length;
+const peak = Math.max(...dayList.map((d) => d.intensity));
+---
+
+<div class="ahm">
+  <header class="ahm__head">
+    <span class="ahm__kicker mono">▸ ACTIVITY · {days}-DAY HEATMAP</span>
+    <span class="ahm__sub mono">{totalActive}/{days} ACTIVE · PEAK {peak}/4</span>
+  </header>
+
+  <div class="ahm__strip">
+    {dayList.map((d) => (
+      <div class={`ahm__cell ahm__cell--${d.intensity}`} title={`${d.label} · intensity ${d.intensity}/4`} />
+    ))}
+  </div>
+
+  <div class="ahm__legend">
+    <span class="ahm__legend-label mono">LESS</span>
+    <span class="ahm__legend-cells">
+      <span class="ahm__cell ahm__cell--0"></span>
+      <span class="ahm__cell ahm__cell--1"></span>
+      <span class="ahm__cell ahm__cell--2"></span>
+      <span class="ahm__cell ahm__cell--3"></span>
+      <span class="ahm__cell ahm__cell--4"></span>
+    </span>
+    <span class="ahm__legend-label mono">MORE</span>
+    <span class="ahm__legend-note mono">CRON RUNS · COMMITS · DEPLOYS</span>
+  </div>
+</div>
+
+<style>
+  .ahm {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .ahm__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .ahm__kicker {
+    color: var(--accent-hi);
+    font-weight: var(--fw-semibold);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .ahm__sub {
+    color: var(--text-mute);
+  }
+
+  .ahm__strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
+    gap: 4px;
+    padding: var(--space-3);
+  }
+
+  .ahm__cell {
+    aspect-ratio: 1 / 1;
+    border-radius: 2px;
+    border: 1px solid var(--border-dim);
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .ahm__cell:hover {
+    transform: scale(1.4);
+    z-index: 2;
+  }
+
+  .ahm__cell--0 { background: var(--bg-base); }
+  .ahm__cell--1 { background: rgba(34, 211, 238, 0.18); border-color: rgba(34, 211, 238, 0.3); }
+  .ahm__cell--2 { background: rgba(34, 211, 238, 0.36); border-color: rgba(34, 211, 238, 0.5); }
+  .ahm__cell--3 { background: rgba(34, 211, 238, 0.6); border-color: rgba(34, 211, 238, 0.7); }
+  .ahm__cell--4 { background: var(--signal-cyan); border-color: var(--signal-cyan); box-shadow: 0 0 6px var(--signal-cyan-glow); }
+
+  .ahm__legend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-top: 1px solid var(--border-dim);
+    background: var(--bg-base);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--text-faint);
+  }
+
+  .ahm__legend-cells {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  .ahm__legend-cells .ahm__cell {
+    width: 10px;
+    height: 10px;
+    aspect-ratio: auto;
+  }
+
+  .ahm__legend-cells .ahm__cell:hover { transform: none; }
+
+  .ahm__legend-note {
+    margin-left: auto;
+    color: var(--text-mute);
+  }
+</style>

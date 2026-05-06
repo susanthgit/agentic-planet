@@ -1,0 +1,189 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import Icon from '@components/primitives/Icon.astro';
+import LiveDot from '@components/data/LiveDot.astro';
+
+import pulseData from '@data/pulse.json';
+
+const items = pulseData.items;
+
+function colorClass(c?: string): string {
+  if (c === 'green') return 'green';
+  if (c === 'red') return 'red';
+  if (c === 'amber') return 'amber';
+  if (c === 'cyan') return 'cyan';
+  if (c === 'magenta') return 'magenta';
+  return 'accent';
+}
+---
+
+<BaseLayout
+  title="Pulse — live updates from the agentic ecosystem"
+  description="What just shipped, what changed, what to watch. Cron-fed updates from the agentic AI ecosystem."
+>
+  <header class="ph">
+    <div class="container-wide">
+      <span class="ph__kicker mono">
+        <LiveDot color="cyan" size="sm" />
+        <span>PULSE · STREAM</span>
+      </span>
+      <h1 class="ph__title">What's moving in the agentic world.</h1>
+      <p class="ph__sub">
+        Cron-fed updates: vendor releases, protocol changes, MCP shipments, framework moves.
+        Plain English. No marketing voice.
+      </p>
+    </div>
+  </header>
+
+  <section class="container-wide section">
+    <Panel kicker="LIVE STREAM" title={`All ${items.length} items`} variant="cyan" density="tight">
+      <div class="pulse-list">
+        {items.map((p, idx) => (
+          <article class={`pevent pevent--${colorClass(p.color)}`}>
+            <span class="pevent__num mono">#{String(items.length - idx).padStart(2, '0')}</span>
+            <span class="pevent__icon" aria-hidden="true">{p.icon || '◇'}</span>
+            <div class="pevent__main">
+              {p.href ? (
+                <a class="pevent__text" href={p.href}>{p.text}</a>
+              ) : (
+                <span class="pevent__text">{p.text}</span>
+              )}
+            </div>
+            <span class="pevent__color mono">{(p.color || 'accent').toUpperCase()}</span>
+          </article>
+        ))}
+      </div>
+    </Panel>
+
+    <Panel kicker="HOW THIS WORKS" title="Editorial + automated" density="loose">
+      <ul>
+        <li><strong>Vendor changelog feeds</strong> — auto-fetched where RSS is available</li>
+        <li><strong>MCP cron data</strong> — every 6h, GitHub Actions checks tracked repos</li>
+        <li><strong>Editorial layer</strong> — Sush adds context, removes vendor spin, calls out what techies should care about</li>
+        <li><strong>Frequency</strong> — typically 5-10 items/week, never auto-spammed</li>
+      </ul>
+      <p class="text-mute">No vendor pays for placement. No "as seen in" logos. Just what shipped, what broke, what's trending.</p>
+    </Panel>
+
+    <div class="cta-row">
+      <Button href="/" variant="ghost" iconLeft="←">Home</Button>
+      <Button href="/this-week/" variant="ghost" iconRight="→">This week — MCP deltas</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ph {
+    padding: var(--space-10) 0 var(--space-6);
+    border-bottom: 1px solid var(--border-dim);
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 0%, var(--signal-cyan-glow), transparent 60%),
+      var(--bg-base);
+  }
+
+  .ph__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+    text-shadow: var(--text-glow-cyan);
+  }
+
+  .ph__title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .ph__sub {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .section { padding: var(--space-8) 0; display: flex; flex-direction: column; gap: var(--space-4); }
+
+  .pulse-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pevent {
+    display: grid;
+    grid-template-columns: 50px 24px 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2-5) var(--space-3);
+    border-bottom: 1px solid var(--border-dim);
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+
+  .pevent:last-child { border-bottom: 0; }
+  .pevent:hover { background: var(--bg-elevated); }
+
+  .pevent__num {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .pevent__icon {
+    font-family: var(--font-mono);
+    font-size: var(--fs-md);
+    text-align: center;
+    color: currentColor;
+  }
+
+  .pevent--green .pevent__icon, .pevent--green .pevent__color { color: var(--signal-green); }
+  .pevent--red .pevent__icon, .pevent--red .pevent__color { color: var(--signal-red); }
+  .pevent--amber .pevent__icon, .pevent--amber .pevent__color { color: var(--signal-amber); }
+  .pevent--cyan .pevent__icon, .pevent--cyan .pevent__color { color: var(--signal-cyan); }
+  .pevent--magenta .pevent__icon, .pevent--magenta .pevent__color { color: var(--signal-magenta); }
+  .pevent--accent .pevent__icon, .pevent--accent .pevent__color { color: var(--accent-hi); }
+
+  .pevent__main {
+    min-width: 0;
+  }
+
+  .pevent__text {
+    font-size: var(--fs-sm);
+    color: var(--text);
+    line-height: 1.4;
+    border-bottom: 0;
+  }
+
+  a.pevent__text:hover {
+    color: var(--text-bright);
+    text-decoration: underline;
+  }
+
+  .pevent__color {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    font-weight: var(--fw-bold);
+    padding: 2px 6px;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: space-between;
+    margin-top: var(--space-2);
+  }
+</style>

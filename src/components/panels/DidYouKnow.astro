@@ -1,0 +1,89 @@
+---
+/**
+ * DidYouKnow — random factoid from a curated pool.
+ * Picks one at build time, swaps each deploy.
+ */
+
+const facts = [
+  { text: 'MCP was introduced by Anthropic in November 2024 and crossed 300+ servers in 12 months.', tag: 'PROTOCOL' },
+  { text: 'Most agent failures are not LLM hallucinations — they are tool-call infinite loops or context exhaustion.', tag: 'FAILURE-MODE' },
+  { text: 'Cursor, Claude Code, Cline, and GitHub Copilot CLI all support MCP. That cross-vendor agreement is unusual for a 1-year-old protocol.', tag: 'ECOSYSTEM' },
+  { text: 'The agentic loop pattern (observe → plan → act → observe) is at least 30 years old in robotics. LLMs just gave it cheaper compute.', tag: 'HISTORY' },
+  { text: 'A typical agent run uses 10–100x more tokens than a single chat reply. Cost-aware design is not optional.', tag: 'COST' },
+  { text: 'YouTube Data API videos.update costs 50 quota units per call. Default project quota is 10k/day — not a flat 50/day rate limit.', tag: 'GOTCHA' },
+  { text: 'Apps SDK from OpenAI does not replace MCP — it builds on MCP-style servers and adds ChatGPT-specific UI rendering.', tag: 'CLARIFICATION' },
+  { text: 'The "lost in the middle" effect means models often miss facts buried halfway through long contexts. Bigger context windows do not fix it.', tag: 'TECHNICAL' },
+  { text: 'GitHub stars are a popularity signal, not a quality signal. Use last commit + issue response time as primary health indicators.', tag: 'EVAL' },
+  { text: 'AutoGen is in maintenance mode — Microsoft Agent Framework is the successor path.', tag: 'MOVES' },
+];
+
+// Stable pseudo-random pick (different per build hour)
+const idx = Math.floor((Date.now() / (1000 * 60 * 60)) % facts.length);
+const pick = facts[idx];
+---
+
+<aside class="dyk">
+  <span class="dyk__kicker mono">
+    <span class="dyk__icon" aria-hidden="true">◇</span>
+    <span>DID YOU KNOW</span>
+  </span>
+  <p class="dyk__text">{pick.text}</p>
+  <span class="dyk__tag mono">[{pick.tag}]</span>
+</aside>
+
+<style>
+  .dyk {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2-5) var(--space-3);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-left: 3px solid var(--signal-amber);
+    border-radius: var(--radius-sm);
+  }
+
+  .dyk__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--signal-amber);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    text-shadow: var(--text-glow-amber);
+    font-weight: var(--fw-bold);
+    flex-shrink: 0;
+  }
+
+  .dyk__icon {
+    font-size: var(--fs-md);
+  }
+
+  .dyk__text {
+    font-size: var(--fs-sm);
+    color: var(--text);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .dyk__tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--signal-amber);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    padding: 2px 6px;
+    border: 1px solid var(--signal-amber);
+    border-radius: var(--radius-xs);
+    flex-shrink: 0;
+    font-weight: var(--fw-bold);
+  }
+
+  @media (max-width: 700px) {
+    .dyk { grid-template-columns: 1fr; }
+    .dyk__tag { justify-self: flex-start; }
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+/**
+ * MiniTerminal — fake terminal that types out rotating commands.
+ * Pure cockpit decoration but feels alive.
+ */
+
+const commands = [
+  { prompt: '$', text: 'npx -y @github/mcp-server', tag: 'INSTALL' },
+  { prompt: '$', text: 'cron run --refresh-mcp-stars', tag: 'CRON' },
+  { prompt: '$', text: 'git push origin main', tag: 'DEPLOY' },
+  { prompt: '$', text: 'agentic stack diagram --layer LLM', tag: 'INSPECT' },
+  { prompt: '$', text: 'curl agents.aguidetocloud.com/api/health', tag: 'PING' },
+  { prompt: '$', text: 'recipe run --id youtube-seo-automation', tag: 'RUN' },
+];
+---
+
+<div class="term">
+  <header class="term__head">
+    <span class="term__dots" aria-hidden="true">
+      <span class="term__dot term__dot--r"></span>
+      <span class="term__dot term__dot--y"></span>
+      <span class="term__dot term__dot--g"></span>
+    </span>
+    <span class="term__title mono">agentic@planet ~ tail -f /var/log/recent</span>
+    <span class="term__status mono phosphor-green">● LIVE</span>
+  </header>
+
+  <div class="term__body">
+    {commands.map((cmd, i) => (
+      <div class="term-line" data-line={i} style={`animation-delay: ${i * 0.4}s`}>
+        <span class="term-line__prompt mono">{cmd.prompt}</span>
+        <span class="term-line__cmd mono">{cmd.text}</span>
+        <span class="term-line__tag mono">[{cmd.tag}]</span>
+      </div>
+    ))}
+    <div class="term-line term-line--cursor">
+      <span class="term-line__prompt mono">$</span>
+      <span class="term-line__cursor" aria-hidden="true">▌</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .term {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    font-family: var(--font-mono);
+  }
+
+  .term__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-dim);
+    font-size: var(--fs-2xs);
+  }
+
+  .term__dots { display: inline-flex; gap: 4px; }
+  .term__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .term__dot--r { background: #FF5F56; }
+  .term__dot--y { background: #FFBD2E; }
+  .term__dot--g { background: #27C93F; }
+
+  .term__title {
+    flex: 1;
+    color: var(--text-mute);
+    font-size: var(--fs-2xs);
+    letter-spacing: 0;
+  }
+
+  .term__status {
+    color: var(--signal-green);
+    font-size: 9px;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .term__body {
+    padding: var(--space-3);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+  }
+
+  .term-line {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-2);
+    align-items: baseline;
+    opacity: 0;
+    animation: term-fade 400ms forwards ease-out;
+  }
+
+  @keyframes term-fade {
+    to { opacity: 1; }
+  }
+
+  .term-line__prompt {
+    color: var(--signal-green);
+    font-weight: var(--fw-bold);
+    text-shadow: var(--text-glow-green);
+  }
+
+  .term-line__cmd {
+    color: var(--code-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .term-line__tag {
+    color: var(--signal-cyan);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-widest);
+    text-shadow: var(--text-glow-cyan);
+  }
+
+  .term-line--cursor {
+    display: flex;
+    gap: var(--space-2);
+    opacity: 1;
+    animation: none;
+  }
+
+  .term-line__cursor {
+    color: var(--accent-hi);
+    animation: blink 1.1s infinite step-start;
+    text-shadow: var(--text-glow-accent);
+  }
+</style>

@@ -1,0 +1,261 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import HealthBoard from '@components/panels/HealthBoard.astro';
+import MetricTile from '@components/data/MetricTile.astro';
+import Icon from '@components/primitives/Icon.astro';
+import LiveDot from '@components/data/LiveDot.astro';
+import DeltaPill from '@components/data/DeltaPill.astro';
+
+import mcpHealth from '@data/mcp-health.json';
+
+const rows = mcpHealth.rows;
+
+function recentDelta(row: typeof rows[number]): number {
+  if (!row.trend || row.trend.length < 2) return row.delta7d ?? 0;
+  return row.trend.at(-1)! - row.trend.at(-2)!;
+}
+
+const withDeltas = rows.map((r) => ({ ...r, _delta: recentDelta(r) }));
+
+const movers = [...withDeltas]
+  .filter((r) => r.health !== 'abandoned')
+  .sort((a, b) => Math.abs(b._delta) - Math.abs(a._delta));
+
+const recentlyCommitted = [...withDeltas]
+  .filter((r) => r.health !== 'abandoned')
+  .sort((a, b) => a.lastCommitDays - b.lastCommitDays);
+
+const totalStars = rows.reduce((s, r) => s + r.stars, 0);
+const totalDelta = withDeltas.reduce((s, r) => s + r._delta, 0);
+
+const cronAge = Date.now() - new Date(mcpHealth._lastUpdated).getTime();
+const cronH = Math.round(cronAge / 3600000);
+const cronLabel = cronH < 1 ? '<1h ago' : `${cronH}h ago`;
+
+function fmt(n: number): string {
+  if (Math.abs(n) >= 1000) return `${(n / 1000).toFixed(1).replace('.0', '')}k`;
+  return n.toString();
+}
+---
+
+<BaseLayout
+  title="This week — MCP movers + recent commits"
+  description="Top star deltas, recently committed servers, cron-fed every 6 hours."
+>
+  <header class="ph">
+    <div class="container-wide">
+      <span class="ph__kicker mono">
+        <LiveDot color="green" size="sm" />
+        <span>THIS WEEK · DELTAS · STREAM</span>
+      </span>
+      <h1 class="ph__title">Top movers across the tracked MCP catalog.</h1>
+      <p class="ph__sub">
+        Star deltas since last cron run, recently committed servers, total tracked stars.
+        Auto-refreshed every 6 hours via GitHub Actions cron — last fired {cronLabel}.
+      </p>
+    </div>
+  </header>
+
+  <section class="container-wide section">
+    <div class="metric-strip">
+      <MetricTile label="Total Stars Tracked" value={fmt(totalStars)} variant="cyan" glow={true} deltaLabel={`across ${rows.length} MCPs`} />
+      <MetricTile label="Net Delta (last cron)" value={totalDelta >= 0 ? `+${fmt(totalDelta)}` : `−${fmt(Math.abs(totalDelta))}`} variant={totalDelta >= 0 ? 'green' : 'red'} deltaLabel="aggregate movement" />
+      <MetricTile label="Alive" value={rows.filter((r) => r.health === 'alive').length} variant="green" />
+      <MetricTile label="Slowing" value={rows.filter((r) => r.health === 'slowing').length} variant="amber" />
+      <MetricTile label="Abandoned" value={rows.filter((r) => r.health === 'abandoned').length} variant="red" />
+    </div>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="LIVE · TOP MOVERS" title="Sorted by absolute delta" variant="green" density="tight">
+      <div class="movers">
+        {movers.slice(0, 10).map((r, i) => {
+          const positive = r._delta >= 0;
+          return (
+            <a class="mrow" href={r.url ?? `/mcp/${r.slug}/`}>
+              <span class="mrow__rank mono">#{String(i + 1).padStart(2, '0')}</span>
+              <span class={`mrow__arrow ${positive ? 'mrow__arrow--up' : 'mrow__arrow--down'}`}>
+                <Icon name={positive ? 'arrow-up' : 'arrow-down'} size={12} />
+              </span>
+              <span class="mrow__name">{r.name}</span>
+              <span class="mrow__cat mono">{r.category}</span>
+              <span class="mrow__stars mono">{fmt(r.stars)} ★</span>
+              <span class={`mrow__delta mono ${positive ? 'mrow__delta--up' : 'mrow__delta--down'}`}>
+                {positive ? '+' : '−'}{fmt(Math.abs(r._delta))}
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="RECENTLY COMMITTED" title="Sorted by last commit ascending" variant="cyan" density="tight">
+      <div class="movers">
+        {recentlyCommitted.slice(0, 10).map((r, i) => (
+          <a class="mrow mrow--committed" href={r.url ?? `/mcp/${r.slug}/`}>
+            <span class="mrow__rank mono">#{String(i + 1).padStart(2, '0')}</span>
+            <span class="mrow__arrow"><Icon name="clock" size={12} /></span>
+            <span class="mrow__name">{r.name}</span>
+            <span class="mrow__cat mono">{r.category}</span>
+            <span class="mrow__stars mono">{fmt(r.stars)} ★</span>
+            <span class="mrow__time mono">{r.lastCommit}</span>
+          </a>
+        ))}
+      </div>
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="FULL HEALTH BOARD" title={`All ${rows.length} servers`} variant="default" density="tight">
+      <HealthBoard rows={rows} compact={false} />
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="ARCHIVE" title="Past weeks · Past month" density="loose">
+      <p>
+        Coming with longer cron history. Right now the cron has been firing for about a day —
+        weekly + monthly aggregates ship once we have ~30 days of trend data.
+      </p>
+      <p class="text-mute">
+        Each cron run appends a value to each MCP's <code>trend</code> array. That's our raw signal.
+      </p>
+    </Panel>
+  </section>
+
+  <div class="container-wide section cta-row">
+    <Button href="/" variant="ghost" iconLeft="←">Home</Button>
+    <Button href="/pulse/" variant="ghost" iconRight="→">Pulse — full stream</Button>
+  </div>
+</BaseLayout>
+
+<style>
+  .ph {
+    padding: var(--space-10) 0 var(--space-6);
+    border-bottom: 1px solid var(--border-dim);
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 0%, var(--signal-green-glow), transparent 60%),
+      var(--bg-base);
+  }
+
+  .ph__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--signal-green);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+    text-shadow: var(--text-glow-green);
+  }
+
+  .ph__title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .ph__sub {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .section { padding: var(--space-6) 0 0; }
+  .section:last-of-type { padding-bottom: var(--space-12); }
+
+  .metric-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .movers { display: flex; flex-direction: column; }
+
+  .mrow {
+    display: grid;
+    grid-template-columns: 50px 24px 1fr 110px 80px 70px;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-dim);
+    color: var(--text);
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+
+  .mrow:last-child { border-bottom: 0; }
+  .mrow:hover { background: var(--bg-elevated); color: var(--text-bright); }
+
+  .mrow__rank {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .mrow__arrow { line-height: 0; color: var(--text-mute); }
+  .mrow__arrow--up { color: var(--signal-green); }
+  .mrow__arrow--down { color: var(--signal-red); }
+
+  .mrow__name {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--text-bright);
+    font-weight: var(--fw-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mrow__cat {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .mrow__stars {
+    font-size: var(--fs-xs);
+    color: var(--signal-cyan);
+    text-align: right;
+  }
+
+  .mrow__delta {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    text-align: right;
+  }
+
+  .mrow__delta--up { color: var(--signal-green); }
+  .mrow__delta--down { color: var(--signal-red); }
+
+  .mrow__time {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-align: right;
+  }
+
+  @media (max-width: 800px) {
+    .mrow {
+      grid-template-columns: 32px 18px 1fr 60px 50px;
+    }
+    .mrow__cat { display: none; }
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: space-between;
+    padding-bottom: var(--space-12);
+  }
+</style>

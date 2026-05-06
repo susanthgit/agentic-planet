@@ -17,9 +17,10 @@ interface PulseItem {
 export interface Props {
   items: PulseItem[];
   limit?: number;
+  viewMoreHref?: string;
 }
 
-const { items, limit = 4 } = Astro.props;
+const { items, limit = 4, viewMoreHref = '/pulse/' } = Astro.props;
 const visible = items.slice(0, limit);
 
 function colorClass(c?: string): string {
@@ -38,7 +39,7 @@ function colorClass(c?: string): string {
       <LiveDot color="cyan" size="sm" />
       <span>PULSE · LIVE</span>
     </span>
-    <span class="pulse-rail__count mono">{items.length}</span>
+    <a class="pulse-rail__more mono" href={viewMoreHref}>VIEW ALL ({items.length}) →</a>
   </header>
 
   <ul class="pulse-rail__list">
@@ -89,6 +90,21 @@ function colorClass(c?: string): string {
 
   .pulse-rail__count {
     color: var(--text-mute);
+  }
+
+  .pulse-rail__more {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border-bottom: 0;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .pulse-rail__more:hover {
+    color: var(--text-bright);
+    text-shadow: var(--text-glow-cyan);
   }
 
   .pulse-rail__list {

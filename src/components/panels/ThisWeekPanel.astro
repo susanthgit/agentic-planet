@@ -24,9 +24,10 @@ interface McpRow {
 export interface Props {
   rows: McpRow[];
   lastUpdated: string;
+  viewMoreHref?: string;
 }
 
-const { rows, lastUpdated } = Astro.props;
+const { rows, lastUpdated, viewMoreHref = '/this-week/' } = Astro.props;
 
 /** Best-effort delta since last cron run (last two trend points).
  * Falls back to delta7d when trend is too short. */
@@ -75,10 +76,7 @@ function signed(n: number): string {
       <LiveDot color="green" size="sm" />
       <span>THIS WEEK · DELTAS</span>
     </span>
-    <span class="tw__cron mono" title={lastUpdated}>
-      <Icon name="clock" size={11} />
-      <span>cron {relativeTime(lastUpdated)}</span>
-    </span>
+    <a class="tw__more mono" href={viewMoreHref} title={lastUpdated}>VIEW ALL →</a>
   </header>
 
   <div class="tw__list">
@@ -150,6 +148,21 @@ function signed(n: number): string {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1-5);
+  }
+
+  .tw__more {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--signal-green);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border-bottom: 0;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .tw__more:hover {
+    color: var(--text-bright);
+    text-shadow: var(--text-glow-green);
   }
 
   .tw__list {

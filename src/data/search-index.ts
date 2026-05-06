@@ -54,6 +54,8 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { title: 'Pick Your Stack', url: '/lab/pick-your-stack/', category: 'lab', kicker: 'X.01', description: '5 questions, recommended stack' },
 
   // Meta
+  { title: 'Pulse · live stream', url: '/pulse/', category: 'meta', kicker: 'PULSE', description: 'All recent agentic ecosystem updates' },
+  { title: 'This week · MCP movers', url: '/this-week/', category: 'meta', kicker: 'DELTAS', description: 'Top star deltas + recently committed' },
   { title: 'Colophon', url: '/colophon/', category: 'meta', description: 'How this site is built' },
   { title: 'GitHub repo', url: 'https://github.com/susanthgit/agentic-planet', category: 'meta', description: 'View source on GitHub' },
 ];

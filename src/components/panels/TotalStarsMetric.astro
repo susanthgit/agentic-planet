@@ -1,0 +1,178 @@
+---
+/**
+ * TotalStarsMetric — single dramatic metric.
+ * Aggregate stars across all tracked MCPs. Lights up.
+ */
+
+import LiveDot from '@components/data/LiveDot.astro';
+import Icon from '@components/primitives/Icon.astro';
+import Sparkline from '@components/data/Sparkline.astro';
+
+interface McpRow {
+  stars: number;
+  trend: number[];
+}
+
+export interface Props {
+  rows: McpRow[];
+  label?: string;
+  href?: string;
+}
+
+const { rows, label = 'Total Stars Tracked', href = '/this-week/' } = Astro.props;
+
+const total = rows.reduce((s, r) => s + (r.stars || 0), 0);
+
+// Compute aggregate trend (sum each timestep across all rows)
+const minTrend = Math.min(...rows.map((r) => r.trend?.length || 0));
+const aggTrend: number[] = [];
+for (let i = 0; i < minTrend; i++) {
+  let sum = 0;
+  for (const r of rows) {
+    sum += r.trend?.[r.trend.length - minTrend + i] ?? 0;
+  }
+  aggTrend.push(sum);
+}
+const trendDelta = aggTrend.length >= 2 ? aggTrend.at(-1)! - aggTrend[0] : 0;
+
+function fmt(n: number): string {
+  if (Math.abs(n) >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace('.0', '')}M`;
+  if (Math.abs(n) >= 1000) return `${(n / 1000).toFixed(1).replace('.0', '')}k`;
+  return n.toLocaleString();
+}
+---
+
+<a class="tsm" href={href}>
+  <div class="tsm__head">
+    <span class="tsm__kicker mono">
+      <LiveDot color="cyan" size="sm" />
+      <span>{label.toUpperCase()}</span>
+    </span>
+    <span class="tsm__more mono">VIEW ALL →</span>
+  </div>
+
+  <div class="tsm__body">
+    <div class="tsm__main">
+      <span class="tsm__digits">{fmt(total)}</span>
+      <span class="tsm__star">★</span>
+    </div>
+
+    <div class="tsm__meta">
+      <span class="tsm__sub mono">across {rows.length} tracked MCPs</span>
+      {aggTrend.length >= 2 && (
+        <span class="tsm__delta mono">
+          {trendDelta >= 0 ? '+' : '−'}{fmt(Math.abs(trendDelta))} ★ since cron 0
+        </span>
+      )}
+    </div>
+
+    {aggTrend.length >= 2 && (
+      <div class="tsm__trend">
+        <Sparkline data={aggTrend} stroke="cyan" width={300} height={48} />
+      </div>
+    )}
+  </div>
+</a>
+
+<style>
+  .tsm {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-panel);
+    border: 1px solid var(--signal-cyan);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--signal-cyan), 0 0 24px var(--signal-cyan-glow);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .tsm:hover {
+    box-shadow: 0 0 0 1px var(--signal-cyan), 0 0 36px var(--signal-cyan-glow);
+    transform: translateY(-1px);
+  }
+
+  .tsm__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .tsm__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--signal-cyan);
+    text-shadow: var(--text-glow-cyan);
+    font-weight: var(--fw-semibold);
+  }
+
+  .tsm__more {
+    color: var(--text-mute);
+  }
+
+  .tsm:hover .tsm__more {
+    color: var(--signal-cyan);
+  }
+
+  .tsm__body {
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+  }
+
+  .tsm__main {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .tsm__digits {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 5.5vw, 72px);
+    font-weight: var(--fw-bold);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--signal-cyan);
+    text-shadow: 0 0 24px var(--signal-cyan-glow);
+  }
+
+  .tsm__star {
+    font-size: var(--fs-2xl);
+    color: var(--signal-cyan);
+    text-shadow: 0 0 12px var(--signal-cyan-glow);
+  }
+
+  .tsm__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .tsm__sub {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .tsm__delta {
+    font-size: var(--fs-xs);
+    color: var(--signal-green);
+    text-shadow: var(--text-glow-green);
+    font-weight: var(--fw-semibold);
+  }
+
+  .tsm__trend {
+    margin-top: var(--space-1);
+  }
+</style>
