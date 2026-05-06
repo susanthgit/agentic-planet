@@ -10,11 +10,11 @@
      ────────────────────────────────────────────────────── */
 
   /* Surfaces */
-  --void: #07090C;            /* deepest background — almost black */
-  --bg-base: #0A0E14;         /* body background */
-  --bg-panel: #0F151E;        /* panel bg */
-  --bg-elevated: #141C28;     /* elevated panels, hover state base */
-  --bg-overlay: #1A2332;      /* hover, selection */
+  --void: #04060A;            /* deepest background — used at edges */
+  --bg-base: #07090E;         /* body background — slightly deeper for more drama */
+  --bg-panel: #0E141C;        /* panel bg */
+  --bg-elevated: #131B26;     /* elevated panels, hover state base */
+  --bg-overlay: #18222F;      /* hover, selection */
 
   /* Borders */
   --border-dim: #1F2937;

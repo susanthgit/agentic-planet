@@ -61,7 +61,7 @@
 - [ ] **Recipe verdict** — `recipes/youtube-seo-automation.mdx` needs your real numbers + your "would I run this again?" take
 - [ ] **MCP review verdicts** — github-mcp + playwright-mcp drafted from public info; need your day-job take
 - [ ] **Disclosure wording** approval. Current: *"Sush works at Microsoft as a Copilot Solution Engineer. The take on this page is independent — not Microsoft's official position."*
-- [ ] **Add CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID secrets** to repo so `deploy.yml` workflow can auto-deploy on push (Settings → Secrets → Actions)
+- [x] ~~**Add CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID secrets** to repo~~ — DONE via GitHub REST API. Auto-deploy is live.
 
 ### 🟡 Soon (Phase 2)
 

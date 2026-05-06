@@ -1,0 +1,232 @@
+---
+/**
+ * ThisWeekPanel — surfaces recent activity from cron-fed MCP data.
+ * Shows: top movers (delta from last cron run), most recently committed,
+ * and cron freshness timestamp.
+ */
+
+import LiveDot from '@components/data/LiveDot.astro';
+import Icon from '@components/primitives/Icon.astro';
+
+interface McpRow {
+  slug: string;
+  name: string;
+  category: string;
+  stars: number;
+  delta7d: number;
+  lastCommit: string;
+  lastCommitDays: number;
+  health: string;
+  trend: number[];
+  url?: string;
+}
+
+export interface Props {
+  rows: McpRow[];
+  lastUpdated: string;
+}
+
+const { rows, lastUpdated } = Astro.props;
+
+/** Best-effort delta since last cron run (last two trend points).
+ * Falls back to delta7d when trend is too short. */
+function recentDelta(row: McpRow): number {
+  if (!row.trend || row.trend.length < 2) return row.delta7d ?? 0;
+  return row.trend.at(-1)! - row.trend.at(-2)!;
+}
+
+const topMovers = [...rows]
+  .filter((r) => r.health !== 'abandoned')
+  .map((r) => ({ ...r, _recent: recentDelta(r) }))
+  .sort((a, b) => Math.abs(b._recent) - Math.abs(a._recent))
+  .slice(0, 3);
+
+const recentlyCommitted = [...rows]
+  .filter((r) => r.health !== 'abandoned')
+  .sort((a, b) => a.lastCommitDays - b.lastCommitDays)
+  .slice(0, 2);
+
+// Compute "X ago" from ISO timestamp
+function relativeTime(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  const min = Math.round(ms / 60000);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const d = Math.round(hr / 24);
+  return `${d}d ago`;
+}
+
+function fmt(n: number): string {
+  if (Math.abs(n) >= 1000) return `${(n / 1000).toFixed(1).replace('.0', '')}k`;
+  return n.toString();
+}
+
+function signed(n: number): string {
+  if (n > 0) return `+${fmt(n)}`;
+  if (n < 0) return `−${fmt(Math.abs(n))}`;
+  return '±0';
+}
+---
+
+<div class="tw">
+  <header class="tw__head">
+    <span class="tw__kicker mono">
+      <LiveDot color="green" size="sm" />
+      <span>THIS WEEK · DELTAS</span>
+    </span>
+    <span class="tw__cron mono" title={lastUpdated}>
+      <Icon name="clock" size={11} />
+      <span>cron {relativeTime(lastUpdated)}</span>
+    </span>
+  </header>
+
+  <div class="tw__list">
+    {topMovers.map((r) => {
+      const positive = r._recent >= 0;
+      return (
+        <a class="tw-row" href={r.url ?? `/mcp/${r.slug}/`}>
+          <span class={`tw-row__arrow ${positive ? 'tw-row__arrow--up' : 'tw-row__arrow--down'}`}>
+            <Icon name={positive ? 'arrow-up' : 'arrow-down'} size={11} />
+          </span>
+          <span class="tw-row__name">{r.name}</span>
+          <span class={`tw-row__delta mono ${positive ? 'tw-row__delta--up' : 'tw-row__delta--down'}`}>
+            {signed(r._recent)} ★
+          </span>
+        </a>
+      );
+    })}
+
+    {recentlyCommitted.length > 0 && (
+      <div class="tw__sub">
+        <span class="tw__sublabel mono">RECENTLY COMMITTED</span>
+        {recentlyCommitted.map((r) => (
+          <a class="tw-row tw-row--muted" href={r.url ?? `/mcp/${r.slug}/`}>
+            <Icon name="clock" size={11} />
+            <span class="tw-row__name">{r.name}</span>
+            <span class="tw-row__time mono">{r.lastCommit}</span>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .tw {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .tw__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .tw__kicker {
+    color: var(--signal-green);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-shadow: var(--text-glow-green);
+    font-weight: var(--fw-semibold);
+  }
+
+  .tw__cron {
+    color: var(--text-mute);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+  }
+
+  .tw__list {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .tw-row {
+    display: grid;
+    grid-template-columns: 14px 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    color: var(--text);
+    border-bottom: 1px solid var(--border-dim);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .tw-row:last-child { border-bottom: 0; }
+
+  .tw-row:hover {
+    background: var(--bg-elevated);
+    color: var(--text-bright);
+  }
+
+  .tw-row__arrow {
+    line-height: 0;
+  }
+
+  .tw-row__arrow--up { color: var(--signal-green); }
+  .tw-row__arrow--down { color: var(--signal-red); }
+
+  .tw-row__name {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--text-bright);
+    font-weight: var(--fw-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tw-row__delta {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+  }
+
+  .tw-row__delta--up { color: var(--signal-green); }
+  .tw-row__delta--down { color: var(--signal-red); }
+
+  .tw-row__time {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+  }
+
+  .tw-row--muted {
+    color: var(--text-mute);
+  }
+
+  .tw-row--muted .tw-row__name {
+    color: var(--text-mute);
+    font-weight: var(--fw-normal);
+  }
+
+  .tw__sub {
+    border-top: 1px dashed var(--border-dim);
+    padding-top: var(--space-1);
+  }
+
+  .tw__sublabel {
+    display: block;
+    padding: var(--space-2) var(--space-3) var(--space-1);
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    font-weight: var(--fw-bold);
+  }
+</style>
