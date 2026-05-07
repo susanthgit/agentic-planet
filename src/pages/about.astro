@@ -1,0 +1,208 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+// Cosmos map — inlined for now. Phase 4 will vendor planets.json into agentic-planet
+// and read from manifest; until then this is hardcoded with the same fields:
+// slug, name, url, tagline. Source of truth: aguidetocloud-revamp/data/planets.toml.
+const cosmosMap = [
+  { slug: 'earth',    name: 'A Guide to Cloud', url: 'https://www.aguidetocloud.com/',         tagline: 'the home — certs, tools, mind maps' },
+  { slug: 'guided',   name: 'Guided',            url: 'https://www.aguidetocloud.com/guided/', tagline: 'cert prep that doesn\'t gatekeep — $9, not $79' },
+  { slug: 'cmd',      name: 'CMD',               url: 'https://cmd.aguidetocloud.com/',         tagline: 'Microsoft jargon decoder · plus error codes' },
+  { slug: 'shift',    name: 'Shift',             url: 'https://shift.aguidetocloud.com/',       tagline: 'how AI is changing real jobs, role by role' },
+  { slug: 'plainai',  name: 'Plain AI',          url: 'https://plainai.aguidetocloud.com/',     tagline: 'museum of AI, in plain English' },
+  { slug: 'agentic',  name: 'Agentic',           url: 'https://agents.aguidetocloud.com/',      tagline: 'cockpit field guide for techies (you are here)', here: true },
+  { slug: 'claw',     name: 'Claw',              url: 'https://claw.aguidetocloud.com/',         tagline: 'plain-English study reference for OpenClaw' },
+];
+---
+
+<BaseLayout
+  title="About — The Agentic Planet"
+  description="Why this site exists, what we publish, and the editorial rules. Built by an engineer who deploys agents for a living."
+>
+  <header class="about-head container-prose">
+    <span class="kicker mono">▸ ABOUT // FIELD GUIDE</span>
+    <h1 class="about-title">A cockpit for techies building with agents.</h1>
+    <p class="about-lede">
+      Plain English. Honest opinions. Working recipes with measured numbers. No vendor spin, no hype,
+      no email capture, no paid tier.
+    </p>
+  </header>
+
+  <section class="container-prose section">
+
+    <Panel kicker="THE GAP" title="Why this exists" density="loose">
+      <p>
+        Most agentic-AI content online is one of: <strong>vendor docs</strong> (pitch),
+        <strong>HN/Reddit</strong> (lottery), <strong>influencer posts</strong> (shallow),
+        <strong>academic papers</strong> (impractical), or <strong>framework-specific tutorials</strong>
+        (LangChain-only, LlamaIndex-only). Nobody curates the whole ecosystem in plain English with
+        honest opinions and working recipes.
+      </p>
+      <p>
+        Agentic is the cockpit-style alternative — a <em>Bloomberg Terminal × Linear × cyberpunk-cockpit</em>
+        take on the agentic-AI landscape, written by someone who deploys this for a living and would
+        rather call out a bad MCP than rank it diplomatically.
+      </p>
+    </Panel>
+
+    <Panel kicker="WHAT WE PUBLISH" title="The 14-pillar field guide" density="loose">
+      <ul>
+        <li><strong>MCP reviews</strong> — formal scorecards, opinionated, side-by-side</li>
+        <li><strong>Vendor deep-dives</strong> — Microsoft · Anthropic · OpenAI · Google · more</li>
+        <li><strong>Compare matchups</strong> — axes named, verdicts honest</li>
+        <li><strong>Recipes</strong> — measured before/after numbers, real cost/latency data</li>
+        <li><strong>Live MCP star deltas</strong> — refreshed every 6 hours via cron</li>
+        <li><strong>Incidents feed</strong> — the things that break, and why</li>
+        <li><strong>Builder log</strong> — Sush's own learnings building this planet</li>
+        <li><strong>Lab</strong> — pick-your-stack wizards, scaffolds you can clone</li>
+        <li><strong>Explainers + FAQ</strong> — the questions techies actually ask</li>
+      </ul>
+      <p class="text-mute">
+        Two pillars carved out for v1: <strong>#13 Newsletter (Pulse)</strong> and
+        <strong>#14 Community</strong> — both deferred. The site is intentionally read-only and
+        zero-friction.
+      </p>
+    </Panel>
+
+    <Panel kicker="EDITORIAL" title="The rules we hold ourselves to" density="loose">
+      <ul>
+        <li><strong>Plain English.</strong> Forbidden words enforced in CI: <em>frontier · ecosystem · multimodal · agentic capability · in layman's terms · AI-powered · robust · scalable · holistic · synergies · game changer · mission-critical · moat · differentiator · flagship</em>. Voice-lint hard-fails the build.</li>
+        <li><strong>Honest opinions.</strong> "Use this. Skip that. Wait three months on this." No fence-sitting reviews.</li>
+        <li><strong>Live data over fake liveness.</strong> When something says "Live", it must actually be cron-fed. We removed every fake "live since X" claim during the v1 SME review.</li>
+        <li><strong>Microsoft disclosure.</strong> Every Microsoft page carries: <em>"Sush works at Microsoft as a Copilot Solution Engineer. The take on this page is independent — not Microsoft's official position."</em></li>
+        <li><strong>Versioned reviews.</strong> Every MCP / vendor / compare entry carries last-reviewed dates and a refresh cadence.</li>
+        <li><strong>Zero monetisation.</strong> No login walls. No paid tiers. No email-capture popups. No sponsored content. Currently <strong>0 sponsored posts</strong>, ever.</li>
+      </ul>
+    </Panel>
+
+    <Panel kicker="WHO BUILT THIS" title="Day-job framing" density="loose">
+      <p>
+        Built and maintained by <a href="https://github.com/susanthgit">Sush (Susanth Sutheesh)</a>,
+        a Copilot Solution Engineer at Microsoft New Zealand. 18+ years in IT — infra admin
+        background, not a developer by training. In his head, still the curious intern figuring
+        things out for himself first, then writing down the simplified version for everyone else.
+      </p>
+      <p>
+        <strong>Microsoft does not sponsor, review, or approve the Agentic Planet.</strong> This is
+        personal volunteer work, written outside work hours, on personal hosting. Microsoft pages on
+        this site display this disclosure prominently. The takes here reflect Sush's independent
+        engineering judgement — they are not Microsoft's official position.
+      </p>
+    </Panel>
+
+    <Panel kicker="THE COSMOS" title="Where this sits in the universe" density="loose">
+      <p>
+        Agentic is one of seven sites in the <strong>A Guide to Cloud</strong> family. Each planet
+        has its own atmosphere — own font, palette, voice register, tech stack. The only universal
+        rules across the cosmos are <em>quality, value, usability, honesty, don't collide,
+        and a strict firewall between free and paid surfaces.</em>
+      </p>
+      <ul class="cosmos-map">
+        {cosmosMap.map((p) => (
+          <li>
+            <span class="mono cosmos-map-name">
+              {p.slug === 'earth' ? '🌍' : p.slug === 'guided' ? '🌑' : '🪐'} {p.name}
+            </span>
+            {p.here ? (
+              <span> — you are here</span>
+            ) : (
+              <span> — <a href={p.url} rel="noopener">{p.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a> — {p.tagline}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      <p class="text-mute" style="font-size: var(--fs-sm);">
+        Read the <a href="https://learn.aguidetocloud.com/reference/cosmos-philosophy/" rel="noopener">cosmos philosophy</a>
+        if that frame intrigues you.
+      </p>
+    </Panel>
+
+    <Panel kicker="DISAGREE" title="How to push back" density="loose">
+      <p>
+        Some calls here will be wrong. If a scorecard reads off, a recipe doesn't reproduce, a
+        vendor take feels like spin we missed, or a forbidden word slipped through — please
+        <a href="https://github.com/susanthgit/agentic-planet/issues">open an issue on GitHub</a>
+        and we'll fix it (or argue it out in public). Updates carry dates and reasons.
+      </p>
+      <p class="text-mute">
+        Spotted a vendor pitch in our copy? Open an issue with <code>[voice]</code> in the title.
+        That's our hardest CI check and the most embarrassing one to fail.
+      </p>
+    </Panel>
+
+    <div class="actions">
+      <Button href="/" variant="ghost" iconLeft="←">Home</Button>
+      <Button href="/colophon/" variant="ghost" iconRight="→">How this site is built</Button>
+      <Button href="https://github.com/susanthgit/agentic-planet" variant="ghost" iconRight="↗" target="_blank" rel="noopener">View source</Button>
+    </div>
+
+  </section>
+</BaseLayout>
+
+<style>
+  .about-head {
+    padding: var(--space-10) 0 var(--space-4);
+  }
+
+  .kicker {
+    display: inline-block;
+    font-size: var(--fs-2xs);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+    text-shadow: var(--text-glow-accent);
+  }
+
+  .about-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: var(--fw-bold);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .about-lede {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .section {
+    padding: var(--space-6) 0 var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .cosmos-map {
+    list-style: none;
+    padding-left: 0;
+    margin: var(--space-3) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .cosmos-map li {
+    color: var(--text-mute);
+    line-height: 1.6;
+  }
+
+  .cosmos-map-name {
+    color: var(--text);
+    font-weight: var(--fw-semibold);
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    flex-wrap: wrap;
+  }
+</style>
