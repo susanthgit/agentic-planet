@@ -7,10 +7,14 @@ import MetricTile from '@components/data/MetricTile.astro';
 import Icon from '@components/primitives/Icon.astro';
 import LiveDot from '@components/data/LiveDot.astro';
 import DeltaPill from '@components/data/DeltaPill.astro';
+import { getCollection } from 'astro:content';
 
 import mcpHealth from '@data/mcp-health.json';
 
 const rows = mcpHealth.rows;
+
+const reviewedMcps = await getCollection('mcps');
+const reviewedSlugs = reviewedMcps.map((m) => m.id);
 
 function recentDelta(row: typeof rows[number]): number {
   if (!row.trend || row.trend.length < 2) return row.delta7d ?? 0;
@@ -111,7 +115,7 @@ function fmt(n: number): string {
 
   <section class="container-wide section">
     <Panel kicker="FULL HEALTH BOARD" title={`All ${rows.length} servers`} variant="default" density="tight">
-      <HealthBoard rows={rows} compact={false} />
+      <HealthBoard rows={rows} compact={false} reviewedSlugs={reviewedSlugs} />
     </Panel>
   </section>
 

@@ -16,6 +16,7 @@ interface FeaturedRecipe {
   before: string;
   after: string;
   cost?: string;
+  status?: 'draft' | 'review' | 'published' | string;
 }
 
 interface FeaturedMcp {
@@ -33,6 +34,14 @@ export interface Props {
 }
 
 const { recipe, mcp } = Astro.props;
+const isDraft = recipe.status === 'draft';
+const isReview = recipe.status === 'review';
+const recipeLabel = isDraft
+  ? 'DRAFT RECIPE · MEASUREMENTS PENDING'
+  : isReview
+    ? 'RECIPE IN REVIEW'
+    : 'RECIPE OF THE WEEK';
+const recipeFeatTag = isDraft ? '◇ DRAFT' : isReview ? '◇ REVIEW' : '★ FEATURED';
 
 function fmt(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1).replace('.0', '')}k`;
@@ -49,8 +58,8 @@ function fmt(n: number): string {
   <div class="featured__cards">
     <a class="fcard fcard--recipe" href={`/recipes/${recipe.slug}/`}>
       <header class="fcard__head">
-        <span class="fcard__label mono"><Icon name="flask" size={12} /> RECIPE OF THE WEEK</span>
-        <span class="fcard__feat mono">★ FEATURED</span>
+        <span class="fcard__label mono"><Icon name="flask" size={12} /> {recipeLabel}</span>
+        <span class="fcard__feat mono">{recipeFeatTag}</span>
       </header>
       <h3 class="fcard__title">{recipe.title}</h3>
       <p class="fcard__desc">{recipe.description}</p>

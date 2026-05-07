@@ -6,6 +6,7 @@ import HealthBoard from '@components/panels/HealthBoard.astro';
 import MetricTile from '@components/data/MetricTile.astro';
 import Tag from '@components/primitives/Tag.astro';
 import Button from '@components/primitives/Button.astro';
+import { getCollection } from 'astro:content';
 
 import mcpHealth from '@data/mcp-health.json';
 
@@ -17,11 +18,14 @@ const totals = {
 };
 const categories = Array.from(new Set(rows.map((r) => r.category))).sort();
 const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
+
+const reviewedMcps = await getCollection('mcps');
+const reviewedSlugs = reviewedMcps.map((m) => m.id);
 ---
 
 <BaseLayout
   title="MCP Servers — health board, honest reviews, plain English"
-  description="The 30 MCP servers worth your time. Stars, weekly delta, last commit, status — refreshed every 6h. Plus honest reviews of each."
+  description="Honest reviews of MCP servers, with live health signals. Stars, weekly delta, last commit, status — refreshed every 6h."
 >
   <PillarHeader
     code="M03"
@@ -51,7 +55,7 @@ const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
       density="tight"
       variant="cyan"
     >
-      <HealthBoard rows={rows} />
+      <HealthBoard rows={rows} reviewedSlugs={reviewedSlugs} />
     </Panel>
 
     <div class="filter-bar">
@@ -60,8 +64,9 @@ const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
     </div>
 
     <div class="footer-actions">
-      <Button href="/mcp/build-your-own/" variant="ghost" iconLeft="◆">Build your own MCP</Button>
-      <Button href="/mcp/badges/" variant="ghost" iconLeft="◈">Embeddable badges</Button>
+      <span class="footer-actions__planned mono">PHASE 2 // PLANNED</span>
+      <span class="footer-actions__item mono">◆ Build your own MCP guide</span>
+      <span class="footer-actions__item mono">◈ Embeddable health badges</span>
       <Button href="/recipes/" variant="ghost" iconLeft="🍳">Recipes using MCPs</Button>
     </div>
 
@@ -132,8 +137,27 @@ const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
   .footer-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-3);
     margin-top: var(--space-6);
+  }
+
+  .footer-actions__planned {
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--text-mute);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs, 2px);
+    padding: 4px 8px;
+  }
+
+  .footer-actions__item {
+    font-size: var(--fs-xs);
+    color: var(--text-mute);
+    padding: 4px 8px;
+    border: 1px dashed var(--border-dim);
+    border-radius: var(--radius-xs, 2px);
   }
 
   .signal-table th,

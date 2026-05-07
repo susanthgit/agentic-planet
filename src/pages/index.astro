@@ -17,6 +17,7 @@ import RoadmapStrip from '@components/panels/RoadmapStrip.astro';
 import DidYouKnow from '@components/panels/DidYouKnow.astro';
 import StartHereRail from '@components/panels/StartHereRail.astro';
 import FeaturedPicks from '@components/panels/FeaturedPicks.astro';
+import { getCollection } from 'astro:content';
 
 import mcpHealth from '@data/mcp-health.json';
 import pulseData from '@data/pulse.json';
@@ -27,6 +28,9 @@ const topMcps = mcpHealth.rows.slice(0, 5);
 const featuredRecipes = recipesData.recipes.slice(0, 3);
 const pillars = pillarsData.pillars;
 const totals = { recipes: recipesData.recipes.length, mcps: mcpHealth.rows.length };
+
+const reviewedMcps = await getCollection('mcps');
+const reviewedSlugs = reviewedMcps.map((m) => m.id);
 
 const totalStars = mcpHealth.rows.reduce((s, r) => s + r.stars, 0);
 function fmtK(n: number): string {
@@ -76,6 +80,7 @@ const featuredRecipe = {
   before: featuredRecipes[0]?.before ?? '',
   after: featuredRecipes[0]?.after ?? '',
   cost: featuredRecipes[0]?.cost ?? undefined,
+  status: featuredRecipes[0]?.status ?? 'draft',
 };
 
 const featuredMcp = {
@@ -112,7 +117,7 @@ const featuredMcp = {
       </h1>
 
       <p class="hero__sub">
-        Agentic AI is exploding. We curate the <strong>30 MCP servers</strong>, <strong>4 vendor takes</strong>, and <strong>5 recipes</strong> that actually save time. Plain English. No vendor spin. Built by an engineer who deploys this for a living.
+        Vendor docs are pitch. Hacker News is a lottery. This is the cockpit: honest MCP reviews, side-by-side vendor takes, and recipes with measured numbers. Plain English. Built by an engineer who deploys this for a living.
       </p>
 
       <div class="hero__cta">
@@ -197,7 +202,7 @@ const featuredMcp = {
           variant="cyan"
           density="tight"
         >
-          <HealthBoard rows={topMcps} compact={false} />
+          <HealthBoard rows={topMcps} compact={false} reviewedSlugs={reviewedSlugs} />
           <div slot="footer" class="bento__footer">
             <Button href="/mcp/" variant="ghost" size="sm">Full board <Icon name="arrow-right" size={12} /></Button>
           </div>

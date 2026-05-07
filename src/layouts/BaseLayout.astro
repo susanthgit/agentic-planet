@@ -24,7 +24,7 @@ const {
   title,
   description = 'Tools, MCPs, recipes, and honest reviews for techies building with agents. Plain English. No vendor spin.',
   canonical,
-  ogImage = '/og/default.png',
+  ogImage,
   noIndex = false,
   bodyClass = '',
 } = Astro.props;
@@ -50,19 +50,18 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="alternate icon" href="/favicon.ico" />
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+  {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />}
   <meta property="og:site_name" content="The Agentic Planet" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={fullTitle} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />
+  {ogImage && <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />}
 
   <meta name="theme-color" content="#0A0E14" />
   <meta name="color-scheme" content="dark" />

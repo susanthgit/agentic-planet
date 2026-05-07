@@ -1,55 +1,16 @@
 {
-  "_note": "Featured recipes for homepage. Hand-curated.",
+  "_note": "Featured recipes for homepage. Hand-curated. Only ships entries that have a real content file with measured numbers. Phantom production entries removed 2026-05-07 (Session 1 trust fix).",
   "recipes": [
     {
       "slug": "youtube-seo-automation",
-      "title": "Automate YouTube SEO across 30 videos",
-      "description": "Three MCPs chained: rewrite titles in Sush's voice, push updates, verify cache.",
+      "title": "Automate YouTube SEO across many videos",
+      "description": "Three MCPs chained: rewrite titles in Sush's voice, push updates, verify cache. Scaffolded — measurements pending Sush's verified runs.",
       "components": ["playwright-mcp", "youtube-mcp", "cloudflare-mcp"],
-      "before": "2 hrs / month",
-      "after": "8 min",
-      "cost": "$0.40 / run",
-      "status": "production"
-    },
-    {
-      "slug": "pr-triage-workflow",
-      "title": "PR triage with 3 MCPs",
-      "description": "Auto-labels, suggests reviewers, summarises diffs into Slack channel.",
-      "components": ["github-mcp", "slack-mcp", "claude-api"],
-      "before": "45 min / day",
-      "after": "4 min",
-      "cost": "$0.18 / run",
-      "status": "production"
-    },
-    {
-      "slug": "toolkit-data-freshness",
-      "title": "Toolkit data freshness check",
-      "description": "Cron-driven audit of TOML data files; flags stale entries before users hit them.",
-      "components": ["github-mcp", "filesystem-mcp", "claude-api"],
-      "before": "4 hrs / month",
-      "after": "0 min",
-      "cost": "$0.05 / week",
-      "status": "production"
-    },
-    {
-      "slug": "blog-seo-audit",
-      "title": "Blog SEO audit at scale",
-      "description": "Search-MCP scans live SERPs, returns gaps + suggested rewrites for each post.",
-      "components": ["web-search-mcp", "cloudflare-mcp", "claude-api"],
-      "before": "1 hr / post",
-      "after": "5 min / post",
-      "cost": "$0.12 / post",
-      "status": "production"
-    },
-    {
-      "slug": "mcp-health-monitoring",
-      "title": "MCP health monitoring (the meta one)",
-      "description": "The cron pipeline that powers this site's own health board. Eat your own dog food.",
-      "components": ["github-mcp", "filesystem-mcp"],
-      "before": "manual checks",
-      "after": "every 6h",
-      "cost": "$0 (Actions)",
-      "status": "production"
+      "before": "Several hours / month manual",
+      "after": "Single-digit minutes",
+      "cost": "Roughly low single-digit cents per video (token usage)",
+      "status": "draft"
     }
   ]
 }
+

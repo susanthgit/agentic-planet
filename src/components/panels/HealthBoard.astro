@@ -25,9 +25,10 @@ export interface Props {
   rows: HealthRow[];
   showSparkline?: boolean;
   compact?: boolean;
+  reviewedSlugs?: string[];
 }
 
-const { rows, showSparkline = true, compact = false } = Astro.props;
+const { rows, showSparkline = true, compact = false, reviewedSlugs = [] } = Astro.props;
 
 function formatStars(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1).replace('.0', '')}k`;
@@ -46,44 +47,72 @@ function formatStars(n: number): string {
     <span class="hb__col hb__col--health">Status</span>
   </div>
 
-  {rows.map((r) => (
-    <a
-      class="hb__row"
-      href={r.url ?? `/mcp/${r.slug}/`}
-      data-status={r.health}
-    >
-      <span class="hb__col hb__col--name">
-        <span class="hb__name">{r.name}</span>
-      </span>
-      <span class="hb__col hb__col--cat">
-        <span class="hb__cat">{r.category}</span>
-      </span>
-      <span class="hb__col hb__col--stars mono">
-        <span class="hb__stars">{formatStars(r.stars)}</span>
-      </span>
-      <span class="hb__col hb__col--delta">
-        <DeltaPill value={r.delta7d} />
-      </span>
-      {showSparkline && (
-        <span class="hb__col hb__col--trend">
-          {r.trend && r.trend.length > 0 ? (
-            <Sparkline data={r.trend} stroke={r.health === 'alive' ? 'green' : r.health === 'slowing' ? 'amber' : 'red'} />
-          ) : (
-            <span class="hb__trend-empty">—</span>
-          )}
+  {rows.map((r) => {
+    const hasReview = reviewedSlugs.includes(r.slug);
+    const Tag = hasReview ? 'a' : 'div';
+    const linkProps = hasReview ? { href: r.url ?? `/mcp/${r.slug}/` } : {};
+    return (
+      <Tag
+        class:list={['hb__row', { 'hb__row--no-review': !hasReview }]}
+        {...linkProps}
+        data-status={r.health}
+      >
+        <span class="hb__col hb__col--name">
+          <span class="hb__name">{r.name}</span>
+          {!hasReview && <span class="hb__pending mono">REVIEW PENDING</span>}
         </span>
-      )}
-      <span class="hb__col hb__col--last mono">
-        {r.lastCommit}
-      </span>
-      <span class="hb__col hb__col--health">
-        <HealthBadge status={r.health} />
-      </span>
-    </a>
-  ))}
+        <span class="hb__col hb__col--cat">
+          <span class="hb__cat">{r.category}</span>
+        </span>
+        <span class="hb__col hb__col--stars mono">
+          <span class="hb__stars">{formatStars(r.stars)}</span>
+        </span>
+        <span class="hb__col hb__col--delta">
+          <DeltaPill value={r.delta7d} />
+        </span>
+        {showSparkline && (
+          <span class="hb__col hb__col--trend">
+            {r.trend && r.trend.length > 0 ? (
+              <Sparkline data={r.trend} stroke={r.health === 'alive' ? 'green' : r.health === 'slowing' ? 'amber' : 'red'} />
+            ) : (
+              <span class="hb__trend-empty">—</span>
+            )}
+          </span>
+        )}
+        <span class="hb__col hb__col--last mono">
+          {r.lastCommit}
+        </span>
+        <span class="hb__col hb__col--health">
+          <HealthBadge status={r.health} />
+        </span>
+      </Tag>
+    );
+  })}
 </div>
 
 <style>
+  .hb__row--no-review {
+    cursor: default;
+  }
+
+  .hb__row--no-review:hover {
+    background: var(--bg-elevated);
+    border-bottom-color: var(--border-dim);
+  }
+
+  .hb__pending {
+    display: inline-block;
+    margin-left: var(--space-2);
+    font-size: var(--fs-3xs, 0.65rem);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--text-mute);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs, 2px);
+    padding: 1px 5px;
+    vertical-align: middle;
+  }
+
   .hb {
     background: var(--bg-base);
     border: 1px solid var(--border-dim);
