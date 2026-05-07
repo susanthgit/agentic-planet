@@ -1,0 +1,170 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+/**
+ * Stack decision view — cross-category compare.
+ *
+ * The same-category matrix views answer "which X is best?".
+ * This page answers "which X should I pair with which Y?" — a different question
+ * with a different shape. We don't normalise across categories (apples and oranges);
+ * we map the agentic stack and show what fits where.
+ */
+---
+
+<BaseLayout
+  title="Compare — stack decision view"
+  description="Cross-category view. Not 'which X wins' — which X pairs with which Y, and where each fits in the stack."
+>
+  <PillarHeader
+    code="CMP-STACK"
+    color="accent"
+    title="Stack decision view."
+    description="Cross-category comparison is a different question. We map the stack and show what fits where — not winners and losers."
+    count={5}
+    countLabel="layers"
+    meta="CATEGORIES MAP TO LAYERS"
+    status="LIVE"
+  />
+
+  <section class="container-prose section">
+    <Panel kicker="WHY THIS PAGE EXISTS" title="Apples and oranges" density="loose">
+      <p>
+        Comparing Claude Desktop and Cursor as if one is ``better'' is the wrong question — they
+        live on different floors of the agentic stack. The matrix views handle <em>same-floor</em>
+        comparisons. This page handles cross-floor: which model with which host, which framework
+        on which protocol.
+      </p>
+    </Panel>
+
+    <Panel kicker="THE FIVE LAYERS" title="Where each compare category sits" density="loose">
+      <table class="layer-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Question</th>
+            <th>Compare category</th>
+            <th>Matrix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">L01 · UI / TRIGGER</td>
+            <td>What kicks off the agent?</td>
+            <td><em>(emerges from Hosts choice)</em></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="mono">L02 · ORCHESTRATION</td>
+            <td>How does the loop work?</td>
+            <td><strong>Frameworks</strong></td>
+            <td><a href="/compare/frameworks/" class="mono">→ FRAMEWORKS</a></td>
+          </tr>
+          <tr>
+            <td class="mono">L03 · MODEL</td>
+            <td>What does the reasoning?</td>
+            <td><strong>LLMs</strong></td>
+            <td><a href="/compare/llms/" class="mono">→ LLMS</a></td>
+          </tr>
+          <tr>
+            <td class="mono">L04 · TOOLS</td>
+            <td>What does the agent touch?</td>
+            <td>MCP servers · <strong>Protocols</strong> · <strong>Vendors</strong></td>
+            <td><a href="/compare/protocols/" class="mono">→ PROTOCOLS</a></td>
+          </tr>
+          <tr>
+            <td class="mono">L05 · MEMORY / CONTEXT</td>
+            <td>What does the agent remember?</td>
+            <td><em>(typically embedded in framework choice)</em></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="mono">CROSS</td>
+            <td>Where does it run?</td>
+            <td><strong>Hosts</strong></td>
+            <td><a href="/compare/hosts/" class="mono">→ HOSTS</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </Panel>
+
+    <Panel kicker="COMMON STACK DECISIONS" title="What pairs with what" density="loose">
+      <h3>Coding agent on a developer laptop</h3>
+      <ul>
+        <li><strong>L03 model:</strong> Claude Sonnet 4.5 — best tool-call reliability for code work.</li>
+        <li><strong>Cross host:</strong> Claude Code (terminal) or Cursor (IDE) — both are first-class.</li>
+        <li><strong>L02 framework:</strong> usually unnecessary — the host orchestrates.</li>
+        <li><strong>L04 protocol:</strong> MCP for tool connection (github-mcp, filesystem-mcp).</li>
+      </ul>
+
+      <h3>Workflow that runs on a server, no human in the loop</h3>
+      <ul>
+        <li><strong>L03 model:</strong> Claude Sonnet 4.5 or GPT-5 — pick on cost vs benchmark fit for your task.</li>
+        <li><strong>Cross host:</strong> none — no human means no chat host. Run from a script.</li>
+        <li><strong>L02 framework:</strong> Pydantic AI (type-safe, light) or LangChain (if you need many integrations).</li>
+        <li><strong>L04 protocol:</strong> MCP, called via your framework's MCP adapter.</li>
+      </ul>
+
+      <h3>Local-first, data-residency-strict</h3>
+      <ul>
+        <li><strong>L03 model:</strong> Llama 3.3 70B (or larger Llama variant) on Ollama / LM Studio.</li>
+        <li><strong>Cross host:</strong> Cline (free, BYO model) — best MCP support for local models in an IDE.</li>
+        <li><strong>L02 framework:</strong> only if you want headless. Otherwise the host is enough.</li>
+        <li><strong>L04 protocol:</strong> MCP (the local model needs MCP-aware host or framework).</li>
+      </ul>
+
+      <h3>Multi-agent system (one agent delegates to another)</h3>
+      <ul>
+        <li><strong>L03 model:</strong> mix-and-match per agent's task.</li>
+        <li><strong>Cross host:</strong> none typically — multi-agent runs from a framework, not a chat host.</li>
+        <li><strong>L02 framework:</strong> LangChain (LangGraph), Microsoft Agent Framework, or CrewAI.</li>
+        <li><strong>L04 protocol:</strong> MCP for tools <em>plus</em> A2A for agent-to-agent delegation.</li>
+      </ul>
+    </Panel>
+
+    <Panel kicker="DISCLAIMER" title="These are starting points" density="loose">
+      <p>
+        Real architectures have constraints we can't enumerate from afar — your latency budget, your
+        team's existing skills, your compliance posture, your existing platform commitments. Treat
+        these as <em>starting points</em> and adjust.
+      </p>
+      <p>
+        Disagree with one of these stack decisions? Open an issue with your context — we'll add
+        common variations as the ``stack decisions'' bench grows.
+      </p>
+      <Button href="https://github.com/susanthgit/agentic-planet/issues/new" variant="ghost" iconLeft="✎">Suggest a stack decision</Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .layer-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-3) 0;
+    font-size: var(--fs-sm);
+  }
+  .layer-table th,
+  .layer-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-dim);
+    text-align: left;
+    vertical-align: top;
+  }
+  .layer-table th {
+    color: var(--text-mute);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    font-weight: var(--fw-semibold);
+  }
+  .layer-table td.mono { color: var(--accent-hi); }
+  .layer-table a { color: var(--accent-hi); border-bottom: 1px dotted; }
+  h3 {
+    font-size: var(--fs-md);
+    margin-top: var(--space-4);
+    color: var(--text-bright);
+  }
+</style>

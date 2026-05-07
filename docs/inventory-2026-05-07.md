@@ -1,5 +1,5 @@
 # Agentic Planet — Inventory & claim matrix
-*Generated 2026-05-07T02:48:24.560Z by `scripts/audit-claims.mjs`*
+*Generated 2026-05-07T03:06:49.580Z by `scripts/audit-claims.mjs`*
 
 This report is the Session 1 Phase A artefact. It captures every claim, link, count, route, and data row in the repo so Phases B–E have a baseline to fix against.
 
@@ -11,6 +11,9 @@ This report is the Session 1 Phase A artefact. It captures every claim, link, co
 | `/404/` | `src/pages/404.astro` |  |
 | `/career/` | `src/pages/career/index.astro` |  |
 | `/colophon/` | `src/pages/colophon.astro` |  |
+| `/compare/` | `src/pages/compare/index.astro` |  |
+| `/compare/[category]/` | `src/pages/compare/[category].astro` | ✓ |
+| `/compare/stack/` | `src/pages/compare/stack.astro` |  |
 | `/desk/` | `src/pages/desk/index.astro` |  |
 | `/desk/[slug]/` | `src/pages/desk/[slug].astro` | ✓ |
 | `/diagrams/` | `src/pages/diagrams/index.astro` |  |
@@ -22,6 +25,7 @@ This report is the Session 1 Phase A artefact. It captures every claim, link, co
 | `/learn/` | `src/pages/learn/index.astro` |  |
 | `/learn/[slug]/` | `src/pages/learn/[slug].astro` | ✓ |
 | `/learn/glossary/` | `src/pages/learn/glossary.astro` |  |
+| `/learn/your-first-agent/` | `src/pages/learn/your-first-agent.astro` |  |
 | `/mcp/` | `src/pages/mcp/index.astro` |  |
 | `/mcp/[slug]/` | `src/pages/mcp/[slug].astro` | ✓ |
 | `/methodology/mcp-security-scorecard/` | `src/pages/methodology/mcp-security-scorecard.astro` |  |
@@ -87,6 +91,11 @@ _None._
 
 | File | Size |
 |------|------|
+| `src/data/compare/frameworks.json` | 4768 bytes |
+| `src/data/compare/hosts.json` | 4813 bytes |
+| `src/data/compare/llms.json` | 4607 bytes |
+| `src/data/compare/protocols.json` | 4235 bytes |
+| `src/data/compare/vendors.json` | 4662 bytes |
 | `src/data/featured-recipes.json` | 768 bytes |
 | `src/data/mcp-health.json` | 9606 bytes |
 | `src/data/pillars.json` | 2363 bytes |

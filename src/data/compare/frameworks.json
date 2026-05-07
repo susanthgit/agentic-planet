@@ -1,0 +1,87 @@
+{
+  "_note": "Agent frameworks (programmatic, not chat hosts). 2026-Q2 snapshot.",
+  "category": "frameworks",
+  "categoryLabel": "Frameworks",
+  "items": [
+    {
+      "id": "langchain",
+      "name": "LangChain",
+      "entityType": "framework",
+      "layer": "tooling",
+      "primaryJob": "General-purpose LLM orchestration framework",
+      "comparableWith": ["framework"],
+      "axes": {
+        "language": { "value": "Python · TypeScript", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "via adapter", "note": "MCP servers can be wrapped as LangChain tools; integration improving but not yet first-class." },
+        "complexity": { "value": "high", "note": "Many abstractions; unwinding them when something breaks takes effort." },
+        "leadsAt": ["Largest ecosystem of integrations", "Mature deployment patterns", "LangGraph for multi-agent orchestration"],
+        "lagsAt": ["Documentation churn (APIs shift between minor versions)", "Sometimes you fight the abstraction more than the problem"],
+        "verdict": "Default if you need many integrations out of the box and have the team capacity to manage abstraction depth."
+      }
+    },
+    {
+      "id": "llamaindex",
+      "name": "LlamaIndex",
+      "entityType": "framework",
+      "layer": "tooling",
+      "primaryJob": "RAG-first agent framework",
+      "comparableWith": ["framework"],
+      "axes": {
+        "language": { "value": "Python · TypeScript", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "yes", "note": "MCP server integration is straightforward; LlamaIndex tools wrap MCP servers cleanly." },
+        "complexity": { "value": "medium" },
+        "leadsAt": ["Best-in-class RAG primitives", "Document loaders + indexes", "Workflow API for agent orchestration"],
+        "lagsAt": ["Less general-purpose than LangChain for non-RAG agents"],
+        "verdict": "Default when retrieval is the dominant pattern. Less compelling for pure tool-call agents."
+      }
+    },
+    {
+      "id": "dspy",
+      "name": "DSPy",
+      "entityType": "framework",
+      "layer": "tooling",
+      "primaryJob": "Prompt-as-code / optimisation framework",
+      "comparableWith": ["framework"],
+      "axes": {
+        "language": { "value": "Python", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "manual", "note": "No native MCP integration; you wrap tools yourself." },
+        "complexity": { "value": "medium", "note": "Different mental model — you compose modules, optimisers tune prompts for you." },
+        "leadsAt": ["Rigorous evaluation patterns", "Prompt-tuning automation", "Cleaner code for production agents than ad-hoc prompts"],
+        "lagsAt": ["Smaller community", "Steeper learning curve up front"],
+        "verdict": "Default when prompt quality matters more than framework convenience. Production-friendly once internalised."
+      }
+    },
+    {
+      "id": "pydantic-ai",
+      "name": "Pydantic AI",
+      "entityType": "framework",
+      "layer": "tooling",
+      "primaryJob": "Type-safe agent framework",
+      "comparableWith": ["framework"],
+      "axes": {
+        "language": { "value": "Python", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "growing", "note": "Pydantic AI has been rapid on MCP integration; check current docs for latest." },
+        "complexity": { "value": "low", "note": "Smaller surface, type-driven. Easier to pick up than LangChain." },
+        "leadsAt": ["Type safety", "Familiarity if you already use Pydantic / FastAPI", "Production-feel out of the box"],
+        "lagsAt": ["Newer; smaller integration catalog than LangChain"],
+        "verdict": "Default for Python teams who already build with Pydantic and want minimal magic."
+      }
+    },
+    {
+      "id": "ms-agent-framework",
+      "name": "Microsoft Agent Framework",
+      "entityType": "framework",
+      "layer": "tooling",
+      "primaryJob": "Microsoft's successor to AutoGen",
+      "comparableWith": ["framework"],
+      "axes": {
+        "language": { "value": "Python · .NET", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "yes" },
+        "complexity": { "value": "medium" },
+        "leadsAt": ["First-party .NET support", "Azure / Foundry integration paths", "Successor to AutoGen with cleaner abstractions"],
+        "lagsAt": ["Newer; ecosystem still settling post-AutoGen consolidation"],
+        "verdict": "Default if you're in the Microsoft / Azure stack and need .NET. Worth comparing against LangChain if you're Python-only."
+      }
+    }
+  ]
+}

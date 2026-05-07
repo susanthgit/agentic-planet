@@ -41,7 +41,7 @@ const scorecard = allScorecards.find((s) => s.id === entry.id);
 ---
 
 <BaseLayout title={`${title} — MCP review`} description={summary}>
-  <article class="mcp-page">
+  <article class="mcp-page" data-pagefind-meta={`kind:mcp-review,name:${name},category:${category},health:${health}`}>
     <header class="mcp-page__head">
       <div class="container-wide">
         <nav class="breadcrumb mono">

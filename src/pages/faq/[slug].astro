@@ -17,7 +17,7 @@ const { title, summary, category, sushReviewNeeded, lastReviewedAt } = entry.dat
 ---
 
 <BaseLayout title={`Q: ${title}`} description={summary}>
-  <article class="faq-page">
+  <article class="faq-page" data-pagefind-meta={`kind:faq,category:${category}`}>
     <header class="faq-page__head container-prose">
       <nav class="breadcrumb mono">
         <a href="/faq/">FAQ</a>

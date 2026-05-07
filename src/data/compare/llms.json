@@ -1,0 +1,71 @@
+{
+  "_note": "LLMs comparison data. 2026-Q2 snapshot. Pricing changes — lastCheckedAt fields are the source of truth.",
+  "category": "llms",
+  "categoryLabel": "LLMs",
+  "items": [
+    {
+      "id": "claude-sonnet-4.5",
+      "name": "Claude Sonnet 4.5",
+      "entityType": "llm",
+      "layer": "model",
+      "primaryJob": "Default reasoning + tool-calling model",
+      "comparableWith": ["llm"],
+      "axes": {
+        "pricing": { "value": "$3 / $15 per M tokens (input / output)", "lastCheckedAt": "2026-05-07", "confidence": "medium", "source": "https://www.anthropic.com/pricing", "note": "Input cache discount lowers effective cost on repeat calls." },
+        "contextWindow": { "value": "200k", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "first-class", "note": "Claude was the canonical MCP client; tool-calling is native." },
+        "leadsAt": ["Plain-English reasoning", "Following multi-step instructions", "Honest uncertainty"],
+        "lagsAt": ["Latency vs Haiku tier", "Image generation (none — text-only)"],
+        "verdict": "Default for non-trivial agentic work that lives outside ChatGPT."
+      }
+    },
+    {
+      "id": "gpt-5",
+      "name": "GPT-5",
+      "entityType": "llm",
+      "layer": "model",
+      "primaryJob": "Default reasoning + tool-calling on the OpenAI side",
+      "comparableWith": ["llm"],
+      "axes": {
+        "pricing": { "value": "$2.50 / $10 per M tokens (input / output)", "lastCheckedAt": "2026-05-07", "confidence": "medium", "source": "https://platform.openai.com/pricing", "note": "Reasoning effort settings can multiply token use 2-3x." },
+        "contextWindow": { "value": "256k", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "via Apps SDK", "note": "OpenAI's Apps SDK builds on MCP-style servers; native tool calling also works directly." },
+        "leadsAt": ["Massive consumer reach via ChatGPT", "Apps SDK distribution", "Image + audio capabilities"],
+        "lagsAt": ["Reasoning settings can be opaque", "Fewer cross-vendor host integrations than Claude"],
+        "verdict": "Default if your audience lives in ChatGPT, or if you need image/audio out of the box."
+      }
+    },
+    {
+      "id": "gemini-2.5-pro",
+      "name": "Gemini 2.5 Pro",
+      "entityType": "llm",
+      "layer": "model",
+      "primaryJob": "Long-context multimodal model",
+      "comparableWith": ["llm"],
+      "axes": {
+        "pricing": { "value": "$1.25 / $10 per M tokens (input / output)", "lastCheckedAt": "2026-05-07", "confidence": "medium", "source": "https://ai.google.dev/pricing" },
+        "contextWindow": { "value": "1M", "lastCheckedAt": "2026-05-07", "confidence": "high", "note": "Context windows above ~200k degrade in real-world recall — measure for your use case." },
+        "mcpSupport": { "value": "growing", "note": "Vertex AI Agents adopted MCP; Gemini API itself supports function calling natively." },
+        "leadsAt": ["Long-context tasks (whole codebases, huge transcripts)", "Multimodal in/out (image, audio, video)", "Workspace integration"],
+        "lagsAt": ["Tool-calling reliability still trails Claude / GPT-5 on agentic loops"],
+        "verdict": "Use when your task is genuinely long-context or genuinely multimodal. Otherwise the field is closer than vendor decks suggest."
+      }
+    },
+    {
+      "id": "llama-3.3-70b",
+      "name": "Llama 3.3 70B",
+      "entityType": "llm",
+      "layer": "model",
+      "primaryJob": "Self-hosted open-weights baseline",
+      "comparableWith": ["llm"],
+      "axes": {
+        "pricing": { "value": "Free weights + your own GPU/inference", "lastCheckedAt": "2026-05-07", "confidence": "high", "note": "Real cost is GPU hours. ~$0.20-0.60/M tokens depending on infra. Tools like Ollama / LM Studio make local viable; production needs bigger boxes." },
+        "contextWindow": { "value": "128k", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "mcpSupport": { "value": "via host", "note": "MCP support depends on your host — Cline / Continue / Goose handle MCP for any local model." },
+        "leadsAt": ["No vendor lock-in", "Data never leaves your network", "Cost predictability at scale"],
+        "lagsAt": ["Reasoning on hardest tasks trails frontier closed models", "Operational overhead (you run the inference)"],
+        "verdict": "Default when data residency or vendor lock-in is non-negotiable. For anything else, the closed-model gap is meaningful."
+      }
+    }
+  ]
+}

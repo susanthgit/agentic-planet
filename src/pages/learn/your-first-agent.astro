@@ -1,0 +1,442 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import Kicker from '@components/primitives/Kicker.astro';
+
+/**
+ * Your first agent in 30 minutes — primary hands-on tutorial.
+ *
+ * STATUS: review (Session 3 ship; sushReviewNeeded — clears to status: published
+ * after Sush voice-passes the page). noIndex until then.
+ *
+ * The page builds a working Claude Desktop + filesystem-mcp + github-mcp setup
+ * that summarises any local repo's README and posts the summary as a GitHub issue.
+ *
+ * Why this page exists FIRST among tutorials:
+ *   It's the most-shareable surface on the site. Anyone landing here and following
+ *   along ends with a working agent in 30 minutes. That's the bar.
+ */
+
+const lastReviewedAt = '2026-05-07';
+const readingTimeMinutes = 30;
+const sushReviewNeeded = true;
+
+const howTo = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'Build your first agent in 30 minutes',
+  description: 'Set up Claude Desktop with filesystem-mcp and github-mcp so a real agent can read a local repo and post an issue summarising its README.',
+  totalTime: 'PT30M',
+  estimatedCost: { '@type': 'MonetaryAmount', currency: 'USD', value: '0' },
+  step: [
+    { '@type': 'HowToStep', name: 'Install Claude Desktop', text: 'Download and install Claude Desktop on macOS or Windows.' },
+    { '@type': 'HowToStep', name: 'Configure filesystem-mcp', text: 'Add filesystem-mcp to claude_desktop_config.json with the directories you want the agent to read.' },
+    { '@type': 'HowToStep', name: 'Generate a GitHub fine-grained PAT', text: 'Create a fine-grained personal access token scoped to one repo, with Issues: Write permission only.' },
+    { '@type': 'HowToStep', name: 'Configure github-mcp', text: 'Add github-mcp to claude_desktop_config.json with the PAT in env.' },
+    { '@type': 'HowToStep', name: 'Restart Claude Desktop', text: 'Restart Claude Desktop so it picks up the new MCP servers.' },
+    { '@type': 'HowToStep', name: 'Run the prompt', text: 'Paste the orchestration prompt and watch the agent read the README and draft an issue.' },
+    { '@type': 'HowToStep', name: 'Approve the issue creation', text: 'Review the drafted issue, then approve the create_issue tool call.' },
+  ],
+};
+---
+
+<BaseLayout
+  title="Your first agent in 30 minutes — hands-on tutorial"
+  description="Build a real Claude Desktop + filesystem-mcp + github-mcp setup that reads a local repo and posts an issue summarising its README. Plain English, hands-on, end-to-end."
+  noIndex={sushReviewNeeded}
+>
+  <article class="tut">
+    <header class="tut__head container-prose">
+      <Kicker text="HANDS-ON · YOUR FIRST AGENT" color="cyan" />
+      <h1 class="tut__title">Build a real agent in 30 minutes.</h1>
+      <p class="tut__lede">
+        We'll set up Claude Desktop with two MCP servers and run a workflow that
+        reads a local repo and posts an issue summarising the README. End-to-end.
+        Real tools, real output.
+      </p>
+      <div class="tut__meta mono">
+        <span>~{readingTimeMinutes} MIN</span>
+        <span>·</span>
+        <span>LAST REVIEWED {lastReviewedAt}</span>
+        <span>·</span>
+        <span>STATUS {sushReviewNeeded ? 'REVIEW' : 'PUBLISHED'}</span>
+      </div>
+    </header>
+
+    {sushReviewNeeded && (
+      <section class="container-prose section">
+        <div class="banner">
+          <span class="banner__label mono">⚠ DRAFT · SUSH VOICE PASS PENDING</span>
+          <span>This tutorial is live but voice-pass pending. Steps verified; phrasing may change.</span>
+        </div>
+      </section>
+    )}
+
+    <section class="container-prose section">
+      <Panel kicker="WHAT YOU'LL BUILD" title="A working agent that reads a repo and writes back" density="loose">
+        <p>
+          By the end of this page you'll have:
+        </p>
+        <ul>
+          <li>Claude Desktop configured with two MCP servers.</li>
+          <li>An agent that can read files in one directory of your choice.</li>
+          <li>An agent that can create a GitHub issue in one repo of your choice.</li>
+          <li>A working prompt that chains both: <em>read this repo's README → draft a one-paragraph summary → post it as an issue → wait for approval before sending.</em></li>
+        </ul>
+        <p>
+          That's the skeleton. From here you can extend the same pattern to any reading-then-writing workflow.
+        </p>
+      </Panel>
+    </section>
+
+    <section class="container-prose section">
+      <Panel kicker="VIDEO" title="Watch it built" density="tight">
+        <div class="video-slot">
+          <span class="video-slot__icon" aria-hidden="true">▶</span>
+          <span class="video-slot__label mono">VIDEO COMING SOON</span>
+          <p class="video-slot__note">
+            Sush is recording the screen-by-screen walkthrough. Until it lands here,
+            the text below is the canonical version — every step is verified.
+          </p>
+        </div>
+      </Panel>
+    </section>
+
+    <section class="container-prose section">
+      <Panel kicker="PREREQUISITES" title="Before you start" density="loose">
+        <ul>
+          <li><strong>A computer</strong> running macOS or Windows (Linux works too via the Linux build of Claude Desktop).</li>
+          <li><strong>A GitHub account</strong> with at least one repo you own (any public or private repo).</li>
+          <li><strong>A Claude account.</strong> The free tier works for reading; sustained use needs Pro ($20/mo).</li>
+          <li><strong>Five minutes</strong> of patience for the install steps. The actual run is fast.</li>
+        </ul>
+      </Panel>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">Step 1 · Install Claude Desktop <span class="mono">~5 MIN</span></h2>
+      <p>
+        Download from <a href="https://claude.ai/download" rel="noopener" target="_blank">claude.ai/download</a>.
+        Run the installer for your platform. Sign in with your Anthropic account.
+      </p>
+      <p>
+        That's it for the host. The next steps wire up tools.
+      </p>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">Step 2 · Connect filesystem-mcp <span class="mono">~5 MIN</span></h2>
+      <p>
+        filesystem-mcp gives the agent read access to a directory you nominate. We're going to point it
+        at a single repo on your laptop — not your whole home folder. Less is more.
+      </p>
+
+      <p>Find the Claude Desktop config file:</p>
+      <ul>
+        <li><strong>macOS:</strong> <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+        <li><strong>Windows:</strong> <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
+        <li><strong>Linux:</strong> <code>~/.config/Claude/claude_desktop_config.json</code></li>
+      </ul>
+
+      <p>If the file doesn't exist, create it. Add this content (replace the path with one repo on your laptop):</p>
+      <pre class="snippet"><code>{`{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/you/code/your-repo"
+      ]
+    }
+  }
+}`}</code></pre>
+
+      <p>
+        Don't have npm? Install Node.js from <a href="https://nodejs.org/" rel="noopener" target="_blank">nodejs.org</a> first.
+      </p>
+      <p>
+        <strong>Why scope to one repo, not your home folder?</strong> Default permissions are broad — the agent
+        gets read access to whatever you point it at. Pointing at a single repo keeps the blast radius small while
+        you build trust with this setup. (See the <a href="/methodology/mcp-security-scorecard/">scorecard methodology</a>
+        for the full safety rationale.)
+      </p>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">Step 3 · Generate a GitHub fine-grained PAT <span class="mono">~5 MIN</span></h2>
+      <p>
+        Go to <a href="https://github.com/settings/personal-access-tokens/new" rel="noopener" target="_blank">github.com/settings/personal-access-tokens/new</a>.
+        Fill it out:
+      </p>
+      <ul>
+        <li><strong>Token name:</strong> something descriptive — <code>agentic-planet-tutorial</code> works.</li>
+        <li><strong>Expiration:</strong> 30 days. (Short. Always short.)</li>
+        <li><strong>Repository access:</strong> ``Only select repositories'' → pick <em>one</em> repo (the same one you'll point filesystem-mcp at).</li>
+        <li><strong>Repository permissions:</strong> <code>Issues: Write</code>. <em>That's it.</em> No metadata, no contents, no nothing else.</li>
+      </ul>
+      <p>
+        Generate the token. Copy it once — GitHub doesn't show it again.
+      </p>
+      <p>
+        <strong>Why not a classic PAT?</strong> Classic PATs grant <code>repo</code> scope which is cross-repo. Fine-grained PATs let
+        you grant ``can write issues on this one repo'' and nothing else. Same agent, dramatically smaller blast radius if anything goes wrong.
+        See the <a href="/mcp/github-mcp/#scorecard">github-mcp scorecard</a> for the full reasoning.
+      </p>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">Step 4 · Connect github-mcp <span class="mono">~3 MIN</span></h2>
+      <p>Edit your Claude Desktop config again, adding github-mcp alongside filesystem:</p>
+      <pre class="snippet"><code>{`{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/you/code/your-repo"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxx_paste_your_token_here"
+      }
+    }
+  }
+}`}</code></pre>
+      <p>
+        Save. Quit and re-open Claude Desktop entirely (not just close the window — fully quit and re-launch).
+        It re-reads the config on launch.
+      </p>
+      <p>
+        You'll know it worked when you see a small ``MCP'' indicator in the input area showing two servers connected.
+      </p>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">Step 5 · Run the prompt <span class="mono">~5 MIN</span></h2>
+      <p>Open a new Claude conversation. Paste this prompt verbatim:</p>
+      <pre class="snippet"><code>{`Use filesystem to read the README.md in the repo I gave you access to.
+
+Then draft a single GitHub issue with:
+- title:  "AI summary: README — \${current date}"
+- body:   a one-paragraph summary of what the README explains.
+
+Show me the drafted issue body. STOP and wait for me to approve before
+calling github.create_issue. Do not call create_issue until I say go.`}</code></pre>
+
+      <p>
+        Send. Watch the agent:
+      </p>
+      <ol>
+        <li>Call <code>filesystem.read_file</code> with the path to your README.</li>
+        <li>Read the content (you'll see it appear in the tool call).</li>
+        <li>Draft the issue body inline.</li>
+        <li>Stop and ask you to approve.</li>
+      </ol>
+
+      <p>
+        Read the drafted body. If it's good, reply <code>go</code>. The agent calls <code>github.create_issue</code>,
+        Claude Desktop pops up an approval dialog (because <code>create_issue</code> is a destructive tool), you click ``Allow once'',
+        and the issue lands in your repo.
+      </p>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">Step 6 · What just happened <span class="mono">~7 MIN</span></h2>
+      <p>
+        That was an agent. Five layers cooperating in one loop:
+      </p>
+      <table class="layers">
+        <thead>
+          <tr><th>Layer</th><th>What it was</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">L01 · UI / TRIGGER</td><td>You typed a prompt. Claude Desktop is the UI surface.</td></tr>
+          <tr><td class="mono">L02 · ORCHESTRATION</td><td>Claude Desktop runs the loop: observe → plan → act → observe. Each tool call goes out, comes back, the model re-plans.</td></tr>
+          <tr><td class="mono">L03 · MODEL</td><td>Claude Sonnet did the reasoning. It picked which tools to call and in which order. It drafted the issue body.</td></tr>
+          <tr><td class="mono">L04 · TOOLS</td><td>Two MCP servers. <code>filesystem.read_file</code> read your README. <code>github.create_issue</code> posted the result.</td></tr>
+          <tr><td class="mono">L05 · MEMORY / CONTEXT</td><td>Conversation context — the README content, the drafted body, your approval — held in Claude's context window for this session.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Subtract any one of these and it's not an agent. Add a third tool (say, <code>slack.post_message</code>)
+        and the same loop chains a third action.
+      </p>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">What can go wrong</h2>
+      <ul>
+        <li><strong>``MCP server not connected''.</strong> Almost always a config typo — JSON keys / commas. Validate the file with <code>jq . claude_desktop_config.json</code>.</li>
+        <li><strong>``filesystem can't access that path''.</strong> The path you put in <code>args</code> needs to exist before Claude Desktop starts. macOS may also need to grant the Claude app full-disk-access in System Settings.</li>
+        <li><strong>``github API 401''.</strong> PAT expired or wrong scope. Regenerate with <code>Issues: Write</code> only and update the env var.</li>
+        <li><strong>``Tool wasn't called''.</strong> The agent decided it didn't need to. Make the prompt more explicit (``USE filesystem.read_file to…'').</li>
+      </ul>
+    </section>
+
+    <section class="container-prose section">
+      <h2 class="step-h">What next</h2>
+      <ul>
+        <li>
+          Try changing the prompt. Have it summarise a different file, draft a PR description, post a multi-line issue with sections.
+        </li>
+        <li>
+          Add a third MCP. <a href="/mcp/playwright-mcp/">playwright-mcp</a> for browser automation. <a href="/scorecards/">Browse all scored MCPs</a>.
+        </li>
+        <li>
+          Read the <a href="/mcp/github-mcp/#scorecard">github-mcp scorecard</a> to understand what other tools the server exposes (and why we used <code>Issues: Write</code> only).
+        </li>
+        <li>
+          Decide on your stack. The <a href="/compare/stack/">stack decision view</a> walks through which model + host + framework combinations fit which problem.
+        </li>
+        <li>
+          Read the <a href="/safety/">safety pillar</a> before pointing this setup at production-shaped data. Treat tool output as untrusted text. Always.
+        </li>
+      </ul>
+    </section>
+
+    <footer class="container-prose section tut__foot">
+      <Button href="/learn/" variant="ghost" iconLeft="←">Back to Learn</Button>
+      <Button href="/scorecards/" variant="primary" iconRight="→">Browse MCP scorecards</Button>
+    </footer>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(howTo)} />
+</BaseLayout>
+
+<style>
+  .tut__head {
+    padding: var(--space-10) 0 var(--space-6);
+    background:
+      radial-gradient(ellipse 50% 40% at 0% 0%, var(--signal-cyan-glow), transparent 60%),
+      var(--bg-base);
+    border-bottom: 1px solid var(--border-dim);
+  }
+  .tut__title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin: var(--space-3) 0;
+  }
+  .tut__lede {
+    font-size: var(--fs-md);
+    line-height: 1.55;
+    color: var(--text-mute);
+    max-width: 720px;
+    margin: 0 0 var(--space-3);
+  }
+  .tut__meta {
+    display: flex;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+  .banner {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-3);
+    border: 1px solid var(--signal-amber);
+    border-radius: var(--radius-xs);
+    background: rgba(251, 191, 36, 0.05);
+    color: var(--text-bright);
+  }
+  .banner__label {
+    color: var(--signal-amber);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .step-h {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    color: var(--text-bright);
+    margin-top: var(--space-6);
+    border-top: 1px solid var(--border-dim);
+    padding-top: var(--space-4);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .step-h .mono {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .snippet {
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    padding: var(--space-3);
+    overflow-x: auto;
+    font-size: var(--fs-xs);
+    margin: var(--space-3) 0;
+  }
+  .snippet code { background: transparent; padding: 0; }
+  .layers { width: 100%; border-collapse: collapse; margin: var(--space-3) 0; }
+  .layers th,
+  .layers td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-dim);
+    text-align: left;
+    vertical-align: top;
+    font-size: var(--fs-sm);
+  }
+  .layers th {
+    color: var(--text-mute);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .video-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    aspect-ratio: 16 / 9;
+    background: var(--bg-base);
+    border: 1px dashed var(--border-bright);
+    border-radius: var(--radius-xs);
+    color: var(--text-mute);
+    text-align: center;
+    padding: var(--space-4);
+  }
+  .video-slot__icon {
+    font-size: 48px;
+    color: var(--accent-hi);
+    opacity: 0.5;
+  }
+  .video-slot__label {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+  .video-slot__note {
+    font-size: var(--fs-sm);
+    color: var(--text-mute);
+    max-width: 480px;
+    margin: 0;
+  }
+  .tut__foot {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    border-top: 1px solid var(--border-dim);
+    padding-top: var(--space-6);
+  }
+</style>

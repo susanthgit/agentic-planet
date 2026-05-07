@@ -1,0 +1,112 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+import llms from '@data/compare/llms.json';
+import hosts from '@data/compare/hosts.json';
+import frameworks from '@data/compare/frameworks.json';
+import vendors from '@data/compare/vendors.json';
+import protocols from '@data/compare/protocols.json';
+
+const categories = [
+  { slug: 'llms',       label: 'LLMs',       count: llms.items.length,       primaryJob: 'Models that do the reasoning + tool-calling.' },
+  { slug: 'hosts',      label: 'Hosts',      count: hosts.items.length,      primaryJob: 'Where the LLM runs your agentic workflow (chat, IDE, terminal).' },
+  { slug: 'frameworks', label: 'Frameworks', count: frameworks.items.length, primaryJob: 'Programmatic agent libraries (LangChain, LlamaIndex, DSPy, …).' },
+  { slug: 'vendors',    label: 'Vendors',    count: vendors.items.length,    primaryJob: 'Microsoft · Anthropic · OpenAI · Google — strategy + lock-in.' },
+  { slug: 'protocols',  label: 'Protocols',  count: protocols.items.length,  primaryJob: 'MCP · A2A · Apps SDK · Agent Protocol — the spec layer.' },
+];
+
+const totalItems = categories.reduce((s, c) => s + c.count, 0);
+---
+
+<BaseLayout
+  title="Compare — LLMs, hosts, frameworks, vendors, protocols"
+  description="Side-by-side, no spin. Pick a category, pick items, see them on consistent axes. Pure client-side."
+>
+  <PillarHeader
+    code="CMP-01"
+    color="accent"
+    title="Compare."
+    description="Pick a category. Pick items. See them on consistent axes. Pure client-side, sharable URLs, every claim dated."
+    count={totalItems}
+    countLabel="items tracked"
+    meta={`${categories.length} CATEGORIES · ${totalItems} ITEMS`}
+    status="LIVE"
+  />
+
+  <section class="container-prose section">
+    <Panel kicker="HOW THIS WORKS" title="Same-category compare = matrix view" density="loose">
+      <p>
+        Each category renders a matrix view: items as columns, axes as rows.
+        Pick 2–4 items at a time. Your selection is encoded in the URL — share the link
+        and the recipient sees the same comparison.
+      </p>
+      <p>
+        Every axis carries a <code>lastCheckedAt</code> date and a confidence level.
+        Pricing changes; capabilities ship. The dates tell you when we last verified.
+      </p>
+      <p>
+        <strong>Cross-category comparison</strong> (e.g. Claude Desktop vs Cursor vs Cline)
+        is a different question than ``which model is better?'' — for that, see the
+        <a href="/compare/stack/">stack decision view</a>.
+      </p>
+    </Panel>
+
+    <Panel kicker={`${categories.length} CATEGORIES`} title="Pick one to start" density="tight">
+      <ul class="catlist">
+        {categories.map((c) => (
+          <li class="catrow">
+            <a class="catrow__link" href={`/compare/${c.slug}/`}>
+              <span class="catrow__label mono">{c.label.toUpperCase()}</span>
+              <span class="catrow__job">{c.primaryJob}</span>
+              <span class="catrow__count mono">{c.count} ITEMS →</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+
+    <Panel kicker="EDITORIAL" title="What this isn't" density="loose">
+      <ul>
+        <li><strong>Not a leaderboard.</strong> Verdicts are scoped (``default for X'' / ``use when Y'') — not winner / loser.</li>
+        <li><strong>Not paid placement.</strong> No vendor pays. No priority surfacing.</li>
+        <li><strong>Not exhaustive.</strong> We compare items we've actually evaluated. Suggest additions via the issue tracker.</li>
+      </ul>
+      <Button href="https://github.com/susanthgit/agentic-planet/issues/new" variant="ghost" iconLeft="✎">Suggest an item</Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .catlist { list-style: none; padding: 0; margin: 0; }
+  .catrow { border-bottom: 1px solid var(--border-dim); }
+  .catrow:last-child { border-bottom: 0; }
+  .catrow__link {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-3) var(--space-2);
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+  .catrow__link:hover { background: var(--bg-elevated); }
+  .catrow__label {
+    font-size: var(--fs-sm);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    font-weight: var(--fw-bold);
+  }
+  .catrow__job { color: var(--text); }
+  .catrow__count {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  @media (max-width: 700px) {
+    .catrow__link { grid-template-columns: 1fr; gap: var(--space-1); }
+  }
+</style>

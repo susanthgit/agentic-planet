@@ -21,7 +21,7 @@ const depthColor = depth === '90-sec' ? 'green' : depth === '5-min' ? 'cyan' : '
 ---
 
 <BaseLayout title={title} description={summary}>
-  <article class="explainer">
+  <article class="explainer" data-pagefind-meta={`kind:explainer,depth:${depth}`}>
     <header class="explainer__head container-prose">
       <nav class="breadcrumb mono">
         <a href="/learn/">Learn</a>

@@ -1,0 +1,79 @@
+{
+  "_note": "Protocols shaping the agentic era. 2026-Q2 snapshot.",
+  "category": "protocols",
+  "categoryLabel": "Protocols",
+  "items": [
+    {
+      "id": "mcp",
+      "name": "MCP — Model Context Protocol",
+      "entityType": "protocol",
+      "layer": "standard",
+      "primaryJob": "Connect agents to tools, data sources, and apps",
+      "comparableWith": ["protocol"],
+      "axes": {
+        "publisher": { "value": "Anthropic", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "introduced": { "value": "Nov 2024", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "adoption": { "value": "established", "note": "Cross-vendor adoption — Anthropic, Microsoft, OpenAI (via Apps SDK), Google (via Vertex). 350+ servers tracked." },
+        "transport": { "value": "stdio · HTTP+SSE · WebSocket" },
+        "openSpec": { "value": "yes", "source": "https://spec.modelcontextprotocol.io/" },
+        "leadsAt": ["Largest server catalog", "Cross-vendor support", "Cleanest spec"],
+        "lagsAt": ["Auth / multi-tenancy still evolving (RFC 2.0 in flight)"],
+        "verdict": "Default for tool connection. The de-facto standard."
+      }
+    },
+    {
+      "id": "a2a",
+      "name": "A2A — Agent-to-Agent Protocol",
+      "entityType": "protocol",
+      "layer": "standard",
+      "primaryJob": "Discover and delegate to other agents",
+      "comparableWith": ["protocol"],
+      "axes": {
+        "publisher": { "value": "Google", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "introduced": { "value": "2025", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "adoption": { "value": "growing", "note": "Useful for multi-agent systems and sub-task delegation. Different problem space than MCP." },
+        "transport": { "value": "HTTP" },
+        "openSpec": { "value": "yes" },
+        "leadsAt": ["Multi-agent orchestration", "Discovery primitives"],
+        "lagsAt": ["Smaller adoption than MCP", "Use case narrower (multi-agent specific)"],
+        "verdict": "Use when you're orchestrating multiple agents. Complementary to MCP, not a replacement."
+      }
+    },
+    {
+      "id": "apps-sdk",
+      "name": "Apps SDK",
+      "entityType": "protocol",
+      "layer": "standard",
+      "primaryJob": "OpenAI's framework for building apps inside ChatGPT",
+      "comparableWith": ["protocol"],
+      "axes": {
+        "publisher": { "value": "OpenAI", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "introduced": { "value": "2025", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "adoption": { "value": "growing", "note": "Uses MCP-style server protocol for tools; ChatGPT-specific UI / widget rendering layered on top." },
+        "transport": { "value": "MCP transport + ChatGPT UI hooks" },
+        "openSpec": { "value": "partial", "note": "Tool layer is MCP; UI / widget hooks are ChatGPT-specific." },
+        "leadsAt": ["ChatGPT distribution", "Rich UI widgets", "Builds on MCP rather than replacing it"],
+        "lagsAt": ["Audience-locked to ChatGPT users"],
+        "verdict": "Default if your audience lives in ChatGPT and you want first-class UI in the chat surface."
+      }
+    },
+    {
+      "id": "agent-protocol",
+      "name": "Agent Protocol",
+      "entityType": "protocol",
+      "layer": "standard",
+      "primaryJob": "Vendor-neutral REST API for invoking agents",
+      "comparableWith": ["protocol"],
+      "axes": {
+        "publisher": { "value": "AI Engineer Foundation", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "introduced": { "value": "2024", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "adoption": { "value": "niche", "note": "Less momentum than MCP / A2A. Worth tracking as a hedge against vendor protocols fragmenting." },
+        "transport": { "value": "HTTP" },
+        "openSpec": { "value": "yes" },
+        "leadsAt": ["Vendor-neutral", "Simple HTTP REST shape"],
+        "lagsAt": ["Limited adoption", "Less tooling than MCP"],
+        "verdict": "Worth tracking. Default to MCP for now; revisit Agent Protocol if vendor protocols fragment."
+      }
+    }
+  ]
+}

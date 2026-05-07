@@ -1,0 +1,72 @@
+{
+  "_note": "Vendor positioning. 2026-Q2 snapshot. Microsoft pages disclose Sush's employer.",
+  "category": "vendors",
+  "categoryLabel": "Vendors",
+  "items": [
+    {
+      "id": "microsoft",
+      "name": "Microsoft",
+      "entityType": "vendor",
+      "layer": "distribution",
+      "primaryJob": "Enterprise agent platform (Copilot Studio · Foundry · Agent 365)",
+      "comparableWith": ["vendor"],
+      "axes": {
+        "products": { "value": "Copilot Studio · Foundry · Connectors · Agent 365 · Declarative Agents", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "lockIn": { "value": "moderate", "note": "Strong if you're building inside M365 / Azure. Connectors / Foundry resources are portable in concept; in practice, migration is non-trivial." },
+        "mcpStance": { "value": "supportive", "note": "Microsoft has shipped MCP support across Copilot Studio + VS Code + Azure AI." },
+        "disclosure": { "value": "yes", "note": "Sush is a Copilot Solution Engineer at Microsoft NZ. The take here is independent — not Microsoft's official position." },
+        "leadsAt": ["Enterprise IT integration", "Existing M365 / Azure footprints", "Compliance / governance story"],
+        "lagsAt": ["Pricing complexity (multiple tiers)", "Brand / pace lag vs Anthropic on protocol-led features"],
+        "verdict": "Default if your org already runs on M365 / Azure and you need the governance story."
+      }
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "entityType": "vendor",
+      "layer": "distribution",
+      "primaryJob": "Protocol-led, capability-led, safety-led",
+      "comparableWith": ["vendor"],
+      "axes": {
+        "products": { "value": "Claude · MCP · Skills · Computer Use · Agent SDK", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "lockIn": { "value": "low", "note": "MCP is open. Claude API is single-vendor; switching costs at the model layer are real but architectural lock-in is modest." },
+        "mcpStance": { "value": "creator", "note": "Anthropic introduced MCP in November 2024. Strongest first-class support." },
+        "leadsAt": ["MCP", "Skills (capability bundling)", "Honest model behaviour", "Computer Use API"],
+        "lagsAt": ["Image / audio capabilities (text-only models)", "Smaller distribution than ChatGPT"],
+        "verdict": "Default for builders who care about protocols, plain behaviour, and cross-vendor interop."
+      }
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "entityType": "vendor",
+      "layer": "distribution",
+      "primaryJob": "Platform + reach (ChatGPT · Apps SDK · Operator · Agents SDK)",
+      "comparableWith": ["vendor"],
+      "axes": {
+        "products": { "value": "GPTs · Apps SDK · Agents SDK · Operator · Realtime API", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "lockIn": { "value": "moderate", "note": "Apps SDK builds on MCP-style servers (good for portability), but ChatGPT-specific UI hooks are platform-locked." },
+        "mcpStance": { "value": "supportive", "note": "Apps SDK uses MCP-style server protocol; ChatGPT exposes them as apps." },
+        "leadsAt": ["Massive consumer reach via ChatGPT", "Image / audio / realtime modalities", "Apps SDK distribution"],
+        "lagsAt": ["Reasoning effort settings can be opaque", "Pace of API churn"],
+        "verdict": "Default if your audience lives in ChatGPT, or you need image / audio / realtime out of the box."
+      }
+    },
+    {
+      "id": "google",
+      "name": "Google",
+      "entityType": "vendor",
+      "layer": "distribution",
+      "primaryJob": "Long-context · multimodal · workspace integration",
+      "comparableWith": ["vendor"],
+      "axes": {
+        "products": { "value": "Gemini · Vertex AI Agents · A2A · Notebook LM · AI Studio", "lastCheckedAt": "2026-05-07", "confidence": "high" },
+        "lockIn": { "value": "moderate", "note": "Vertex resources are GCP-locked. Gemini API is portable in concept; integrations into Workspace are platform-locked." },
+        "mcpStance": { "value": "supportive", "note": "Vertex AI Agents adopted MCP. A2A is Google's protocol for agent-to-agent communication, complementary to MCP." },
+        "leadsAt": ["Long-context (1M tokens)", "Multimodal in / out", "Workspace integration"],
+        "lagsAt": ["Fewer cross-vendor host integrations", "Smaller MCP server catalog than Anthropic-led ecosystem"],
+        "verdict": "Default when your task is genuinely long-context / multimodal, or you live in Google Workspace."
+      }
+    }
+  ]
+}

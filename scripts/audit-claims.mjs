@@ -225,17 +225,42 @@ const dynamicPrefixes = routes.filter(r => r.dynamic).map(r => {
   return { prefix, collection, file: r.file, route: r.route };
 });
 
+// Static-list-driven dynamic routes (not content-collection-backed).
+// These resolve via getStaticPaths() against a hand-listed set in the page itself.
+const STATIC_DYNAMIC_SLUGS = {
+  '/compare/': ['llms', 'hosts', 'frameworks', 'vendors', 'protocols'],
+  '/badge/':   [], // populated below from scorecards collection
+};
+
 // For each dynamic prefix, list slugs present in the matching collection
 function slugsForPrefix(prefix) {
+  // Static-list dynamic routes (e.g. /compare/[category])
+  if (STATIC_DYNAMIC_SLUGS[prefix]) {
+    if (prefix === '/badge/') {
+      return (collectionStats.scorecards || []).map(s => s.slug);
+    }
+    return STATIC_DYNAMIC_SLUGS[prefix];
+  }
   // /faq/ → faq · /mcp/ → mcps (singular path → plural collection? real mapping)
-  // Astro repo uses /mcp/[slug] but collection name is "mcps"; /recipes/[slug] → "recipes"; /faq/[slug] → "faq"; /learn/[slug] → "explainers"
+  // Astro repo uses /mcp/[slug] but collection name is "mcps"; /recipes/[slug] → "recipes"; /faq/[slug] → "faq"; /learn/[slug] → "explainers"; /desk/[slug] → "desk"
   const segment = prefix.replace(/^\/|\/$/g, '');
-  const map = { mcp: 'mcps', recipes: 'recipes', faq: 'faq', learn: 'explainers' };
+  const map = { mcp: 'mcps', recipes: 'recipes', faq: 'faq', learn: 'explainers', desk: 'desk' };
   const collection = map[segment] || segment;
   return (collectionStats[collection] || []).map(item => item.slug);
 }
 
+function looksLikeFilePath(url) {
+  // Filter URL-like strings that are actually file system paths in code snippets
+  // (e.g. /Users/you/code/repo, /home/user, /etc/passwd, /var/log)
+  if (/^\/(Users|home|etc|var|opt|tmp|root|mnt|srv|usr|bin|sbin|lib|boot|dev|proc|sys|run)(\/|$)/.test(url)) return true;
+  // Windows-style absolute paths
+  if (/^\/[A-Z]:[/\\]/i.test(url)) return true;
+  return false;
+}
+
 function routeExists(url) {
+  // Filter out file-system paths in code snippets — they're not internal URLs
+  if (looksLikeFilePath(url)) return { exists: true, kind: 'filesystem-path-not-a-url' };
   // Normalise trailing slash
   const trimmed = url.endsWith('/') ? url : url + '/';
   if (staticRoutes.has(trimmed)) return { exists: true, kind: 'static' };
@@ -245,12 +270,16 @@ function routeExists(url) {
       const slug = trimmed.slice(dp.prefix.length).replace(/\/$/, '');
       const slugs = slugsForPrefix(dp.prefix);
       if (slugs.includes(slug)) return { exists: true, kind: 'dynamic-matched', collection: dp.collection };
+      // Special handling: /badge/<slug>/security.svg shape — also valid
+      if (dp.prefix === '/badge/' && slug.includes('/security.svg')) {
+        const slugOnly = slug.split('/')[0];
+        if (slugs.includes(slugOnly)) return { exists: true, kind: 'badge-svg-matched' };
+      }
       return { exists: false, kind: 'dynamic-no-content', collection: dp.collection, slug };
     }
   }
   // Also accept /static-asset patterns from /public
   // crude check: does file exist under public/?
-  const pubPath = path.join(PUBLIC, url);
   return { exists: false, kind: 'unknown' };
 }
 

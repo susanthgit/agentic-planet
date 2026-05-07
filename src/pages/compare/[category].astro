@@ -1,0 +1,104 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import CompareMatrix from '@components/interactive/CompareMatrix.tsx';
+
+import llms from '@data/compare/llms.json';
+import hosts from '@data/compare/hosts.json';
+import frameworks from '@data/compare/frameworks.json';
+import vendors from '@data/compare/vendors.json';
+import protocols from '@data/compare/protocols.json';
+
+export function getStaticPaths() {
+  return [
+    { params: { category: 'llms' } },
+    { params: { category: 'hosts' } },
+    { params: { category: 'frameworks' } },
+    { params: { category: 'vendors' } },
+    { params: { category: 'protocols' } },
+  ];
+}
+
+const { category } = Astro.params;
+
+const dataMap: Record<string, any> = { llms, hosts, frameworks, vendors, protocols };
+const data = dataMap[category as string];
+
+if (!data) {
+  throw new Error(`Unknown compare category: ${category}`);
+}
+
+const colorMap: Record<string, string> = {
+  llms:       'magenta',
+  hosts:      'cyan',
+  frameworks: 'green',
+  vendors:    'amber',
+  protocols:  'accent',
+};
+---
+
+<BaseLayout
+  title={`Compare ${data.categoryLabel} — side by side`}
+  description={`${data.categoryLabel} compared on consistent axes. ${data.items.length} items tracked. Per-axis confidence + lastCheckedAt. Pure client-side.`}
+>
+  <PillarHeader
+    code={`CMP-${category.toUpperCase()}`}
+    color={colorMap[category as string] as any}
+    title={`Compare ${data.categoryLabel.toLowerCase()}.`}
+    description={`${data.items.length} ${data.categoryLabel.toLowerCase()} side-by-side on consistent axes. Per-axis values carry lastCheckedAt + confidence + source.`}
+    count={data.items.length}
+    countLabel="items tracked"
+    meta={`CATEGORY ${category.toUpperCase()} · ${data.items.length} ITEMS`}
+    status="LIVE"
+  />
+
+  <section class="container-wide section">
+    <CompareMatrix
+      client:load
+      items={data.items}
+      category={data.category}
+      categoryLabel={data.categoryLabel}
+    />
+  </section>
+
+  <section class="container-prose section">
+    <Panel kicker="OTHER CATEGORIES" title="Compare something else" density="tight">
+      <ul class="otherslist">
+        {category !== 'llms'       && <li><a href="/compare/llms/" class="mono">LLMS →</a></li>}
+        {category !== 'hosts'      && <li><a href="/compare/hosts/" class="mono">HOSTS →</a></li>}
+        {category !== 'frameworks' && <li><a href="/compare/frameworks/" class="mono">FRAMEWORKS →</a></li>}
+        {category !== 'vendors'    && <li><a href="/compare/vendors/" class="mono">VENDORS →</a></li>}
+        {category !== 'protocols'  && <li><a href="/compare/protocols/" class="mono">PROTOCOLS →</a></li>}
+        <li><a href="/compare/stack/" class="mono">STACK DECISION VIEW (cross-category) →</a></li>
+      </ul>
+    </Panel>
+
+    <Panel kicker="DISCLOSURES" title="Editorial policy" density="loose">
+      <ul>
+        <li>Microsoft pages disclose Sush's employer.</li>
+        <li>No vendor pays for placement.</li>
+        <li>Verdicts are scoped to a use-case (``default for X'' / ``use when Y''). Not winner / loser.</li>
+        <li>Every axis carries lastCheckedAt and confidence. Pricing in particular drifts — we date it explicitly.</li>
+      </ul>
+      <Button href="https://github.com/susanthgit/agentic-planet/issues/new" variant="ghost" iconLeft="✎">Suggest an item or correction</Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .otherslist {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .otherslist a {
+    font-size: var(--fs-sm);
+    color: var(--accent-hi);
+    border-bottom: 1px dotted var(--accent-hi);
+  }
+</style>

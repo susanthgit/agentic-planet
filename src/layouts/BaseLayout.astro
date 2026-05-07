@@ -70,16 +70,20 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
 <body class={bodyClass}>
   <a href="#main" class="skip-link">Skip to main content</a>
 
-  <StatusBar />
-  <Nav />
+  <div data-pagefind-ignore>
+    <StatusBar />
+    <Nav />
+  </div>
 
   <main id="main" tabindex="-1">
     <slot />
   </main>
 
-  <Footer />
+  <div data-pagefind-ignore>
+    <Footer />
 
-  <CommandPalette client:load />
+    <CommandPalette client:load />
+  </div>
 
   <script>
     // ⌘K is handled by CommandPalette React island. No fallback navigation.

@@ -1,0 +1,92 @@
+{
+  "_note": "Hosts (where the LLM runs your agentic workflow). 2026-Q2 snapshot.",
+  "category": "hosts",
+  "categoryLabel": "Hosts",
+  "items": [
+    {
+      "id": "claude-desktop",
+      "name": "Claude Desktop",
+      "entityType": "host",
+      "layer": "runtime",
+      "primaryJob": "Local desktop chat host with first-class MCP",
+      "comparableWith": ["host"],
+      "axes": {
+        "pricing": { "value": "Free + Pro $20/mo", "lastCheckedAt": "2026-05-07", "confidence": "high", "source": "https://www.anthropic.com/pricing" },
+        "modelLockIn": { "value": "Claude only", "note": "Doesn't run other vendors' models." },
+        "mcpSupport": { "value": "first-class", "note": "MCP is configured via a single config.json. Many MCPs ship with Claude Desktop config snippets in their READMEs." },
+        "headless": { "value": "no" },
+        "leadsAt": ["Best MCP onboarding", "Long conversations", "Voice-of-tool design"],
+        "lagsAt": ["No headless / scripted mode", "macOS + Windows only", "No keyboard-only navigation that beats a real IDE"],
+        "verdict": "Default host for non-coding agentic work. Setup is the lowest-friction in the field."
+      }
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "entityType": "host",
+      "layer": "runtime",
+      "primaryJob": "Terminal-first coding agent",
+      "comparableWith": ["host"],
+      "axes": {
+        "pricing": { "value": "Pro $20/mo (included)", "lastCheckedAt": "2026-05-07", "confidence": "high", "source": "https://www.anthropic.com/claude-code" },
+        "modelLockIn": { "value": "Claude only" },
+        "mcpSupport": { "value": "first-class" },
+        "headless": { "value": "yes", "note": "Can be invoked from scripts; conversation state in the terminal." },
+        "leadsAt": ["Terminal-native workflow", "First-class MCP", "Honest about its own actions"],
+        "lagsAt": ["Single-vendor model", "Terminal UX has a learning curve"],
+        "verdict": "Default for terminal-first developers who already work in tmux / iTerm / WT."
+      }
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "entityType": "host",
+      "layer": "runtime",
+      "primaryJob": "AI-first code editor (VS Code fork)",
+      "comparableWith": ["host"],
+      "axes": {
+        "pricing": { "value": "Free + Pro $20/mo + Business $40/mo", "lastCheckedAt": "2026-05-07", "confidence": "high", "source": "https://cursor.com/pricing" },
+        "modelLockIn": { "value": "multi-model", "note": "Claude, GPT, Gemini, custom — switchable per task." },
+        "mcpSupport": { "value": "yes" },
+        "headless": { "value": "no" },
+        "leadsAt": ["IDE integration", "Tab-completion + agent in one tool", "Multi-model routing"],
+        "lagsAt": ["VS Code drift (lags upstream by weeks)", "Pricing-tier feature gating can frustrate"],
+        "verdict": "Default for IDE-centric developers who want one tool that does completion AND agent work."
+      }
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "entityType": "host",
+      "layer": "runtime",
+      "primaryJob": "Open-source agent inside VS Code",
+      "comparableWith": ["host"],
+      "axes": {
+        "pricing": { "value": "Free (BYO API key)", "lastCheckedAt": "2026-05-07", "confidence": "high", "note": "You pay token costs directly to your model provider." },
+        "modelLockIn": { "value": "multi-model", "note": "Any provider with an API key." },
+        "mcpSupport": { "value": "first-class" },
+        "headless": { "value": "no" },
+        "leadsAt": ["Open source, transparent", "Multi-model + multi-provider", "Strong MCP support"],
+        "lagsAt": ["BYO API means you eat token spikes", "Setup heavier than Cursor"],
+        "verdict": "Default when you want full control over your agent tool — no vendor markup, all your tokens."
+      }
+    },
+    {
+      "id": "goose",
+      "name": "Goose",
+      "entityType": "host",
+      "layer": "runtime",
+      "primaryJob": "Open-source CLI / desktop agent (Block-built)",
+      "comparableWith": ["host"],
+      "axes": {
+        "pricing": { "value": "Free (BYO model)", "lastCheckedAt": "2026-05-07", "confidence": "high", "source": "https://block.github.io/goose/" },
+        "modelLockIn": { "value": "multi-model" },
+        "mcpSupport": { "value": "first-class" },
+        "headless": { "value": "yes" },
+        "leadsAt": ["Both desktop and CLI modes", "Strong MCP support", "Built and used inside Block (eat-your-own-dog-food)"],
+        "lagsAt": ["Smaller community than Cursor / Cline", "Desktop UX still maturing"],
+        "verdict": "Worth a look if you want headless-capable open-source with MCP. Niche but real."
+      }
+    }
+  ]
+}

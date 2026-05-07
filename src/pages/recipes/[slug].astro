@@ -34,7 +34,7 @@ const riskColor = risk === 'low' ? 'green' : risk === 'medium' ? 'amber' : 'red'
 ---
 
 <BaseLayout title={`${title} — Recipe`} description={description}>
-  <article class="recipe">
+  <article class="recipe" data-pagefind-meta={`kind:recipe,status:${status}`}>
     <header class="recipe__head">
       <div class="recipe__head-inner container-wide">
         <nav class="breadcrumb mono">
