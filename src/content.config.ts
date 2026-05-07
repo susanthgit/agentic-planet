@@ -1,6 +1,25 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+/**
+ * Lifecycle status — applied to every content collection (Session 1 Phase A2, 2026-05-07).
+ *
+ * - draft       : not linked from primary nav, not counted, noindex
+ * - review      : visible-with-banner; off-counts, off-sitemap, noindex
+ * - published   : counted, indexed, primary-nav-eligible (Sush has voice-passed)
+ * - archived    : visible but excluded from "current" / "freshness" claims
+ *
+ * `countable` and `noindex` are derived from `status` by default in the count engine
+ * but can be overridden per-file when needed (e.g. a published page intentionally noindex'd).
+ */
+const lifecycle = {
+  status: z.enum(['draft', 'review', 'published', 'archived']).default('draft'),
+  countable: z.boolean().optional(),  // derived from status if absent
+  noindex: z.boolean().optional(),    // derived from status if absent
+  lastReviewedAt: z.coerce.date().optional(),
+  nextReviewDue: z.coerce.date().optional(),
+};
+
 // Recipes — chained workflows with measured before/after
 const recipes = defineCollection({
   loader: glob({ base: 'src/content/recipes', pattern: '**/*.{md,mdx}' }),
@@ -12,13 +31,13 @@ const recipes = defineCollection({
     before: z.string(),
     after: z.string(),
     cost: z.string().optional(),
-    status: z.enum(['production', 'experimental', 'draft']).default('draft'),
     domain: z.string().optional(),
     publishedAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),
     runs: z.number().optional(),
     risk: z.enum(['low', 'medium', 'high']).optional(),
-    sushVerdictNeeded: z.boolean().default(false),
+    sushVerdictNeeded: z.boolean().default(true),
+    ...lifecycle,
   }),
 });
 
@@ -39,8 +58,9 @@ const mcps = defineCollection({
     dataAccess: z.array(z.string()).default([]),
     health: z.enum(['alive', 'slowing', 'abandoned', 'unknown']).default('unknown'),
     recommend: z.boolean().default(false),
-    sushVerdictNeeded: z.boolean().default(false),
+    sushVerdictNeeded: z.boolean().default(true),
     reviewedAt: z.coerce.date().optional(),
+    ...lifecycle,
   }),
 });
 
@@ -61,7 +81,8 @@ const tools = defineCollection({
     catch: z.string().optional(),
     homepage: z.string().url().optional(),
     repo: z.string().url().optional(),
-    sushVerdictNeeded: z.boolean().default(false),
+    sushVerdictNeeded: z.boolean().default(true),
+    ...lifecycle,
   }),
 });
 
@@ -74,8 +95,9 @@ const vendors = defineCollection({
     productName: z.string().optional(),
     summary: z.string(),
     publishedAt: z.coerce.date().optional(),
-    sushVerdictNeeded: z.boolean().default(false),
+    sushVerdictNeeded: z.boolean().default(true),
     disclosureRequired: z.boolean().default(false),
+    ...lifecycle,
   }),
 });
 
@@ -89,7 +111,8 @@ const standards = defineCollection({
     summary: z.string(),
     specUrl: z.string().url().optional(),
     adoption: z.enum(['draft', 'emerging', 'established', 'fading']).default('emerging'),
-    sushVerdictNeeded: z.boolean().default(false),
+    sushVerdictNeeded: z.boolean().default(true),
+    ...lifecycle,
   }),
 });
 
@@ -104,6 +127,7 @@ const explainers = defineCollection({
     publishedAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),
     sushReviewNeeded: z.boolean().default(true),
+    ...lifecycle,
   }),
 });
 
@@ -116,7 +140,7 @@ const faq = defineCollection({
     summary: z.string(),
     category: z.enum(['big-picture', 'technical', 'career', 'safety', 'cost', 'protocol']).default('big-picture'),
     sushReviewNeeded: z.boolean().default(true),
-    lastReviewedAt: z.coerce.date().optional(),
+    ...lifecycle,
   }),
 });
 
@@ -129,6 +153,7 @@ const safety = defineCollection({
     category: z.enum(['injection', 'data-flow', 'failure-mode', 'privacy', 'decision-tree']).default('failure-mode'),
     severity: z.enum(['info', 'low', 'medium', 'high', 'critical']).default('medium'),
     sushReviewNeeded: z.boolean().default(false),
+    ...lifecycle,
   }),
 });
 
@@ -140,6 +165,7 @@ const landscape = defineCollection({
     summary: z.string(),
     eventDate: z.coerce.date().optional(),
     type: z.enum(['timeline-event', 'state-of', 'prediction', 'vendor-move']).default('timeline-event'),
+    ...lifecycle,
   }),
 });
 
@@ -153,6 +179,7 @@ const open = defineCollection({
     summary: z.string(),
     category: z.string(),
     health: z.enum(['alive', 'slowing', 'abandoned', 'unknown']).default('unknown'),
+    ...lifecycle,
   }),
 });
 
