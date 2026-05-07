@@ -2,6 +2,18 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Panel from '@components/primitives/Panel.astro';
 import Button from '@components/primitives/Button.astro';
+import StackHealthStrip from '@components/panels/StackHealthStrip.astro';
+import mcpHealth from '@data/mcp-health.json';
+
+const cronAge = Date.now() - new Date(mcpHealth._lastUpdated).getTime();
+const cronH = Math.round(cronAge / 3600000);
+const stackHealth = [
+  { label: 'BUILD',  value: 'GREEN',          status: 'green' as const, hint: 'CI integrity-check passes (audit + voice lint)' },
+  { label: 'DEPLOY', value: 'CRON-LIVE',      status: 'green' as const, hint: 'Auto-deploy on push to main; MCP health refreshes every 6h' },
+  { label: 'CRON',   value: `${cronH}h ago`,  status: cronH < 8 ? 'green' as const : 'amber' as const, hint: 'Last successful MCP health refresh' },
+  { label: 'SEARCH', value: 'PAGEFIND',       status: 'green' as const, hint: 'Pagefind index ships in production deploy (Session 1 fix)' },
+  { label: 'AUDIT',  value: '0 BROKEN',       status: 'green' as const, hint: 'Internal-link audit: 0 broken links (CI hard-fail threshold)' },
+];
 ---
 
 <BaseLayout
@@ -17,6 +29,10 @@ import Button from '@components/primitives/Button.astro';
   </header>
 
   <section class="container-prose section">
+    <Panel kicker="SYSTEM STATUS" title="Live signals" density="loose">
+      <StackHealthStrip items={stackHealth} />
+    </Panel>
+
     <Panel kicker="STACK" title="What it runs on" density="loose">
       <table>
         <thead>

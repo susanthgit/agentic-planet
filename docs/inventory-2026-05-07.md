@@ -1,5 +1,5 @@
 # Agentic Planet — Inventory & claim matrix
-*Generated 2026-05-07T02:21:26.045Z by `scripts/audit-claims.mjs`*
+*Generated 2026-05-07T02:28:03.064Z by `scripts/audit-claims.mjs`*
 
 This report is the Session 1 Phase A artefact. It captures every claim, link, count, route, and data row in the repo so Phases B–E have a baseline to fix against.
 
@@ -22,6 +22,7 @@ This report is the Session 1 Phase A artefact. It captures every claim, link, co
 | `/learn/glossary/` | `src/pages/learn/glossary.astro` |  |
 | `/mcp/` | `src/pages/mcp/index.astro` |  |
 | `/mcp/[slug]/` | `src/pages/mcp/[slug].astro` | ✓ |
+| `/methodology/mcp-security-scorecard/` | `src/pages/methodology/mcp-security-scorecard.astro` |  |
 | `/open/` | `src/pages/open/index.astro` |  |
 | `/pulse/` | `src/pages/pulse.astro` |  |
 | `/recipes/` | `src/pages/recipes/index.astro` |  |
@@ -74,6 +75,7 @@ _None._
 | File | Size |
 |------|------|
 | `public/favicon.svg` | 500 bytes |
+| `public/llms.txt` | 4112 bytes |
 | `public/robots.txt` | 88 bytes |
 
 ## Data files

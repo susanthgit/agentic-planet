@@ -7,6 +7,7 @@ import MetricTile from '@components/data/MetricTile.astro';
 import Icon from '@components/primitives/Icon.astro';
 import LiveDot from '@components/data/LiveDot.astro';
 import DeltaPill from '@components/data/DeltaPill.astro';
+import ActivityHeatmap from '@components/panels/ActivityHeatmap.astro';
 import { getCollection } from 'astro:content';
 import { computeUniqueRepoStars } from '@lib/counts';
 
@@ -117,6 +118,12 @@ function fmt(n: number): string {
   <section class="container-wide section">
     <Panel kicker="FULL HEALTH BOARD" title={`All ${rows.length} servers`} variant="default" density="tight">
       <HealthBoard rows={rows} compact={false} reviewedSlugs={reviewedSlugs} />
+    </Panel>
+  </section>
+
+  <section class="container-wide section">
+    <Panel kicker="ACTIVITY HEATMAP" title="Last 7 days · all tracked MCPs" variant="default" density="tight">
+      <ActivityHeatmap rows={rows} />
     </Panel>
   </section>
 

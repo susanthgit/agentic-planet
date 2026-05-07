@@ -1,0 +1,213 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+/**
+ * MCP Security Scorecard — methodology page.
+ *
+ * STATUS: review (Session 1 Phase E scaffold; sushReviewNeeded — clears
+ * to status: published in Session 2 BEFORE any public scorecard ships).
+ *
+ * Why this page exists FIRST:
+ *   The Scorecard is opinionated public commentary on third-party MCPs.
+ *   Without methodology, dispute path, and an explicit "not a formal audit"
+ *   disclaimer, scorecards read as arbitrary or accusatory. This page
+ *   ships before any /scorecards/<slug>/ page is publicly linked.
+ */
+---
+
+<BaseLayout
+  title="MCP Security Scorecard — methodology"
+  description="How we score MCP servers. What's measured, what isn't, how to dispute. Not a formal security audit."
+  noIndex={true}
+>
+  <PillarHeader
+    code="MTH-01"
+    color="amber"
+    title="Methodology · MCP Security Scorecard"
+    description="Adoption posture, not certification. What we look at, what we don't, how disputes work."
+    count={0}
+    countLabel="scorecards public"
+    meta="STATUS // REVIEW · SUSH VOICE PASS PENDING"
+    status="REVIEW"
+  />
+
+  <section class="container-prose section">
+    <Panel kicker="THE PROMISE" title="Adoption posture, not certification" density="loose">
+      <p>
+        Snyk and Socket cover npm packages. There's no equivalent for MCP servers.
+        The MCP Security Scorecard fills that gap with an <strong>opinionated adoption posture</strong> per server,
+        based on public-source review. The point isn't to gate — it's to help builders make adoption decisions explicit instead of vibes-based.
+      </p>
+      <p class="callout">
+        <strong>This is not a formal security audit.</strong> We don't claim to find every vulnerability.
+        Each scorecard is a snapshot — a methodology version, a confidence level, source citations,
+        and a recommended action. Dispute mechanism below.
+      </p>
+    </Panel>
+
+    <Panel kicker="VERDICT BANDS" title="Four adoption postures" density="loose">
+      <table class="bands-table">
+        <thead>
+          <tr><th>Band</th><th>What it means</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="band band--adopt">ADOPT</td>
+            <td>Corp- or community-maintained · code reviewable · narrow blast radius · current dep tree.</td>
+          </tr>
+          <tr>
+            <td class="band band--limited">ADOPT WITH LIMITS</td>
+            <td>Workable with documented mitigations: scoped tokens, sandbox, human approval on writes.</td>
+          </tr>
+          <tr>
+            <td class="band band--review">REVIEW FIRST</td>
+            <td>Gaps you must understand before adopting (opaque secrets handling, unsigned releases, broad default permissions).</td>
+          </tr>
+          <tr>
+            <td class="band band--avoid">DO NOT USE FOR SENSITIVE WORK</td>
+            <td>Abandoned · unresolved active incidents · or known exfiltration vectors.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Verdicts are scoped to a use-case (e.g. <em>local read-only repo exploration</em> vs <em>production write access</em>).
+        ADOPT for one use-case can be REVIEW FIRST for another.
+      </p>
+    </Panel>
+
+    <Panel kicker="WHAT WE MEASURE" title="22 dimensions per server" density="loose">
+      <ul class="meas-list">
+        <li><strong>Licence.</strong> MIT / Apache-2.0 / etc.</li>
+        <li><strong>Security policy.</strong> Disclosure contact + handling commitment.</li>
+        <li><strong>Signed releases.</strong> Yes / no / partial.</li>
+        <li><strong>Install methods.</strong> npm / Docker / binary / source.</li>
+        <li><strong>Code review.</strong> Yes / partial / no / unknown.</li>
+        <li><strong>Secrets handling.</strong> Scoped / env-only / leaky / unknown.</li>
+        <li><strong>Credential storage.</strong> OS keychain / file / memory / unknown.</li>
+        <li><strong>OAuth handling.</strong> Scoped / broad / n/a.</li>
+        <li><strong>Sandbox model.</strong> Container / subprocess / process / none.</li>
+        <li><strong>Filesystem access.</strong> Scoped / home / root / none.</li>
+        <li><strong>Shell access.</strong> Yes / no / sandboxed.</li>
+        <li><strong>Network egress.</strong> None / allow-list / open.</li>
+        <li><strong>Telemetry.</strong> None / opt-in / opt-out / forced.</li>
+        <li><strong>Data residency.</strong> Local / cloud / mixed.</li>
+        <li><strong>Default permissions.</strong> Minimal / moderate / broad.</li>
+        <li><strong>Destructive tools.</strong> Which tools delete / modify, and is human approval supported?</li>
+        <li><strong>Prompt-injection exposure.</strong> Low / medium / high.</li>
+        <li><strong>Supply chain surface.</strong> Direct + transitive dep counts.</li>
+        <li><strong>Dependency CVE surface.</strong> Last scanned, severity.</li>
+        <li><strong>Rate-limit risk.</strong> Resource exhaustion potential.</li>
+        <li><strong>Maintainer type + bus factor.</strong> Corp / indie / community / abandoned · primary maintainers.</li>
+        <li><strong>Issue response (median days)</strong> + incident history (with sources).</li>
+      </ul>
+      <p>
+        <strong>Unknowns reduce confidence.</strong> They never silently pass. A scorecard with many unknowns ships at lower confidence and the verdict reflects that.
+      </p>
+    </Panel>
+
+    <Panel kicker="WHAT WE DON'T MEASURE" title="Where this is NOT a substitute" density="loose">
+      <ul>
+        <li><strong>Source code audit.</strong> We read public docs, package.json, recent commits, and obvious patterns. We do not run code-level static analysis or fuzz testing.</li>
+        <li><strong>Penetration testing.</strong> We don't probe deployed instances.</li>
+        <li><strong>Threat modelling for your specific deployment.</strong> Your network, your data classification, your compliance — those are yours to map.</li>
+        <li><strong>Cryptographic review.</strong> We note signed-releases yes/no but don't verify key infrastructure.</li>
+        <li><strong>Compliance attestation.</strong> SOC2 / ISO / HIPAA / GDPR — we link to vendor claims if present, we don't certify.</li>
+      </ul>
+      <p>
+        If your context demands any of the above, treat the scorecard as an <em>orienting starting point</em>, not a substitute.
+      </p>
+    </Panel>
+
+    <Panel kicker="EVIDENCE & FRESHNESS" title="Every scorecard carries" density="loose">
+      <ul>
+        <li><strong>Methodology version</strong> — the rubric used at time of review.</li>
+        <li><strong>Confidence level</strong> — high / medium / low based on number of measurable dimensions.</li>
+        <li><strong>Last reviewed</strong> + <strong>next review due</strong> dates. Stale badge if overdue.</li>
+        <li><strong>Sources cited</strong> — public links for every claim.</li>
+        <li><strong>Reviewed by</strong> — person whose adoption posture this represents.</li>
+      </ul>
+    </Panel>
+
+    <Panel kicker="DISPUTE / CORRECT" title="If you maintain an MCP we've scored" density="loose">
+      <p>
+        <strong>Open an issue.</strong> Every scorecard page has a "Report a correction" link that pre-fills
+        a GitHub issue with the slug. Reviewers respond within seven calendar days.
+      </p>
+      <Button href="https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md" variant="primary" iconLeft="✎">
+        Report a scorecard correction
+      </Button>
+      <p>
+        Disputes that change a verdict are merged into the next methodology version. The page records the
+        version history publicly.
+      </p>
+    </Panel>
+
+    <Panel kicker="VERSION HISTORY" title="Methodology versions" density="loose">
+      <table class="versions-table">
+        <thead>
+          <tr><th>Version</th><th>Date</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.0 (planned)</td>
+            <td>Session 2 · 2026-05</td>
+            <td>Initial public methodology. Scorecards begin shipping for the 5 most-used MCPs.</td>
+          </tr>
+        </tbody>
+      </table>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .callout {
+    border-left: 3px solid var(--signal-amber);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    margin: var(--space-4) 0;
+  }
+  .bands-table,
+  .versions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-3) 0;
+  }
+  .bands-table th,
+  .bands-table td,
+  .versions-table th,
+  .versions-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-dim);
+    text-align: left;
+    font-size: var(--fs-sm);
+  }
+  .band {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    font-weight: var(--fw-semibold);
+    white-space: nowrap;
+  }
+  .band--adopt   { color: var(--signal-green); }
+  .band--limited { color: var(--signal-cyan); }
+  .band--review  { color: var(--signal-amber); }
+  .band--avoid   { color: var(--signal-red); }
+  .meas-list {
+    columns: 2;
+    column-gap: var(--space-6);
+    list-style: none;
+    padding: 0;
+  }
+  .meas-list li {
+    margin-bottom: var(--space-2);
+    break-inside: avoid;
+    font-size: var(--fs-sm);
+  }
+  @media (max-width: 700px) {
+    .meas-list { columns: 1; }
+  }
+</style>

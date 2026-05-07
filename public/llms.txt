@@ -1,0 +1,91 @@
+# The Agentic Planet — for AI agents and crawlers
+
+> The cockpit-style field guide for techies building with agents.
+> Plain English. Honest take. Built and maintained by Sush (Microsoft Copilot SE, NZ).
+
+## What this site is
+
+A curated, opinionated reference for the agentic AI space:
+
+- MCP servers (with a Health Board, security scorecard methodology, embeddable badges)
+- Vendor takes (side-by-side, no spin)
+- Recipes (chained workflows with measured before/after numbers)
+- Standards (MCP, A2A, Apps SDK, Agent Protocol)
+- Safety (risk catalog, decision trees, plain-English risk lens)
+- Explainers + FAQ + Glossary
+- Lab tools (Pick Your Stack wizard)
+- Pulse + This Week (cron-fed weekly updates)
+
+## What this site is NOT
+
+- Not vendor docs. Not vendor pitch.
+- Not an aggregator. Not auto-generated.
+- Not a security audit (the Scorecard is opinionated adoption posture; methodology at /methodology/mcp-security-scorecard/).
+- Not a paid tier. No login. No email gate. No tracking beyond cookieless analytics.
+
+## Canonical sections
+
+- /                              — Home (cockpit overview)
+- /landscape/                    — Where the field came from, where it's going
+- /mcp/                          — MCP Health Board + reviews
+- /recipes/                      — Workflows with measured before/after
+- /vendors/                      — Vendor deep-dives (Microsoft, Anthropic, OpenAI, Google)
+- /standards/                    — MCP, A2A, Apps SDK, Agent Protocol
+- /safety/                       — Risk catalog + decision trees
+- /learn/                        — Explainers + glossary
+- /faq/                          — Honest answers to big questions
+- /lab/pick-your-stack/          — 5-question wizard → recommended stack
+- /this-week/                    — MCP star deltas + recent commits (cron-fed every 6h)
+- /pulse/                        — Vendor releases + protocol changes
+- /methodology/                  — How we score (MCP Security Scorecard, vendor reviews, recipes)
+- /colophon/                     — Stack, editorial rules, licences, disclosures
+
+## Data endpoints (machine-readable)
+
+- /sitemap-index.xml             — site map
+- /pagefind/                     — full-text search index (Pagefind)
+
+Future endpoints (Session 8):
+- /data/mcps.json
+- /data/scorecards.json
+- /data/incidents.json
+- /data/compare-items.json
+
+## Editorial policy
+
+- Plain English only. No vendor spin. Honest take is mandatory.
+- Microsoft pages disclose Sush's employer.
+- Recipes ship only with measured numbers (before / after / cost). No vibes.
+- MCP scorecards include methodology version + confidence level + source citations.
+- Every review page carries a "Last reviewed" date and a "Report a correction" link.
+- Forbidden marketing words enforced via CI voice lint.
+
+## Licences
+
+- Code: MIT (https://github.com/susanthgit/agentic-planet)
+- Content (articles, recipes, reviews): CC BY 4.0
+- Diagrams: CC BY 4.0
+
+## Reporting corrections / contributing
+
+Open an issue: https://github.com/susanthgit/agentic-planet/issues
+Most pages have an "Edit on GitHub" link in the footer.
+
+## Disclosure
+
+Built and maintained by Sush (Susanth Sutheesh), Copilot Solution Engineer at Microsoft New Zealand.
+Microsoft pages on this site display this disclosure prominently.
+The takes on those pages reflect Sush's independent engineering judgement — not Microsoft's official position.
+
+## Freshness
+
+- MCP health data: refreshed every 6 hours via GitHub Actions cron (data-driven).
+- Vendor / standards / safety pages: quarterly review (manual).
+- Recipes: re-measured when the underlying tooling materially changes.
+- Scorecards: nextReviewDue tracked per scorecard; stale badge if overdue.
+
+If you're an agent indexing this site for downstream use, please:
+1. Respect the canonical URLs (link back to them rather than rehosting content).
+2. Cite "Agentic Planet" + page URL.
+3. Note the page's lastReviewedAt date.
+4. Don't redistribute scorecards without the methodology link.
