@@ -29,6 +29,7 @@ const OUT_FILE = path.join(ROOT, 'docs', `inventory-${TODAY}.md`);
 const COLLECTIONS = [
   'recipes', 'mcps', 'tools', 'vendors', 'standards',
   'explainers', 'faq', 'safety', 'landscape', 'open',
+  'scorecards', 'desk',
 ];
 
 // ---------- helpers ----------
@@ -137,19 +138,40 @@ const pageFiles = await walk(SRC_PAGES, '.astro');
 const routes = pageFiles.map(p => ({ file: rel(p), route: pageToRoute(p), dynamic: isDynamicRoute(pageToRoute(p)) }));
 
 // 2. Content collections
+// Walk content collections — note JSON files are valid here for collections
+// like `scorecards` (defineCollection { loader: glob({ pattern: '**/*.json' }) }).
+async function walkCollection(dir) {
+  const all = [];
+  for (const ext of ['.mdx', '.md', '.json']) {
+    all.push(...await walk(dir, ext));
+  }
+  return all;
+}
+
 const collectionStats = {};
 for (const c of COLLECTIONS) {
   const dir = path.join(SRC_CONTENT, c);
-  const files = await walk(dir, '.mdx');
+  const files = await walkCollection(dir);
   const items = [];
   for (const f of files) {
     const src = await fs.readFile(f, 'utf8');
-    const fm = parseFrontmatter(src);
-    const base = path.basename(f, '.mdx');
+    let fm = {};
+    if (f.endsWith('.json')) {
+      try {
+        fm = JSON.parse(src);
+      } catch (e) {
+        items.push({ file: rel(f), slug: path.basename(f, '.json'), title: '(invalid JSON)', status: 'invalid', sushReviewNeeded: false, sushVerdictNeeded: false });
+        continue;
+      }
+    } else {
+      fm = parseFrontmatter(src);
+    }
+    const ext = path.extname(f);
+    const base = path.basename(f, ext);
     items.push({
       file: rel(f),
       slug: fm.slug || base,
-      title: fm.title || '(untitled)',
+      title: fm.title || fm.displayName || '(untitled)',
       status: fm.status || (fm.sushVerdictNeeded || fm.sushReviewNeeded ? 'review' : 'unspecified'),
       sushReviewNeeded: fm.sushReviewNeeded === true,
       sushVerdictNeeded: fm.sushVerdictNeeded === true,
@@ -428,6 +450,34 @@ log('6. **Missing static assets** — public/ has only favicon.svg + robots.txt;
 log('');
 log('Phase C will replace the typed counts with computed-at-build queries against content collections, gated by lifecycle status (Phase A2).');
 
+// ---------- scorecard integrity (Session 2) ----------
+
+log('');
+log('## Scorecard integrity (Session 2)');
+log('');
+log('Every scorecard JSON must point to an existing MCP review file. Orphan scorecards are forbidden.');
+log('');
+
+const scorecardItems = collectionStats.scorecards ?? [];
+const mcpSlugs = new Set((collectionStats.mcps ?? []).map(m => m.slug));
+const orphanScorecards = scorecardItems.filter(s => !mcpSlugs.has(s.slug));
+
+let scorecardOrphans = 0;
+if (scorecardItems.length === 0) {
+  log('_(no scorecards yet)_');
+} else if (orphanScorecards.length === 0) {
+  log(`✓ All ${scorecardItems.length} scorecard(s) have a matching MCP review file.`);
+} else {
+  log('| Scorecard slug | Status | Issue |');
+  log('|----------------|--------|-------|');
+  for (const s of orphanScorecards) {
+    log(`| \`${s.slug}\` | ${s.status} | **ORPHAN** — no MCP review file at \`src/content/mcps/${s.slug}.mdx\` |`);
+  }
+  scorecardOrphans = orphanScorecards.length;
+}
+log('');
+log(`Scorecard orphans: ${scorecardOrphans}`);
+
 // ---------- write report ----------
 
 await fs.mkdir(path.dirname(OUT_FILE), { recursive: true });
@@ -438,3 +488,4 @@ console.log(`Routes: ${routes.length}`);
 console.log(`Collections: ${COLLECTIONS.length} (${COLLECTIONS.map(c => `${c}=${(collectionStats[c] || []).length}`).join(' ')})`);
 console.log(`Hardcoded count claims: ${countClaims.length}`);
 console.log(`Broken internal links: ${brokenLinks.length}`);
+console.log(`Scorecard orphans: ${scorecardOrphans}`);

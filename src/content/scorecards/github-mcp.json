@@ -1,0 +1,121 @@
+{
+  "slug": "github-mcp",
+  "displayName": "github-mcp-server",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "review",
+  "noindex": true,
+  "sushReviewNeeded": true,
+  "scorecard": {
+    "licence": {
+      "value": "MIT",
+      "note": "Standard permissive licence."
+    },
+    "securityPolicy": {
+      "value": "yes",
+      "contact": "https://github.com/github/github-mcp-server/security",
+      "note": "GitHub's standard security policy applies (private vulnerability reporting via Security tab)."
+    },
+    "signedReleases": {
+      "value": "yes",
+      "note": "GitHub signs its release artefacts; binary releases verifiable."
+    },
+    "installMethods": ["binary", "source", "docker"],
+    "codeReview": {
+      "value": "yes",
+      "note": "PRs go through GitHub's internal review. Open-source repo with public history."
+    },
+    "secretsHandling": {
+      "value": "scoped",
+      "note": "PAT or fine-grained token passed via env or stdin. Never persisted in tool output. Recommends fine-grained tokens with the smallest scope possible."
+    },
+    "credentialStorage": {
+      "value": "memory",
+      "note": "Tokens live in process env. No on-disk credential cache."
+    },
+    "oauthHandling": {
+      "value": "scoped",
+      "note": "Fine-grained PATs let you scope to specific repos and permission sets. Classic PATs work but tend to over-grant."
+    },
+    "sandboxModel": {
+      "value": "process",
+      "note": "Runs as a subprocess of the MCP host. No additional sandboxing inside the server."
+    },
+    "filesystemAccess": {
+      "value": "none",
+      "note": "Server itself doesn't touch local filesystem. Repository contents flow through API calls only."
+    },
+    "shellAccess": {
+      "value": "no",
+      "note": "No shell tools exposed."
+    },
+    "networkEgress": {
+      "value": "allow-list",
+      "note": "Only api.github.com (and uploads/downloads to github.com release assets)."
+    },
+    "telemetry": {
+      "value": "none",
+      "note": "No telemetry beyond standard GitHub API request logs (server-side, governed by GitHub's privacy policy)."
+    },
+    "dataResidency": {
+      "value": "cloud",
+      "note": "Data flows through GitHub's API endpoints. Repository data residency is GitHub-managed (regional for Enterprise; US for public)."
+    },
+    "defaultPermissions": {
+      "value": "broad",
+      "note": "Depends entirely on PAT scope. A classic PAT with `repo` scope gives the agent everything across all your repos. Always use fine-grained tokens scoped to the smallest set of repos and permissions the task needs."
+    },
+    "destructiveTools": {
+      "present": [
+        "create_or_update_file",
+        "delete_file",
+        "create_branch",
+        "merge_pull_request",
+        "close_issue",
+        "delete_workflow_run",
+        "cancel_workflow_run"
+      ],
+      "humanApproval": "optional",
+      "note": "MCP host (e.g. Claude Desktop) is responsible for approval prompts; the server itself does not gate destructive calls."
+    },
+    "promptInjectionExposure": {
+      "value": "high",
+      "note": "Tool responses include issue / PR / file content authored by third parties. Hostile content in any read result can attempt to redirect the agent. Treat all tool output as untrusted text."
+    },
+    "supplyChainSurface": {
+      "value": "low",
+      "depCount": 38,
+      "directDeps": 9,
+      "note": "Go binary; dep tree small relative to JS-based MCP servers. All major deps are first-party Go libraries or GitHub-maintained packages."
+    },
+    "depCveSurface": {
+      "value": "clean",
+      "lastScannedAt": "2026-05-07",
+      "note": "No active CVEs in the dep tree at last scan. GitHub Security Advisories monitors automatically."
+    },
+    "rateLimitRisk": {
+      "value": "medium",
+      "note": "GitHub primary rate limit is 5,000 req/h for authenticated requests; secondary rate limits trigger on bursty patterns. Long-running agents can hit secondary limits."
+    },
+    "maintainerType": {
+      "value": "corp",
+      "busFactor": 5,
+      "releaseCadence": "weekly",
+      "note": "Maintained by GitHub itself. Staff team. Release cadence is weekly during active development."
+    },
+    "issueResponseMedianDays": 2,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Any agentic workflow that reads or writes GitHub resources.",
+  "verdictNote": "Default for code-touching agents. Adopt with fine-grained PATs scoped to the smallest set of repos and permissions the task needs; never grant `repo` (full) scope to a long-running agent.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/github/github-mcp-server" },
+    { "label": "Releases", "url": "https://github.com/github/github-mcp-server/releases" },
+    { "label": "GitHub fine-grained PATs docs", "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=github-mcp"
+}

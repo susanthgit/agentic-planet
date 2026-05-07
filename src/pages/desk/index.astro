@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+
+/**
+ * Builder Log — "Sush's desk".
+ *
+ * Session 2 scaffold. No homepage feature yet — this surface ships ALIVE
+ * once at least one entry is voice-passed (Session 6: 3 backdated entries
+ * land first; weekly cadence after that).
+ */
+
+const entries = await getCollection('desk');
+const visible = entries
+  .filter((e) => e.data.status !== 'draft')
+  .sort((a, b) => new Date(b.data.weekOf).getTime() - new Date(a.data.weekOf).getTime());
+
+const fmtWeek = (d: Date) => new Date(d).toISOString().slice(0, 10);
+---
+
+<BaseLayout
+  title="Sush's desk — weekly builder log"
+  description="What I built, deployed, broke, and learned each week. Plain English, real screenshots, honest reflections."
+>
+  <PillarHeader
+    code="DSK-01"
+    color="cyan"
+    title="Sush's desk."
+    description="What I built, deployed, broke and learned each week. Real entries, dated. No marketing voice."
+    count={visible.length}
+    countLabel="weeks logged"
+    meta={visible.length === 0 ? "DAY 1 // SCAFFOLD · ENTRIES PENDING" : `LATEST · ${fmtWeek(visible[0].data.weekOf)}`}
+    status={visible.length === 0 ? "EARLY" : "IN-PROGRESS"}
+  />
+
+  <section class="container-prose section">
+    {visible.length === 0 ? (
+      <Panel kicker="SCAFFOLD" title="Surface ready, entries pending" density="loose">
+        <p>
+          The Builder Log surface is wired up but no entries have been written yet.
+          The format: 5–10 short dated entries per Friday post, covering what was
+          built, deployed, broken, fixed, or learned that week.
+        </p>
+        <p>
+          First three backdated entries land in <a href="/colophon/">Session 6</a> of
+          the current epic — the night build, the iteration rounds, and the trust-engine
+          audit (Session 1). Weekly cadence picks up after that.
+        </p>
+        <p>
+          This surface stays out of primary nav until the first real entry ships.
+        </p>
+      </Panel>
+    ) : (
+      <Panel kicker={`${visible.length} ENTRIES`} title="Recent weeks" density="tight">
+        <ul class="desklist">
+          {visible.map((e) => (
+            <li class="deskrow">
+              <a href={`/desk/${e.id}/`} class="deskrow__link">
+                <span class="deskrow__week mono">WEEK OF {fmtWeek(e.data.weekOf)}</span>
+                <span class="deskrow__title">{e.data.title}</span>
+                {e.data.summary && <span class="deskrow__summary">{e.data.summary}</span>}
+                {e.data.entries && <span class="deskrow__count mono">{e.data.entries} entries →</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Panel>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .desklist { list-style: none; padding: 0; margin: 0; }
+  .deskrow { border-bottom: 1px solid var(--border-dim); }
+  .deskrow:last-child { border-bottom: 0; }
+  .deskrow__link {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-2);
+    align-items: baseline;
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+  .deskrow__link:hover { background: var(--bg-elevated); }
+  .deskrow__week {
+    font-size: var(--fs-2xs);
+    color: var(--signal-cyan);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .deskrow__title { color: var(--text-bright); font-weight: var(--fw-semibold); }
+  .deskrow__summary { color: var(--text-mute); font-size: var(--fs-sm); grid-column: 2; }
+  .deskrow__count {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  @media (max-width: 700px) {
+    .deskrow__link { grid-template-columns: 1fr; gap: var(--space-1); }
+  }
+</style>

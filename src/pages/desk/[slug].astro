@@ -1,0 +1,113 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Button from '@components/primitives/Button.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('desk');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const fmtDate = (date: Date) => new Date(date).toISOString().slice(0, 10);
+const isReview = d.status !== 'published';
+---
+
+<BaseLayout title={d.title} description={d.summary ?? `Builder log entry for week of ${fmtDate(d.weekOf)}`} noIndex={isReview}>
+  <article class="desk-entry">
+    <header class="desk-entry__head container-prose">
+      <nav class="breadcrumb mono">
+        <a href="/desk/">Sush's desk</a>
+        <span aria-hidden="true">/</span>
+        <span>WEEK OF {fmtDate(d.weekOf)}</span>
+      </nav>
+      <h1 class="desk-entry__title">{d.title}</h1>
+      {d.summary && <p class="desk-entry__summary">{d.summary}</p>}
+      <div class="desk-entry__meta mono">
+        WEEK OF {fmtDate(d.weekOf)}
+        {d.publishedAt && ` · POSTED ${fmtDate(d.publishedAt)}`}
+        {d.entries && ` · ${d.entries} ENTRIES`}
+        {isReview && ` · STATUS: ${(d.status ?? 'review').toUpperCase()}`}
+      </div>
+    </header>
+
+    {isReview && (
+      <section class="container-prose section">
+        <div class="banner">
+          <span class="banner__label mono">⚠ DRAFT</span>
+          <span>This entry hasn't been voice-passed yet. Not yet listed publicly or indexed.</span>
+        </div>
+      </section>
+    )}
+
+    <section class="container-prose section desk-entry__body">
+      <Content />
+    </section>
+
+    <footer class="container-prose desk-entry__foot">
+      <Button href="/desk/" variant="ghost" iconLeft="←">All weeks</Button>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .desk-entry__head {
+    padding: var(--space-10) 0 var(--space-6);
+    border-bottom: 1px solid var(--border-dim);
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-3);
+  }
+  .breadcrumb a { color: var(--signal-cyan); }
+  .desk-entry__title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: var(--fw-bold);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-3);
+  }
+  .desk-entry__summary {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    margin: 0 0 var(--space-3);
+    max-width: 720px;
+  }
+  .desk-entry__meta {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+  .banner {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-3);
+    border: 1px solid var(--signal-amber);
+    border-radius: var(--radius-xs);
+    background: rgba(251, 191, 36, 0.05);
+    color: var(--text-bright);
+  }
+  .banner__label {
+    color: var(--signal-amber);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .desk-entry__body { padding-block: var(--space-6); }
+  .desk-entry__foot { padding-block: var(--space-6); }
+</style>

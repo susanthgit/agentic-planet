@@ -1,0 +1,400 @@
+---
+/**
+ * Scorecard.astro — renders an MCP Security Scorecard panel.
+ *
+ * Used inline on each MCP review page (src/pages/mcp/[slug].astro)
+ * AND on the standalone /scorecards/<slug>/ pages (if we add those later).
+ *
+ * Schema: src/content.config.ts (scorecards collection).
+ * Methodology: /methodology/mcp-security-scorecard/
+ *
+ * Status discipline (Session 2):
+ *   - When scorecard.data.status === 'review' → render the panel WITH a
+ *     "Methodology under review" banner. Verdicts are visible but flagged.
+ *   - When scorecard.data.status === 'published' → render normally.
+ *   - When the matching MCP review page has sushVerdictNeeded:true → also
+ *     show the existing review banner (already rendered by the parent page).
+ */
+
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import LiveDot from '@components/data/LiveDot.astro';
+
+interface SourceLink { label: string; url: string; }
+
+export interface Props {
+  scorecard: {
+    id: string;
+    data: {
+      slug: string;
+      displayName: string;
+      lastReviewedAt: Date;
+      nextReviewDue: Date;
+      reviewedBy: string;
+      methodologyVersion: string;
+      confidence: 'high' | 'medium' | 'low';
+      status?: 'draft' | 'review' | 'published' | 'archived';
+      sushReviewNeeded?: boolean;
+      verdict: 'ADOPT' | 'ADOPT WITH LIMITS' | 'REVIEW FIRST' | 'DO NOT USE FOR SENSITIVE WORK';
+      verdictScope: string;
+      verdictNote: string;
+      sources: SourceLink[];
+      correctionUrl: string;
+      scorecard: Record<string, any>;
+    };
+  };
+}
+
+const { scorecard } = Astro.props;
+const d = scorecard.data;
+
+const isReview = d.status !== 'published';
+const verdictClass = (() => {
+  switch (d.verdict) {
+    case 'ADOPT':                              return 'verdict--adopt';
+    case 'ADOPT WITH LIMITS':                  return 'verdict--limited';
+    case 'REVIEW FIRST':                       return 'verdict--review';
+    case 'DO NOT USE FOR SENSITIVE WORK':      return 'verdict--avoid';
+    default:                                   return 'verdict--review';
+  }
+})();
+
+const fmtDate = (d: Date) => new Date(d).toISOString().slice(0, 10);
+
+// Pre-pick the displayed dimensions in a stable order.
+const sc = d.scorecard ?? {};
+const dimensionOrder: { key: string; label: string }[] = [
+  { key: 'maintainerType',          label: 'Maintainer' },
+  { key: 'licence',                 label: 'Licence' },
+  { key: 'codeReview',              label: 'Code review' },
+  { key: 'secretsHandling',         label: 'Secrets handling' },
+  { key: 'sandboxModel',            label: 'Sandbox' },
+  { key: 'filesystemAccess',        label: 'Filesystem access' },
+  { key: 'shellAccess',             label: 'Shell access' },
+  { key: 'networkEgress',           label: 'Network egress' },
+  { key: 'oauthHandling',           label: 'OAuth handling' },
+  { key: 'defaultPermissions',      label: 'Default permissions' },
+  { key: 'promptInjectionExposure', label: 'Prompt-injection exposure' },
+  { key: 'supplyChainSurface',      label: 'Supply chain surface' },
+  { key: 'depCveSurface',           label: 'Dep CVE surface' },
+  { key: 'rateLimitRisk',           label: 'Rate-limit risk' },
+  { key: 'signedReleases',          label: 'Signed releases' },
+  { key: 'securityPolicy',          label: 'Security policy' },
+  { key: 'telemetry',               label: 'Telemetry' },
+  { key: 'dataResidency',           label: 'Data residency' },
+  { key: 'credentialStorage',       label: 'Credential storage' },
+];
+
+const destructive = sc.destructiveTools;
+const incidents   = sc.incidents ?? [];
+---
+
+<section class="scorecard">
+  {isReview && (
+    <div class="scorecard__banner mono">
+      <LiveDot color="amber" size="sm" />
+      <span>METHODOLOGY UNDER REVIEW · VERDICTS SUBJECT TO REVISION</span>
+      <a href="/methodology/mcp-security-scorecard/" class="scorecard__banner-link">Read the methodology →</a>
+    </div>
+  )}
+
+  <header class="scorecard__head">
+    <div class="scorecard__head-left">
+      <span class="scorecard__kicker mono">▸ MCP SECURITY SCORECARD</span>
+      <span class="scorecard__meta mono">
+        Methodology v{d.methodologyVersion} · Confidence {d.confidence.toUpperCase()} · Reviewed {fmtDate(d.lastReviewedAt)} · Next review due {fmtDate(d.nextReviewDue)}
+      </span>
+    </div>
+    <a href="/methodology/mcp-security-scorecard/" class="scorecard__methodology mono">METHODOLOGY ↗</a>
+  </header>
+
+  <div class={`scorecard__verdict ${verdictClass}`}>
+    <div class="scorecard__verdict-band mono">{d.verdict}</div>
+    <div class="scorecard__verdict-body">
+      <p class="scorecard__verdict-scope mono">FOR: {d.verdictScope}</p>
+      <p class="scorecard__verdict-note">{d.verdictNote}</p>
+    </div>
+  </div>
+
+  <div class="scorecard__grid">
+    {dimensionOrder.map(({ key, label }) => {
+      const item = sc[key];
+      if (!item || !item.value) return null;
+      return (
+        <div class="dim">
+          <span class="dim__label mono">{label}</span>
+          <span class="dim__value mono">{Array.isArray(item.value) ? item.value.join(', ') : item.value}</span>
+          {item.note && <p class="dim__note">{item.note}</p>}
+        </div>
+      );
+    })}
+  </div>
+
+  {destructive && destructive.present && destructive.present.length > 0 && (
+    <Panel kicker="DESTRUCTIVE TOOLS" title={`${destructive.present.length} present · human approval ${destructive.humanApproval}`} density="tight" variant="warning">
+      <ul class="destructive-list">
+        {destructive.present.map((t: string) => <li><code>{t}</code></li>)}
+      </ul>
+      {destructive.note && <p class="dim__note" style="margin-top: var(--space-2);">{destructive.note}</p>}
+    </Panel>
+  )}
+
+  {incidents.length > 0 && (
+    <Panel kicker="INCIDENT HISTORY" title={`${incidents.length} on record`} density="tight" variant="warning">
+      <ul class="incidents-list">
+        {incidents.map((i: any) => (
+          <li>
+            <span class="mono">{fmtDate(i.date)}</span>
+            <span class={`mono incidents-list__sev incidents-list__sev--${i.severity}`}>{i.severity.toUpperCase()}</span>
+            <span class="mono incidents-list__status">{i.status.toUpperCase()}</span>
+            <span class="incidents-list__summary">{i.summary}</span>
+            <a class="mono" href={i.sourceUrl} rel="noopener" target="_blank">source ↗</a>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  )}
+
+  <footer class="scorecard__foot">
+    {d.sources && d.sources.length > 0 && (
+      <div class="scorecard__sources">
+        <span class="scorecard__sources-label mono">SOURCES //</span>
+        {d.sources.map((s) => (
+          <a href={s.url} class="mono" rel="noopener" target="_blank">{s.label} ↗</a>
+        ))}
+      </div>
+    )}
+    <div class="scorecard__actions">
+      <Button href={d.correctionUrl} variant="ghost" iconLeft="✎">Report a correction</Button>
+      <Button href={`/badge/${d.slug}/security.svg`} variant="ghost" iconRight="↗" target="_blank" rel="noopener">Embeddable badge ↗</Button>
+    </div>
+  </footer>
+
+  <p class="scorecard__disclaimer mono">
+    NOT A FORMAL SECURITY AUDIT · Adoption posture based on public-source review · See methodology for what's measured and what isn't
+  </p>
+</section>
+
+<style>
+  .scorecard {
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-sm);
+    padding: var(--space-5);
+    background: linear-gradient(180deg, var(--bg-elevated), var(--bg-base));
+    margin: var(--space-6) 0;
+  }
+
+  .scorecard__banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--signal-amber);
+    border: 1px solid var(--signal-amber);
+    border-radius: var(--radius-xs);
+    padding: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-4);
+    background: rgba(251, 191, 36, 0.05);
+  }
+
+  .scorecard__banner-link {
+    margin-left: auto;
+    color: var(--signal-amber);
+    border-bottom: 1px dotted var(--signal-amber);
+  }
+
+  .scorecard__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .scorecard__kicker {
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-hi);
+    display: block;
+    margin-bottom: var(--space-1);
+  }
+
+  .scorecard__meta {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .scorecard__methodology {
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--accent-hi);
+    border-bottom: 1px dotted var(--accent-hi);
+    align-self: flex-start;
+  }
+
+  .scorecard__verdict {
+    display: flex;
+    gap: var(--space-3);
+    align-items: stretch;
+    border: 1px solid var(--border-dim);
+    border-left-width: 4px;
+    border-radius: var(--radius-xs);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  .verdict--adopt   { border-left-color: var(--signal-green); background: rgba(74, 222, 128, 0.04); }
+  .verdict--limited { border-left-color: var(--signal-cyan);  background: rgba(103, 232, 249, 0.04); }
+  .verdict--review  { border-left-color: var(--signal-amber); background: rgba(251, 191, 36, 0.04); }
+  .verdict--avoid   { border-left-color: var(--signal-red);   background: rgba(248, 113, 113, 0.04); }
+
+  .scorecard__verdict-band {
+    font-family: var(--font-mono);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-wider);
+    align-self: center;
+    flex-shrink: 0;
+    min-width: 160px;
+  }
+  .verdict--adopt .scorecard__verdict-band   { color: var(--signal-green); }
+  .verdict--limited .scorecard__verdict-band { color: var(--signal-cyan); }
+  .verdict--review .scorecard__verdict-band  { color: var(--signal-amber); }
+  .verdict--avoid .scorecard__verdict-band   { color: var(--signal-red); }
+
+  .scorecard__verdict-body { flex: 1; }
+  .scorecard__verdict-scope {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0 0 var(--space-1);
+  }
+  .scorecard__verdict-note {
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--text-bright);
+    margin: 0;
+  }
+
+  .scorecard__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+
+  .dim {
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    padding: var(--space-3);
+    background: var(--bg-base);
+  }
+
+  .dim__label {
+    display: block;
+    font-size: var(--fs-3xs, 0.65rem);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: 4px;
+  }
+
+  .dim__value {
+    display: block;
+    font-size: var(--fs-sm);
+    color: var(--text-bright);
+    font-weight: var(--fw-semibold);
+    margin-bottom: var(--space-1);
+  }
+
+  .dim__note {
+    font-size: var(--fs-2xs);
+    line-height: 1.4;
+    color: var(--text-mute);
+    margin: var(--space-1) 0 0 0;
+  }
+
+  .destructive-list,
+  .incidents-list {
+    margin: 0;
+    padding-left: var(--space-4);
+    font-size: var(--fs-sm);
+  }
+  .destructive-list li code {
+    color: var(--signal-red);
+    background: rgba(248, 113, 113, 0.08);
+    padding: 1px 4px;
+    border-radius: var(--radius-xs);
+  }
+
+  .incidents-list { list-style: none; padding: 0; }
+  .incidents-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-dim);
+    font-size: var(--fs-sm);
+  }
+  .incidents-list__sev { font-size: var(--fs-2xs); padding: 1px 4px; border-radius: var(--radius-xs); }
+  .incidents-list__sev--low      { color: var(--text-mute); }
+  .incidents-list__sev--medium   { color: var(--signal-amber); }
+  .incidents-list__sev--high     { color: var(--signal-red); }
+  .incidents-list__sev--critical { color: var(--signal-red); font-weight: var(--fw-bold); }
+  .incidents-list__status { color: var(--text-faint); }
+  .incidents-list__summary { color: var(--text); flex: 1; }
+
+  .scorecard__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-dim);
+  }
+
+  .scorecard__sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: baseline;
+  }
+  .scorecard__sources-label {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .scorecard__sources a {
+    font-size: var(--fs-xs);
+    color: var(--accent-hi);
+    border-bottom: 1px dotted var(--accent-hi);
+  }
+
+  .scorecard__actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .scorecard__disclaimer {
+    margin-top: var(--space-4);
+    font-size: var(--fs-3xs, 0.65rem);
+    color: var(--text-faint);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    border-top: 1px dashed var(--border-dim);
+    padding-top: var(--space-3);
+  }
+</style>

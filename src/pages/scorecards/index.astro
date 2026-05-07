@@ -1,0 +1,164 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+
+const scorecards = (await getCollection('scorecards')).sort((a, b) =>
+  new Date(b.data.lastReviewedAt).getTime() - new Date(a.data.lastReviewedAt).getTime()
+);
+
+const reviewedMcps = await getCollection('mcps');
+const reviewedMcpSlugs = new Set(reviewedMcps.map((m) => m.id));
+
+const TARGET = 30;
+
+const bandClass = (band: string) => {
+  switch (band) {
+    case 'ADOPT':                          return 'band--adopt';
+    case 'ADOPT WITH LIMITS':              return 'band--limited';
+    case 'REVIEW FIRST':                   return 'band--review';
+    case 'DO NOT USE FOR SENSITIVE WORK':  return 'band--avoid';
+    default:                               return 'band--review';
+  }
+};
+
+const fmtDate = (d: Date) => new Date(d).toISOString().slice(0, 10);
+
+const anyReviewStatus = scorecards.some((s) => s.data.status !== 'published');
+---
+
+<BaseLayout
+  title="MCP Security Scorecards"
+  description="Adoption posture for tracked MCP servers. Methodology-led, evidence-cited, dispute-friendly. Not a formal security audit."
+>
+  <PillarHeader
+    code="SCD-01"
+    color="amber"
+    title="MCP Security Scorecards"
+    description="Adoption posture per server, scored against a public methodology. Not a formal audit."
+    count={scorecards.length}
+    countLabel="MCPs scored"
+    meta={`SHIPPED ${scorecards.length} OF ${TARGET} · METHODOLOGY V1.0`}
+    status={scorecards.length === 0 ? 'EARLY' : scorecards.length >= TARGET / 2 ? 'IN-PROGRESS' : 'EARLY'}
+  />
+
+  <section class="container-prose section">
+    <Panel kicker="THE FAST READ" title="What this is — and isn't" density="loose">
+      <p>
+        Each scorecard records an <strong>adoption posture</strong> for one MCP server —
+        not a certification, not a security audit. We read the public source, the docs,
+        the dep tree and the recent issues, then write a one-sentence verdict scoped to a
+        use-case, with sources cited and a correction link on every card.
+      </p>
+      <p>
+        <strong>Methodology comes first.</strong> The same rubric is applied to every server.
+        Methodology version, confidence level, and review date are stamped on every card so
+        you can see what was measured and when.
+      </p>
+      <Button href="/methodology/mcp-security-scorecard/" variant="primary" iconRight="→">Read the methodology</Button>
+    </Panel>
+
+    {anyReviewStatus && (
+      <Panel kicker="STATUS" title="Methodology v1.0 is in review" density="loose" variant="warning">
+        <p>
+          Scorecards below are visible but not yet final. We've drafted the rubric and scored
+          the first MCPs against it; the methodology page is awaiting Sush's voice-pass before
+          public scorecards promote to <code>published</code>. Verdicts are subject to revision.
+        </p>
+      </Panel>
+    )}
+
+    <Panel kicker={`${scorecards.length} SCORED`} title="Catalog" density="tight">
+      {scorecards.length === 0 ? (
+        <p>No scorecards yet. Check back as Session 2 ships.</p>
+      ) : (
+        <ul class="sclist">
+          {scorecards.map((s) => {
+            const d = s.data;
+            const hasMcpReview = reviewedMcpSlugs.has(d.slug);
+            return (
+              <li class="scrow">
+                <a href={hasMcpReview ? `/mcp/${d.slug}/#scorecard` : `/mcp/`} class="scrow__link">
+                  <span class="scrow__name mono">{d.displayName}</span>
+                  <span class={`scrow__band mono ${bandClass(d.verdict)}`}>{d.verdict}</span>
+                  <span class="scrow__scope">{d.verdictScope}</span>
+                  <span class="scrow__meta mono">v{d.methodologyVersion} · reviewed {fmtDate(d.lastReviewedAt)} · {d.confidence.toUpperCase()} confidence</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Panel>
+
+    <Panel kicker="MCP MAINTAINER?" title="Embed your scorecard" density="loose">
+      <p>If your MCP is scored, you can embed the badge in your README:</p>
+      <pre class="snippet"><code>{`<a href="https://agents.aguidetocloud.com/scorecards/">
+  <img src="https://agents.aguidetocloud.com/badge/<your-slug>/security.svg"
+       alt="MCP Security Scorecard">
+</a>`}</code></pre>
+      <p>Don't see your MCP scored yet? Open an issue and we'll get to it.</p>
+      <Button href="https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md" variant="ghost" iconLeft="✎">Open scorecard issue</Button>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .sclist { list-style: none; padding: 0; margin: 0; }
+  .scrow { border-bottom: 1px solid var(--border-dim); }
+  .scrow:last-child { border-bottom: 0; }
+  .scrow__link {
+    display: grid;
+    grid-template-columns: 1.6fr 1.2fr 2fr 1.4fr;
+    gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-3) var(--space-2);
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+  .scrow__link:hover { background: var(--bg-elevated); }
+  .scrow__name {
+    color: var(--text-bright);
+    font-weight: var(--fw-semibold);
+  }
+  .scrow__band {
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    font-weight: var(--fw-bold);
+    padding: 4px 8px;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .band--adopt   { color: var(--signal-green); }
+  .band--limited { color: var(--signal-cyan); }
+  .band--review  { color: var(--signal-amber); }
+  .band--avoid   { color: var(--signal-red); }
+  .scrow__scope {
+    font-size: var(--fs-sm);
+    color: var(--text);
+  }
+  .scrow__meta {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-align: right;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .snippet {
+    background: var(--bg-base);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    padding: var(--space-3);
+    overflow-x: auto;
+    font-size: var(--fs-xs);
+    margin: var(--space-3) 0;
+  }
+  @media (max-width: 800px) {
+    .scrow__link { grid-template-columns: 1fr; gap: var(--space-1); }
+    .scrow__meta { text-align: left; }
+  }
+</style>

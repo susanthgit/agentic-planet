@@ -1,0 +1,120 @@
+{
+  "slug": "playwright-mcp",
+  "displayName": "playwright-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "review",
+  "noindex": true,
+  "sushReviewNeeded": true,
+  "scorecard": {
+    "licence": {
+      "value": "Apache-2.0",
+      "note": "Microsoft's typical default for OSS tooling."
+    },
+    "securityPolicy": {
+      "value": "yes",
+      "contact": "https://github.com/microsoft/playwright-mcp/security",
+      "note": "Microsoft's standard responsible disclosure policy applies."
+    },
+    "signedReleases": {
+      "value": "partial",
+      "note": "npm package published under @playwright/mcp; provenance attestations available via npm. Browser binaries are downloaded by Playwright itself, not redistributed by this package."
+    },
+    "installMethods": ["npm", "source"],
+    "codeReview": {
+      "value": "yes",
+      "note": "PRs go through Microsoft's internal review. Active project under the Playwright org."
+    },
+    "secretsHandling": {
+      "value": "scoped",
+      "note": "Server itself does not handle secrets. If your prompt asks the agent to enter passwords on a form, the credentials flow through Playwright into a real browser context — your responsibility to scope where that browser navigates."
+    },
+    "credentialStorage": {
+      "value": "memory",
+      "note": "No persistent credential storage by the server. Browser context can persist cookies / session storage if you enable it via storageState."
+    },
+    "oauthHandling": {
+      "value": "n/a",
+      "note": "Server itself doesn't take OAuth tokens; any OAuth happens inside the controlled browser session."
+    },
+    "sandboxModel": {
+      "value": "process",
+      "note": "Runs as subprocess of MCP host. The CHROMIUM browser process is itself sandboxed by Chromium; the MCP server isn't additionally containerised by default."
+    },
+    "filesystemAccess": {
+      "value": "scoped",
+      "note": "Writes screenshots and downloads to a configured directory (default: a per-session temp dir). Reads no host filesystem outside that scope unless the agent navigates to file:// URLs (which can be disabled via launch arg)."
+    },
+    "shellAccess": {
+      "value": "no",
+      "note": "No shell tools exposed by the server itself."
+    },
+    "networkEgress": {
+      "value": "open",
+      "note": "By design — the agent can navigate to any URL. This is the most significant safety dimension. Treat the running browser as having full HTTP egress and lock down what URLs your agent is allowed to visit at the prompt level."
+    },
+    "telemetry": {
+      "value": "opt-in",
+      "note": "Playwright itself respects PLAYWRIGHT_DISABLE_TELEMETRY=1; the MCP server doesn't add additional telemetry."
+    },
+    "dataResidency": {
+      "value": "local",
+      "note": "Browser runs locally. Sites the agent visits send data to those sites' servers (their residency, not yours)."
+    },
+    "defaultPermissions": {
+      "value": "broad",
+      "note": "Once attached, the agent can drive a real browser anywhere. There is no `read-only browse` mode by default — every navigation is a potential write (form submit, button click)."
+    },
+    "destructiveTools": {
+      "present": [
+        "click",
+        "fill",
+        "press_key",
+        "navigate",
+        "select_option",
+        "upload_file"
+      ],
+      "humanApproval": "optional",
+      "note": "Form submits and button clicks can perform irreversible actions on remote systems. MCP host is responsible for approval gating; the server doesn't differentiate clicks-that-do-nothing from clicks-that-buy-something."
+    },
+    "promptInjectionExposure": {
+      "value": "high",
+      "note": "Pages the agent navigates to can contain hostile instructions in DOM text, alt attributes, hidden elements, or even ARIA labels. The accessibility-tree input the LLM sees is fully attacker-controllable when the page is hostile."
+    },
+    "supplyChainSurface": {
+      "value": "medium",
+      "depCount": 0,
+      "directDeps": 2,
+      "note": "Direct deps are small (@modelcontextprotocol/sdk + playwright). Transitive surface includes Playwright itself, which depends on browser binaries downloaded at install time. Browser binaries are signed by Microsoft / Google / Mozilla."
+    },
+    "depCveSurface": {
+      "value": "clean",
+      "lastScannedAt": "2026-05-07",
+      "note": "No active CVEs in the published package at last scan."
+    },
+    "rateLimitRisk": {
+      "value": "medium",
+      "note": "Browser sessions are heavyweight (~500MB RAM each). Long-running agents that spawn many sessions hit memory pressure faster than rate limits."
+    },
+    "maintainerType": {
+      "value": "corp",
+      "busFactor": 4,
+      "releaseCadence": "monthly",
+      "note": "Maintained by Microsoft Playwright team. Active project, regular releases tracking Playwright core."
+    },
+    "issueResponseMedianDays": 4,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Browser automation tasks that have no API alternative.",
+  "verdictNote": "Use when no API exists for the task. Always scope target URLs at the prompt level (allow-list, not deny-list); never run with credentials beyond what the task actually needs; assume any page content can be hostile and treat tool output as untrusted text.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/microsoft/playwright-mcp" },
+    { "label": "Releases (npm)", "url": "https://www.npmjs.com/package/@playwright/mcp" },
+    { "label": "Playwright security guidance", "url": "https://playwright.dev/docs/best-practices" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=playwright-mcp"
+}

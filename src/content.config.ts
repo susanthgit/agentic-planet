@@ -144,6 +144,69 @@ const faq = defineCollection({
   }),
 });
 
+// Scorecards — MCP Security Scorecard JSON entries (Session 2).
+// Each entry mirrors the spec from /methodology/mcp-security-scorecard/.
+// 22 measured dimensions + verdict band + sources + correction URL.
+// Bands: ADOPT / ADOPT WITH LIMITS / REVIEW FIRST / DO NOT USE FOR SENSITIVE WORK.
+const scorecards = defineCollection({
+  loader: glob({ base: 'src/content/scorecards', pattern: '**/*.json' }),
+  schema: z.object({
+    slug: z.string(),
+    displayName: z.string(),
+    lastReviewedAt: z.coerce.date(),
+    nextReviewDue: z.coerce.date(),
+    reviewedBy: z.string(),
+    methodologyVersion: z.string(),
+    confidence: z.enum(['high', 'medium', 'low']),
+    sushReviewNeeded: z.boolean().default(true),
+    scorecard: z.object({
+      licence:            z.object({ value: z.string().optional(), note: z.string().optional() }).optional(),
+      securityPolicy:     z.object({ value: z.enum(['yes', 'no', 'unknown']), contact: z.string().optional(), note: z.string().optional() }).optional(),
+      signedReleases:     z.object({ value: z.enum(['yes', 'no', 'partial', 'unknown']), note: z.string().optional() }).optional(),
+      installMethods:     z.array(z.string()).optional(),
+      codeReview:         z.object({ value: z.enum(['yes', 'partial', 'no', 'unknown']), note: z.string().optional() }),
+      secretsHandling:    z.object({ value: z.enum(['scoped', 'env-only', 'leaky', 'unknown']), note: z.string().optional() }),
+      credentialStorage:  z.object({ value: z.enum(['os-keychain', 'file', 'memory', 'unknown']), note: z.string().optional() }).optional(),
+      oauthHandling:      z.object({ value: z.enum(['scoped', 'broad', 'n/a', 'unknown']), note: z.string().optional() }).optional(),
+      sandboxModel:       z.object({ value: z.enum(['container', 'subprocess', 'process', 'none']), note: z.string().optional() }),
+      filesystemAccess:   z.object({ value: z.enum(['scoped', 'home', 'root', 'none']), note: z.string().optional() }).optional(),
+      shellAccess:        z.object({ value: z.enum(['yes', 'no', 'sandboxed']), note: z.string().optional() }).optional(),
+      networkEgress:      z.object({ value: z.enum(['none', 'allow-list', 'open']), note: z.string().optional() }).optional(),
+      telemetry:          z.object({ value: z.enum(['none', 'opt-in', 'opt-out', 'forced']), note: z.string().optional() }).optional(),
+      dataResidency:      z.object({ value: z.enum(['local', 'cloud', 'mixed']), note: z.string().optional() }).optional(),
+      defaultPermissions: z.object({ value: z.enum(['minimal', 'moderate', 'broad']), note: z.string().optional() }).optional(),
+      destructiveTools:   z.object({ present: z.array(z.string()).default([]), humanApproval: z.enum(['yes', 'no', 'optional']) }).optional(),
+      promptInjectionExposure: z.object({ value: z.enum(['low', 'medium', 'high']), note: z.string().optional() }),
+      supplyChainSurface: z.object({ value: z.enum(['low', 'medium', 'high']), depCount: z.number().optional(), directDeps: z.number().optional(), note: z.string().optional() }),
+      depCveSurface:      z.object({ value: z.enum(['clean', 'warnings', 'critical', 'unknown']), lastScannedAt: z.coerce.date().optional(), note: z.string().optional() }).optional(),
+      rateLimitRisk:      z.object({ value: z.enum(['low', 'medium', 'high']), note: z.string().optional() }).optional(),
+      maintainerType:     z.object({ value: z.enum(['corp', 'indie', 'community', 'abandoned']), busFactor: z.number().optional(), releaseCadence: z.string().optional(), note: z.string().optional() }),
+      issueResponseMedianDays: z.number().optional(),
+      incidents:          z.array(z.object({ date: z.coerce.date(), severity: z.enum(['low', 'medium', 'high', 'critical']), summary: z.string(), sourceUrl: z.string().url(), status: z.enum(['monitoring', 'resolved', 'false-alarm']) })).default([]),
+    }),
+    verdict: z.enum(['ADOPT', 'ADOPT WITH LIMITS', 'REVIEW FIRST', 'DO NOT USE FOR SENSITIVE WORK']),
+    verdictScope: z.string(),
+    verdictNote: z.string(),
+    sources: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
+    correctionUrl: z.string().url(),
+    ...lifecycle,
+  }),
+});
+
+// Builder Log — Sush's desk weekly entries (Session 2 scaffold; entries land in Session 6).
+const desk = defineCollection({
+  loader: glob({ base: 'src/content/desk', pattern: '**/*.{md,mdx}' }),
+  schema: z.object({
+    title: z.string(),
+    weekOf: z.coerce.date(),
+    publishedAt: z.coerce.date().optional(),
+    summary: z.string().optional(),
+    entries: z.number().optional(),
+    sushReviewNeeded: z.boolean().default(true),
+    ...lifecycle,
+  }),
+});
+
 // Safety — risk catalog, decision trees
 const safety = defineCollection({
   loader: glob({ base: 'src/content/safety', pattern: '**/*.{md,mdx}' }),
@@ -194,4 +257,6 @@ export const collections = {
   safety,
   landscape,
   open,
+  scorecards,
+  desk,
 };

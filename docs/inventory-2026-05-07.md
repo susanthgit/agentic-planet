@@ -1,5 +1,5 @@
 # Agentic Planet — Inventory & claim matrix
-*Generated 2026-05-07T02:28:03.064Z by `scripts/audit-claims.mjs`*
+*Generated 2026-05-07T02:48:24.560Z by `scripts/audit-claims.mjs`*
 
 This report is the Session 1 Phase A artefact. It captures every claim, link, count, route, and data row in the repo so Phases B–E have a baseline to fix against.
 
@@ -11,6 +11,8 @@ This report is the Session 1 Phase A artefact. It captures every claim, link, co
 | `/404/` | `src/pages/404.astro` |  |
 | `/career/` | `src/pages/career/index.astro` |  |
 | `/colophon/` | `src/pages/colophon.astro` |  |
+| `/desk/` | `src/pages/desk/index.astro` |  |
+| `/desk/[slug]/` | `src/pages/desk/[slug].astro` | ✓ |
 | `/diagrams/` | `src/pages/diagrams/index.astro` |  |
 | `/faq/` | `src/pages/faq/index.astro` |  |
 | `/faq/[slug]/` | `src/pages/faq/[slug].astro` | ✓ |
@@ -28,6 +30,7 @@ This report is the Session 1 Phase A artefact. It captures every claim, link, co
 | `/recipes/` | `src/pages/recipes/index.astro` |  |
 | `/recipes/[slug]/` | `src/pages/recipes/[slug].astro` | ✓ |
 | `/safety/` | `src/pages/safety/index.astro` |  |
+| `/scorecards/` | `src/pages/scorecards/index.astro` |  |
 | `/standards/` | `src/pages/standards/index.astro` |  |
 | `/templates/` | `src/pages/templates/index.astro` |  |
 | `/this-week/` | `src/pages/this-week.astro` |  |
@@ -50,6 +53,8 @@ Schemas declared in `src/content.config.ts`. Actual files counted below.
 | `safety` | 0 | _(empty)_ | 0 | 0 |
 | `landscape` | 0 | _(empty)_ | 0 | 0 |
 | `open` | 0 | _(empty)_ | 0 | 0 |
+| `scorecards` | 2 | `github-mcp` · `playwright-mcp` | 2 | 0 |
+| `desk` | 0 | _(empty)_ | 0 | 0 |
 
 ## Hardcoded count claims in templates
 
@@ -160,3 +165,11 @@ Phase B fixes target:
 6. **Missing static assets** — public/ has only favicon.svg + robots.txt; BaseLayout references /og/default.png and /favicon.ico.
 
 Phase C will replace the typed counts with computed-at-build queries against content collections, gated by lifecycle status (Phase A2).
+
+## Scorecard integrity (Session 2)
+
+Every scorecard JSON must point to an existing MCP review file. Orphan scorecards are forbidden.
+
+✓ All 2 scorecard(s) have a matching MCP review file.
+
+Scorecard orphans: 0

@@ -5,6 +5,7 @@ import Panel from '@components/primitives/Panel.astro';
 import Tag from '@components/primitives/Tag.astro';
 import Button from '@components/primitives/Button.astro';
 import HealthBadge from '@components/data/HealthBadge.astro';
+import Scorecard from '@components/panels/Scorecard.astro';
 
 export async function getStaticPaths() {
   const all = await getCollection('mcps');
@@ -33,6 +34,10 @@ const {
   sushVerdictNeeded,
   reviewedAt,
 } = entry.data;
+
+// Pull the matching scorecard if one exists
+const allScorecards = await getCollection('scorecards');
+const scorecard = allScorecards.find((s) => s.id === entry.id);
 ---
 
 <BaseLayout title={`${title} — MCP review`} description={summary}>
@@ -76,6 +81,11 @@ const {
     <div class="container-wide mcp-page__body">
       <div class="mcp-page__content">
         <Content />
+        {scorecard && (
+          <div id="scorecard">
+            <Scorecard scorecard={scorecard} />
+          </div>
+        )}
       </div>
 
       <aside class="mcp-page__aside">

@@ -44,14 +44,29 @@ if (!m) {
   process.exit(2);
 }
 const broken = Number(m[1]);
+
+const orphanMatch = out.match(/Scorecard orphans:\s*(\d+)/);
+const orphans = orphanMatch ? Number(orphanMatch[1]) : 0;
+
 console.log(`integrity-check: broken internal links = ${broken} (threshold: ${THRESHOLD})`);
+console.log(`integrity-check: scorecard orphans = ${orphans} (threshold: 0)`);
+
+let failed = false;
 
 if (broken > THRESHOLD) {
   console.error(`❌ integrity-check FAILED: ${broken} broken internal link(s) > threshold ${THRESHOLD}`);
   console.error(`   See docs/inventory-*.md for the full list.`);
   console.error(`   Emergency override: set INTEGRITY_LINK_THRESHOLD env var (document why).`);
-  process.exit(1);
+  failed = true;
 }
+
+if (orphans > 0) {
+  console.error(`❌ integrity-check FAILED: ${orphans} scorecard(s) point to non-existent MCP review files.`);
+  console.error(`   Either create the matching src/content/mcps/<slug>.mdx review or remove the scorecard.`);
+  failed = true;
+}
+
+if (failed) process.exit(1);
 
 console.log(`✓ integrity-check passed`);
 process.exit(0);
