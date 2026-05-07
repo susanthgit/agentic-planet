@@ -1,0 +1,49 @@
+{
+  "slug": "postgres-mcp",
+  "displayName": "postgres-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "MIT", "note": "Inherited from the modelcontextprotocol/servers monorepo." },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/modelcontextprotocol/servers/security" },
+    "signedReleases": { "value": "yes", "note": "npm package published with provenance attestations." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes" },
+    "secretsHandling": { "value": "scoped", "note": "Connection string carries credentials. Pass via env / args; the server doesn't persist or log it." },
+    "credentialStorage": { "value": "memory", "note": "Connection string lives in process env / args. No on-disk credential cache." },
+    "oauthHandling": { "value": "n/a", "note": "Plain Postgres auth via connection string." },
+    "sandboxModel": { "value": "process" },
+    "filesystemAccess": { "value": "none", "note": "No filesystem operations." },
+    "shellAccess": { "value": "no" },
+    "networkEgress": { "value": "allow-list", "note": "Only the configured Postgres host." },
+    "telemetry": { "value": "none" },
+    "dataResidency": { "value": "mixed", "note": "Wherever your Postgres lives. Query results enter the LLM context — pay attention to data-classification before pointing this at production." },
+    "defaultPermissions": { "value": "moderate", "note": "Whatever the connecting role can do. With a properly-scoped read-only role, this is small. With a default `postgres` superuser, this is everything." },
+    "destructiveTools": {
+      "present": ["query"],
+      "humanApproval": "optional",
+      "note": "`query` is one tool; whether it's destructive depends on the SQL the agent generates and the role's permissions. Forks that add `execute` for DDL/DML increase blast radius materially."
+    },
+    "promptInjectionExposure": { "value": "high", "note": "Row contents the agent reads back can contain hostile instructions. Common in any user-generated text column (comments, descriptions). Treat all query output as untrusted text." },
+    "supplyChainSurface": { "value": "low", "depCount": 18, "directDeps": 2, "note": "Direct deps are MCP SDK and pg (the canonical Node Postgres client). Both have strong release hygiene." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "medium", "note": "No MCP-layer rate limit. A long-running agent can run expensive queries; mitigations are at the Postgres role level (statement_timeout) not the MCP server." },
+    "maintainerType": { "value": "corp", "busFactor": 4, "releaseCadence": "monthly", "note": "Anthropic + the modelcontextprotocol working group." },
+    "issueResponseMedianDays": 5,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Read-only agentic SQL over a Postgres database.",
+  "verdictNote": "Use a dedicated Postgres role with SELECT-only and a short `statement_timeout`. Never connect with the `postgres` superuser or your app's role. For DDL/DML workloads, prefer migrations and code review — not an LLM with database write access.",
+  "sources": [
+    { "label": "Source (monorepo)", "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/postgres" },
+    { "label": "npm package", "url": "https://www.npmjs.com/package/@modelcontextprotocol/server-postgres" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=postgres-mcp"
+}

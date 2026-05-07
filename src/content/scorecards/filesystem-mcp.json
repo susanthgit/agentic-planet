@@ -1,0 +1,49 @@
+{
+  "slug": "filesystem-mcp",
+  "displayName": "filesystem-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "MIT", "note": "Inherited from the modelcontextprotocol/servers monorepo." },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/modelcontextprotocol/servers/security", "note": "Anthropic's monorepo policy applies; private vulnerability reporting via Security tab." },
+    "signedReleases": { "value": "yes", "note": "npm package published with provenance attestations." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes", "note": "PRs go through the modelcontextprotocol org; public review history." },
+    "secretsHandling": { "value": "scoped", "note": "Server itself stores no secrets. If your agent reads a file containing a secret, that secret enters the LLM context — that's your prompt's problem, not the server's." },
+    "credentialStorage": { "value": "memory", "note": "No persisted credentials." },
+    "oauthHandling": { "value": "n/a", "note": "Filesystem doesn't authenticate." },
+    "sandboxModel": { "value": "process", "note": "Runs as subprocess of the MCP host. The path allow-list is enforced inside the server process itself." },
+    "filesystemAccess": { "value": "scoped", "note": "Hard-scoped at server launch via the allow-list paths. The server refuses operations on paths outside the list." },
+    "shellAccess": { "value": "no", "note": "No shell tools exposed." },
+    "networkEgress": { "value": "none", "note": "Pure filesystem — no network calls." },
+    "telemetry": { "value": "none" },
+    "dataResidency": { "value": "local", "note": "Files stay on your machine. Only the agent's reads enter the LLM context (over whatever transport you've configured)." },
+    "defaultPermissions": { "value": "broad", "note": "By default the server exposes read AND write AND delete tools. You'd need a fork or a wrapper to ship a read-only mode." },
+    "destructiveTools": {
+      "present": ["write_file", "edit_file", "move_file", "create_directory"],
+      "humanApproval": "optional",
+      "note": "MCP host (e.g. Claude Desktop) is responsible for approval prompts. The server doesn't gate destructive calls itself."
+    },
+    "promptInjectionExposure": { "value": "high", "note": "File contents the agent reads can contain hostile instructions. Treat all read output as untrusted text — particularly README.md, code comments, and any data file under attacker influence." },
+    "supplyChainSurface": { "value": "low", "depCount": 12, "directDeps": 3, "note": "Small JS dep tree. Direct deps are MCP SDK, glob matcher, and a few Node-native modules." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07", "note": "No active CVEs at last scan." },
+    "rateLimitRisk": { "value": "low", "note": "No rate limits — purely local I/O." },
+    "maintainerType": { "value": "corp", "busFactor": 4, "releaseCadence": "monthly", "note": "Maintained by Anthropic and the modelcontextprotocol working group." },
+    "issueResponseMedianDays": 5,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Local file operations on a tightly-scoped allow-list of directories.",
+  "verdictNote": "Use it. Scope the allow-list to one repo subfolder, not $HOME. For unsupervised agents, drop write tools entirely (fork or wrap); for supervised agents, configure your host to gate destructive calls with explicit approval.",
+  "sources": [
+    { "label": "Source (monorepo)", "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem" },
+    { "label": "npm package", "url": "https://www.npmjs.com/package/@modelcontextprotocol/server-filesystem" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=filesystem-mcp"
+}

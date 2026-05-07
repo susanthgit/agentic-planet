@@ -63,7 +63,15 @@ function isAxisValue(v: unknown): v is AxisValue {
   return !!v && typeof v === 'object' && !Array.isArray(v) && 'value' in (v as object);
 }
 
-function renderValue(v: AxisValue | string | string[]): { display: React.ReactNode; meta?: string; note?: string } {
+function isStale(lastCheckedAt?: string): boolean {
+  if (!lastCheckedAt) return false;
+  const checked = new Date(lastCheckedAt).getTime();
+  if (Number.isNaN(checked)) return false;
+  const ageDays = (Date.now() - checked) / (1000 * 60 * 60 * 24);
+  return ageDays > 120;
+}
+
+function renderValue(v: AxisValue | string | string[]): { display: React.ReactNode; meta?: string; note?: string; stale?: boolean } {
   if (typeof v === 'string') return { display: v };
   if (Array.isArray(v)) return { display: <ul className="cmp-list">{v.map((x, i) => <li key={i}>{x}</li>)}</ul> };
   if (isAxisValue(v)) {
@@ -73,7 +81,7 @@ function renderValue(v: AxisValue | string | string[]): { display: React.ReactNo
     const metaParts: string[] = [];
     if (v.lastCheckedAt) metaParts.push(`checked ${v.lastCheckedAt}`);
     if (v.confidence)    metaParts.push(`${v.confidence} confidence`);
-    return { display, meta: metaParts.join(' · '), note: v.note };
+    return { display, meta: metaParts.join(' · '), note: v.note, stale: isStale(v.lastCheckedAt) };
   }
   return { display: '—' };
 }
@@ -167,7 +175,10 @@ export default function CompareMatrix({ items, category, categoryLabel, defaultI
                       const r = renderValue(raw as AxisValue | string | string[]);
                       return (
                         <td key={it.id} className="cmp__cell">
-                          <div className="cmp__cell-value">{r.display}</div>
+                          <div className="cmp__cell-value">
+                            {r.display}
+                            {r.stale && <span className="cmp__stale mono" title="Data older than 120 days — may be out of date">STALE</span>}
+                          </div>
                           {r.note && <p className="cmp__cell-note">{r.note}</p>}
                           {r.meta && <span className="cmp__cell-meta mono">{r.meta}</span>}
                         </td>

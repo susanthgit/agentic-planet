@@ -7,20 +7,19 @@ import Kicker from '@components/primitives/Kicker.astro';
 /**
  * Your first agent in 30 minutes — primary hands-on tutorial.
  *
- * STATUS: review (Session 3 ship; sushReviewNeeded — clears to status: published
- * after Sush voice-passes the page). noIndex until then.
+ * STATUS: published 2026-05-07 (Sush voice-passed batch).
  *
  * The page builds a working Claude Desktop + filesystem-mcp + github-mcp setup
  * that summarises any local repo's README and posts the summary as a GitHub issue.
  *
- * Why this page exists FIRST among tutorials:
+ * Why this page exists:
  *   It's the most-shareable surface on the site. Anyone landing here and following
  *   along ends with a working agent in 30 minutes. That's the bar.
  */
 
 const lastReviewedAt = '2026-05-07';
 const readingTimeMinutes = 30;
-const sushReviewNeeded = true;
+const sushReviewNeeded = false;
 
 const howTo = {
   '@context': 'https://schema.org',

@@ -1,0 +1,62 @@
+---
+title: "filesystem-mcp review"
+name: "filesystem-mcp"
+repo: "https://github.com/modelcontextprotocol/servers"
+category: "Dev"
+summary: "The reference MCP server for read/write access to a configured directory. Part of the modelcontextprotocol/servers monorepo. Default 'agent can touch my files' tool."
+verdict: "Default for any agent that needs to read or write a directory you nominate. Scope it tight — never point at $HOME."
+pros:
+  - "Reference implementation — kept current with the spec"
+  - "Read AND write tools (read_file, write_file, edit_file, list_directory, move_file, search_files)"
+  - "Allow-list scoping is enforced at the server, not the prompt"
+  - "Drop-in for nearly every chat host (one config snippet)"
+cons:
+  - "Default permissions are broad — write, edit and delete are all on by default"
+  - "Path scoping is per-directory: no per-pattern filters (you can't say 'no .env files')"
+  - "No built-in ignore for common-but-secret files (.env, .pem, .ssh)"
+setupTime: "2 minutes"
+catch: "It writes. Even when you only meant to read. Pair with a host that gates destructive tools (Claude Desktop does, with one click). For agents you can't supervise, point this at a project subdirectory — never at $HOME, never at a directory containing .env files."
+dataAccess:
+  - "Read access to every file under the configured allow-list"
+  - "Write access to those files (create, modify, delete)"
+  - "Search via grep-style queries over the configured paths"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Exposes filesystem operations as MCP tools. The agent gets `read_file`, `write_file`, `edit_file` (with diff-style patches), `list_directory`, `search_files`, `move_file`, `create_directory`, and `get_file_info`. All operations are scoped to a list of allowed directories you pass at launch.
+
+## When you actually need it
+
+Any time an agent needs to touch real files. The most common pattern: point it at a single project folder, let the agent read code or docs, and (with human-approval gates on writes) let it draft small edits.
+
+## Setup
+
+```bash
+# Claude Desktop (config.json under "mcpServers")
+"filesystem": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-filesystem",
+    "/Users/you/code/your-repo"
+  ]
+}
+```
+
+Pass one path. Pass two paths if you need it. Don't pass `/` and don't pass `$HOME`. Each path becomes a separately-scoped read/write zone.
+
+## The catch
+
+`write_file`, `edit_file`, `move_file` and the path-creating tools are all on by default. That's the right call — most agents need them — but it means the blast radius equals "everything writeable under the allow-list." Two mitigations: scope tighter than you think (one repo subfolder, not the whole monorepo), and use a host that gates destructive tool calls behind explicit approval (Claude Desktop does this for any tool the agent flags as having side effects — but you can also enforce per-call approval globally in host settings).
+
+For agents running unsupervised (cron, headless), don't grant write at all. Run with read-only by giving the agent a `read-only-fs` wrapper or by using a separate filesystem MCP fork that drops write tools.
+
+## What's in the monorepo
+
+filesystem-mcp lives in `modelcontextprotocol/servers` alongside postgres-mcp, slack-mcp, and ~20 other reference MCPs. The repo's overall star count (~85k) is shared across all of them — see the [scorecard](#scorecard) below for what we measure per package vs per repo.

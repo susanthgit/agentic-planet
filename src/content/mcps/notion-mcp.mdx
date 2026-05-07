@@ -1,0 +1,65 @@
+---
+title: "notion-mcp review"
+name: "notion-mcp"
+repo: "https://github.com/makenotion/notion-mcp-server"
+category: "Productivity"
+summary: "Notion's official MCP server. Read and write pages, databases, blocks. Internal-integration-token authenticated. The 'agent that lives in your workspace docs' enabler."
+verdict: "Default if your knowledge / docs / project tracking lives in Notion. Scope the integration to specific pages — Notion's permission model is page-tree-based and you should use that."
+pros:
+  - "Maintained by Notion themselves — API parity stays close"
+  - "Page-level access control: integrations only see pages you explicitly share"
+  - "Block-level operations cover the things humans actually do (append, edit, search)"
+  - "Database tools handle filters, sorts, and pagination cleanly"
+cons:
+  - "Notion's API is rate-limited (3 RPS) — bursty agents queue up"
+  - "Block ops can be verbose; page restructuring takes many calls"
+  - "Some recent block types (synced blocks, AI blocks) aren't fully exposed"
+setupTime: "5 minutes"
+catch: "Notion's permission model defaults to opt-in: an integration sees nothing until you explicitly share a page with it. That's good. The catch is the inheritance — sharing a top-level page shares all children. So if you share your 'Engineering' workspace root, you've shared every doc nested under it. Walk the tree before sharing."
+dataAccess:
+  - "Every page (and its children) explicitly shared with the integration"
+  - "Database rows in those page-trees"
+  - "User profiles in the workspace (limited)"
+  - "Property history on database items"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Read and write Notion. Tools cover `search` (full-text across shared pages), `get_page`, `update_page`, `append_block_children`, `query_database`, `create_database_item`, `update_database_item`. Auth is an Internal Integration Token from your Notion workspace.
+
+## When you actually need it
+
+Notion is where many teams keep meeting notes, decision logs, OKRs, runbooks. An agent that can read those and write back is a strong fit for:
+
+1. **Meeting summary → Notion page.** Agent reads a transcript, drafts a summary, appends to your meeting-notes database.
+2. **Question answered from your docs.** Agent gets a question via Slack, searches the Notion knowledge base, drafts an answer with citations back to specific pages.
+3. **Status update collation.** Agent reads each team-member's weekly update page, drafts a single roll-up, posts to a parent.
+
+## Setup
+
+Create an Internal Integration at notion.so/profile/integrations. Pick the workspace, decide the capabilities (Read content, Update content, Insert content) — start with Read only, add the others when you genuinely need them. Copy the Internal Integration Token.
+
+```bash
+"notion": {
+  "command": "npx",
+  "args": ["-y", "@notionhq/notion-mcp-server"],
+  "env": {
+    "NOTION_INTEGRATION_TOKEN": "secret_…"
+  }
+}
+```
+
+Then in Notion, share specific pages with the integration. **Walk the tree before you share** — sharing a parent page shares every descendant.
+
+## The catch
+
+The permission model is the safety lever. Use it. A common mistake: someone shares the workspace's top-level "Company" page with the integration "to make it work" while developing — and that's now the whole company knowledge base in the agent's blast radius.
+
+A better pattern: create a dedicated parent page like "Agent Workspace", share that, and only put content the agent should access under it. If the agent needs to read the meeting-notes database, share the database explicitly — not the whole workspace.
+
+The other catch is rate limits. Notion's API is 3 requests per second. An agent doing block-level operations on a page (which can be 50+ blocks) hits the ceiling fast. The MCP server doesn't queue or back-off — your agent will see HTTP 429s. Add a "use the search tool first to narrow before paginating" rule in the prompt.

@@ -1,0 +1,72 @@
+---
+title: "cloudflare-mcp review"
+name: "cloudflare-mcp"
+repo: "https://github.com/cloudflare/mcp-server-cloudflare"
+category: "Cloud"
+summary: "Cloudflare's official MCP server. Lets agents manage Workers, R2 buckets, KV namespaces, DNS, Pages projects, cache purges. API-token authenticated."
+verdict: "Default for any agent that operates Cloudflare infra. Cloudflare tokens are well-scoped — exploit that."
+pros:
+  - "Maintained by Cloudflare directly — keeps up with API changes"
+  - "Token scopes are fine-grained: per-account, per-zone, per-permission-group"
+  - "Cache purge, DNS edits and Workers ops are common automation targets — covered well"
+  - "Cloudflare-side audit log shows every action with timestamp + IP"
+cons:
+  - "Some operations (Workers deploys) are immediately effectful — there's no preview/dry-run for everything"
+  - "Token scopes mean limited to what you grant — but defaults in template scripts tend to over-grant"
+  - "Account-level tools can affect billing if misused (Workers paid plan, Stream)"
+setupTime: "5 minutes"
+catch: "API tokens look fine-grained until you copy a 'Read All Resources' template and accept it. Always start from the 'Edit zone DNS' or 'Workers Scripts:Edit' minimum-scope templates and trim further. Token exposure is the worst-case here — leaked tokens with broad scope can purge your cache, redirect your DNS, or rack up Workers costs."
+dataAccess:
+  - "Every zone the token can read (DNS records, settings)"
+  - "Workers scripts source code (depending on scope)"
+  - "R2 bucket contents (if R2:Read granted)"
+  - "KV namespace values"
+  - "Pages project deployment metadata"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Wraps the Cloudflare REST API as MCP tools. Coverage is broad: `list_workers`, `deploy_worker`, `purge_cache`, `list_dns_records`, `update_dns_record`, `list_kv_namespaces`, `read_kv_value`, `write_kv_value`, `list_r2_buckets`, `list_pages_projects`. Authentication is a Cloudflare API token passed via env.
+
+## When you actually need it
+
+Three patterns:
+
+1. **Cache purge after content updates.** The classic — your agent updates a blog post, then asks the cloudflare-mcp to purge the relevant URLs. Often part of a chained workflow.
+2. **DNS edits during incidents.** An agent watches your monitoring (via another tool), and when a record needs to change (failover, IP rotation), it drafts the change, waits for human approval, then applies.
+3. **Workers script ops.** Agents that deploy edge functions — building, deploying, rolling back. With proper scoping this is safe; with broad scopes it's terrifying.
+
+## Setup
+
+Create a Cloudflare API token at dash.cloudflare.com/profile/api-tokens. Use a template close to what you need:
+
+- *Edit zone DNS* — for DNS automations
+- *Workers Scripts:Edit* — for Workers deploys
+- *Cache Purge* — for cache busting
+
+Then trim. The templates often grant more than you need (e.g. `Edit zone DNS` includes settings the agent doesn't touch). Check the per-permission-group breakdown.
+
+```bash
+"cloudflare": {
+  "command": "npx",
+  "args": ["-y", "@cloudflare/mcp-server-cloudflare"],
+  "env": {
+    "CLOUDFLARE_API_TOKEN":   "…",
+    "CLOUDFLARE_ACCOUNT_ID":  "…"
+  }
+}
+```
+
+## The catch
+
+Cloudflare API tokens are arguably the best-in-class auth model for agentic infrastructure access — fine-grained per-resource, per-permission-group. The catch is humans don't use them well. Two patterns to avoid:
+
+- **The "Edit Zone DNS" trap.** That template grants edit on the whole zone; if you only need to edit one record-name pattern, the policy language supports a filter. Use it.
+- **The "I'll just use Global API Key" shortcut.** Global API Keys exist for legacy reasons. Don't. Ever.
+
+For agent workloads: rotate tokens monthly, scope per-purpose (one for cache, one for DNS, one for Workers), and watch the Cloudflare audit log on a schedule. Cloudflare logs every API call with token, IP, timestamp.

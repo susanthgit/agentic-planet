@@ -1,5 +1,5 @@
 # Agentic Planet — Inventory & claim matrix
-*Generated 2026-05-07T03:06:49.580Z by `scripts/audit-claims.mjs`*
+*Generated 2026-05-07T03:29:44.044Z by `scripts/audit-claims.mjs`*
 
 This report is the Session 1 Phase A artefact. It captures every claim, link, count, route, and data row in the repo so Phases B–E have a baseline to fix against.
 
@@ -48,7 +48,7 @@ Schemas declared in `src/content.config.ts`. Actual files counted below.
 | Collection | Files | Slugs | Sush-review-needed | Sush-verdict-needed |
 |------------|-------|-------|--------------------|---------------------|
 | `recipes` | 1 | `youtube-seo-automation` | 0 | 1 |
-| `mcps` | 2 | `github-mcp` · `playwright-mcp` | 0 | 2 |
+| `mcps` | 7 | `cloudflare-mcp` · `filesystem-mcp` · `github-mcp` · `notion-mcp` · `playwright-mcp` · `postgres-mcp` · `slack-mcp` | 0 | 2 |
 | `tools` | 0 | _(empty)_ | 0 | 0 |
 | `vendors` | 0 | _(empty)_ | 0 | 0 |
 | `standards` | 0 | _(empty)_ | 0 | 0 |
@@ -57,7 +57,7 @@ Schemas declared in `src/content.config.ts`. Actual files counted below.
 | `safety` | 0 | _(empty)_ | 0 | 0 |
 | `landscape` | 0 | _(empty)_ | 0 | 0 |
 | `open` | 0 | _(empty)_ | 0 | 0 |
-| `scorecards` | 2 | `github-mcp` · `playwright-mcp` | 2 | 0 |
+| `scorecards` | 7 | `cloudflare-mcp` · `filesystem-mcp` · `github-mcp` · `notion-mcp` · `playwright-mcp` · `postgres-mcp` · `slack-mcp` | 0 | 0 |
 | `desk` | 0 | _(empty)_ | 0 | 0 |
 
 ## Hardcoded count claims in templates
@@ -131,11 +131,11 @@ _None._
 |----------|------:|-------------|--------------|
 | `github-mcp` | 29550 | `undefined` | ✓ |
 | `playwright-mcp` | 32090 | `undefined` | ✓ |
-| `filesystem-mcp` | 0 | `undefined` | ✗ (404 risk) |
-| `postgres-mcp` | 0 | `undefined` | ✗ (404 risk) |
-| `slack-mcp` | 0 | `undefined` | ✗ (404 risk) |
-| `cloudflare-mcp` | 3707 | `undefined` | ✗ (404 risk) |
-| `notion-mcp` | 4301 | `undefined` | ✗ (404 risk) |
+| `filesystem-mcp` | 0 | `undefined` | ✓ |
+| `postgres-mcp` | 0 | `undefined` | ✓ |
+| `slack-mcp` | 0 | `undefined` | ✓ |
+| `cloudflare-mcp` | 3707 | `undefined` | ✓ |
+| `notion-mcp` | 4301 | `undefined` | ✓ |
 | `figma-mcp` | 14634 | `undefined` | ✗ (404 risk) |
 | `azure-mcp` | 1213 | `undefined` | ✗ (404 risk) |
 | `stripe-mcp` | 1528 | `undefined` | ✗ (404 risk) |
@@ -153,7 +153,7 @@ Source of truth: counts in `src/data/pillars.json` are the *promises*; collectio
 |--------|------------------:|------------------:|-----------:|-----------:|-------|
 | L01 Landscape | 4 | 1 | 0 | 0 | pillars.json claims 1 but only 0 live |
 | R02 Recipes | 5 | 1 | 1 | 0 | 1 flagged for Sush |
-| M03 MCP Servers | 30 | 13 | 2 | 0 | pillars.json claims 13 but only 2 live · 2 flagged for Sush |
+| M03 MCP Servers | 30 | 13 | 7 | 5 | pillars.json claims 13 but only 7 live · 2 flagged for Sush |
 | T04 Tools | 12 | 0 | 0 | 0 | — |
 | V05 Vendors | 4 | 2 | 0 | 0 | pillars.json claims 2 but only 0 live |
 | S06 Safety | 14 | 14 | 0 | 0 | pillars.json claims 14 but only 0 live |
@@ -179,6 +179,6 @@ Phase C will replace the typed counts with computed-at-build queries against con
 
 Every scorecard JSON must point to an existing MCP review file. Orphan scorecards are forbidden.
 
-✓ All 2 scorecard(s) have a matching MCP review file.
+✓ All 7 scorecard(s) have a matching MCP review file.
 
 Scorecard orphans: 0

@@ -1,0 +1,50 @@
+{
+  "slug": "cloudflare-mcp",
+  "displayName": "cloudflare-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "Apache-2.0", "note": "Cloudflare's typical default for OSS." },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/cloudflare/mcp-server-cloudflare/security", "note": "Cloudflare's standard responsible disclosure applies." },
+    "signedReleases": { "value": "partial", "note": "npm package published; check npm provenance attestations on the latest version." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes", "note": "Active Cloudflare team maintains; PRs go through Cloudflare's internal review." },
+    "secretsHandling": { "value": "scoped", "note": "API token via env. Server doesn't persist or log it." },
+    "credentialStorage": { "value": "memory" },
+    "oauthHandling": { "value": "scoped", "note": "Cloudflare's API tokens are best-in-class fine-grained: per-account, per-zone, per-permission-group. Use them." },
+    "sandboxModel": { "value": "process" },
+    "filesystemAccess": { "value": "scoped", "note": "Some Workers deploy tools may read script files from a configured directory; scope at the host." },
+    "shellAccess": { "value": "no" },
+    "networkEgress": { "value": "allow-list", "note": "Cloudflare API endpoints (api.cloudflare.com) only." },
+    "telemetry": { "value": "none", "note": "Cloudflare's server-side audit log captures API calls (governed by Cloudflare's privacy policy)." },
+    "dataResidency": { "value": "cloud", "note": "Cloudflare's infrastructure. Specific resources (R2, Workers KV, D1) have their own residency settings." },
+    "defaultPermissions": { "value": "moderate", "note": "Per the API token. Default templates over-grant; trim before issuing." },
+    "destructiveTools": {
+      "present": ["purge_cache", "update_dns_record", "deploy_worker", "delete_worker", "write_kv_value"],
+      "humanApproval": "optional",
+      "note": "Cache purges, DNS edits, and Workers deploys are immediately effectful. No dry-run for most; gate at the host."
+    },
+    "promptInjectionExposure": { "value": "medium", "note": "Tool output (Workers script source, KV values, R2 object metadata) can contain hostile content. Lower exposure than browser/filesystem MCPs because tool surface is more API-shaped." },
+    "supplyChainSurface": { "value": "low", "depCount": 22, "directDeps": 3, "note": "MCP SDK + Cloudflare's official @cloudflare/* clients." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "low", "note": "Cloudflare API rate limits are generous for normal use; only burst-deploy patterns hit ceilings." },
+    "maintainerType": { "value": "corp", "busFactor": 5, "releaseCadence": "monthly", "note": "Maintained by Cloudflare." },
+    "issueResponseMedianDays": 3,
+    "incidents": []
+  },
+  "verdict": "ADOPT",
+  "verdictScope": "Cloudflare infrastructure operations using a fine-grained API token scoped per-purpose.",
+  "verdictNote": "Use it. Token scoping is the strongest safety lever — start from the minimum permission-group template and trim. Rotate tokens monthly. Watch Cloudflare's audit log on the same cadence you check IAM logs elsewhere.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/cloudflare/mcp-server-cloudflare" },
+    { "label": "Cloudflare API tokens docs", "url": "https://developers.cloudflare.com/fundamentals/api/get-started/create-token/" },
+    { "label": "API token scoping", "url": "https://developers.cloudflare.com/fundamentals/api/reference/permissions/" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=cloudflare-mcp"
+}

@@ -1,0 +1,69 @@
+---
+title: "slack-mcp review"
+name: "slack-mcp"
+repo: "https://github.com/modelcontextprotocol/servers"
+category: "Productivity"
+summary: "Reference MCP server for Slack workspace operations: list channels, read messages, post messages, manage threads. Auth via Bot User OAuth Token."
+verdict: "Default for agents that need to read or post Slack. Always scope the bot token to the smallest set of channels — Slack tokens are coarse and the blast radius matters."
+pros:
+  - "Covers the everyday verbs (channels, messages, threads, users, files)"
+  - "Bot User OAuth tokens are reasonably auditable from the Slack admin side"
+  - "Works in both posting and reading directions — agents can summarise threads back to a different channel"
+cons:
+  - "Bot tokens grant per-scope-not-per-channel — `chat:write` writes anywhere the bot is invited"
+  - "No first-party rate-limit handling — Slack's tier 2/3 limits are easy to hit"
+  - "Reading a high-traffic channel can blow your context window in seconds"
+setupTime: "10 minutes"
+catch: "Slack tokens grant by SCOPE, not by channel. A bot with `chat:write` can post in any channel it's been invited to — and `chat:write.public` lets it post in public channels it ISN'T invited to. Curate the invite list. Audit weekly. Rotate the token any time the agent's prompt changes materially."
+dataAccess:
+  - "Every channel the bot user is in (read history)"
+  - "Every public channel if `channels:read.public` granted"
+  - "User profiles in the workspace"
+  - "Files shared in those channels (if `files:read` granted)"
+  - "Post history once the bot starts writing — may show as 'Bot' in the workspace's audit log"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Lets an agent read and write Slack. Tools cover `list_channels`, `get_channel_history`, `post_message`, `reply_to_thread`, `list_users`, `get_user_profile`, and a few more. Auth is a Bot User OAuth Token issued from a Slack app you create in your workspace.
+
+## When you actually need it
+
+Three patterns I've seen work:
+
+1. **Agent posts daily/weekly summaries.** Agent reads a configured channel's last 24h, summarises, posts a digest in another channel. Standalone — no human in the loop after setup.
+2. **Agent triages incoming threads.** When a message in `#support` matches a pattern, the agent reads the thread context, drafts a reply, posts it in a private review channel, waits for approval, then posts publicly.
+3. **Agent posts decisions / changes.** Used as a notification sink — when an agent does anything material (deploys, bookings, file edits), it posts a one-line "I just did X" to a `#agent-log` channel for human visibility.
+
+## Setup
+
+Create a Slack app at api.slack.com/apps. Add a Bot User. Grant the minimum scopes you need (start with `channels:history`, `chat:write`). Install to workspace. Copy the Bot User OAuth Token (starts `xoxb-`).
+
+```bash
+"slack": {
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-slack"],
+  "env": {
+    "SLACK_BOT_TOKEN": "xoxb-…",
+    "SLACK_TEAM_ID":   "T01234567"
+  }
+}
+```
+
+Then, in Slack, invite the bot user to the specific channels you want it to read/write. **Don't** add it to `#general` or `#announcements` unless you genuinely need it there.
+
+## The catch
+
+Slack's auth model wasn't designed for autonomous agents. Tokens are scope-based, not channel-based — `chat:write` writes wherever you're invited, period. There's no Slack-side feature that says "this bot can ONLY post in #agent-log."
+
+Mitigations:
+
+- **One bot per agent purpose.** A summariser bot has different scopes than a triage bot. They get separate tokens.
+- **Curate the invite list.** Treat the list of channels the bot is in as a security artifact. Audit it on the same cadence you audit IAM policies.
+- **Watch the workspace audit log.** Anyone with admin in the workspace can see every message a bot has posted. Use it.
+- **Rate-limit at the prompt level.** A loose prompt can trigger Slack tier 2 rate limits; if your agent is allowed to post repeatedly, add a "no more than N posts per hour" rule in the system prompt.

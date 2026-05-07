@@ -7,31 +7,31 @@ import Button from '@components/primitives/Button.astro';
 /**
  * MCP Security Scorecard — methodology page.
  *
- * STATUS: review (Session 1 Phase E scaffold; sushReviewNeeded — clears
- * to status: published in Session 2 BEFORE any public scorecard ships).
+ * STATUS: published 2026-05-07 (Sush voice-passed batch). Methodology v1.0
+ * is now the canonical rubric. Public scorecards may now ship at status: published.
  *
- * Why this page exists FIRST:
+ * Why this page exists:
  *   The Scorecard is opinionated public commentary on third-party MCPs.
- *   Without methodology, dispute path, and an explicit "not a formal audit"
- *   disclaimer, scorecards read as arbitrary or accusatory. This page
- *   ships before any /scorecards/<slug>/ page is publicly linked.
+ *   This page leads with the methodology, dispute path, and explicit
+ *   ``not a formal audit'' disclaimer so scorecards never read as arbitrary
+ *   or accusatory.
  */
 ---
 
 <BaseLayout
   title="MCP Security Scorecard — methodology"
   description="How we score MCP servers. What's measured, what isn't, how to dispute. Not a formal security audit."
-  noIndex={true}
+  noIndex={false}
 >
   <PillarHeader
     code="MTH-01"
     color="amber"
     title="Methodology · MCP Security Scorecard"
     description="Adoption posture, not certification. What we look at, what we don't, how disputes work."
-    count={0}
-    countLabel="scorecards public"
-    meta="STATUS // REVIEW · SUSH VOICE PASS PENDING"
-    status="REVIEW"
+    count={1}
+    countLabel="methodology version"
+    meta="STATUS // PUBLISHED · METHODOLOGY V1.0 · 2026-05-07"
+    status="LIVE"
   />
 
   <section class="container-prose section">

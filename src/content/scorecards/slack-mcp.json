@@ -1,0 +1,50 @@
+{
+  "slug": "slack-mcp",
+  "displayName": "slack-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "MIT", "note": "Inherited from the modelcontextprotocol/servers monorepo." },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/modelcontextprotocol/servers/security" },
+    "signedReleases": { "value": "yes", "note": "npm package published with provenance attestations." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes" },
+    "secretsHandling": { "value": "scoped", "note": "Bot User OAuth Token passed via env. Server doesn't log or persist it." },
+    "credentialStorage": { "value": "memory", "note": "Token in process env." },
+    "oauthHandling": { "value": "broad", "note": "Slack tokens are per-scope, not per-channel. `chat:write` writes wherever the bot is invited. Curate the invite list as a security artefact." },
+    "sandboxModel": { "value": "process" },
+    "filesystemAccess": { "value": "none" },
+    "shellAccess": { "value": "no" },
+    "networkEgress": { "value": "allow-list", "note": "Only slack.com APIs." },
+    "telemetry": { "value": "none" },
+    "dataResidency": { "value": "cloud", "note": "Slack's cloud. Your workspace's region governs storage." },
+    "defaultPermissions": { "value": "broad", "note": "Whatever scopes you grant the bot user become the agent's powers. Default templates are over-broad — start with `chat:write` and `channels:history` only." },
+    "destructiveTools": {
+      "present": ["post_message", "reply_to_thread"],
+      "humanApproval": "optional",
+      "note": "Slack messages are visible immediately to whoever's in the channel. Treat every post as 'this is what the bot just said about your company in front of everyone here'."
+    },
+    "promptInjectionExposure": { "value": "high", "note": "Channel messages the agent reads can contain hostile instructions — particularly in user-driven channels (#support, #general). Treat all message content as untrusted text." },
+    "supplyChainSurface": { "value": "low", "depCount": 14, "directDeps": 2, "note": "MCP SDK + Slack's official @slack/web-api Node client." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "high", "note": "Slack's tier 2 rate limits are easy to hit with bursty posting. A loose prompt can land you on a temporary lockout." },
+    "maintainerType": { "value": "corp", "busFactor": 4, "releaseCadence": "monthly", "note": "Anthropic + the modelcontextprotocol working group." },
+    "issueResponseMedianDays": 5,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Slack workspace operations where the bot's invited channel set is curated and minimal.",
+  "verdictNote": "Use it. Create a per-purpose Slack app (one bot per agent intent). Grant minimal scopes. Curate the invite list — that's your real ACL. Add a posting-rate cap in the prompt to avoid Slack rate limits.",
+  "sources": [
+    { "label": "Source (monorepo)", "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/slack" },
+    { "label": "npm package", "url": "https://www.npmjs.com/package/@modelcontextprotocol/server-slack" },
+    { "label": "Slack OAuth scopes reference", "url": "https://api.slack.com/scopes" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=slack-mcp"
+}

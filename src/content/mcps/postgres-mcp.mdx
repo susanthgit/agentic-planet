@@ -1,0 +1,71 @@
+---
+title: "postgres-mcp review"
+name: "postgres-mcp"
+repo: "https://github.com/modelcontextprotocol/servers"
+category: "Data"
+summary: "Reference MCP server for PostgreSQL access. Read-first by design — schema introspection plus a configured-by-you query tool. Part of modelcontextprotocol/servers."
+verdict: "Default for read-only agentic SQL. For write workloads, prefer your app layer with proper migrations — not an LLM."
+pros:
+  - "Schema-first: list_tables, describe_table give the agent the structure before it tries to query"
+  - "Read-only by default in most install configs"
+  - "Connection string-driven — works against any reachable Postgres (local, RDS, Supabase, Neon, Cloud SQL)"
+cons:
+  - "No built-in row-level security awareness — the agent sees whatever the connecting role can see"
+  - "No query timeout or row-limit at the MCP layer — long-running agents can run away with expensive queries"
+  - "DDL / DML tools are available in some forks; the canonical version is read-tilted but not strictly read-only"
+setupTime: "5 minutes"
+catch: "If you connect with an admin role 'just to make it work', the agent gets admin SQL. Provision a dedicated read-only Postgres role for the agent. Add row limits at the role level (`SET row_security`, statement timeouts). Treat any DDL or DML capability as production-grade — gate behind explicit human approval."
+dataAccess:
+  - "Every table the connecting role can SELECT from"
+  - "Schema metadata (column names, types, comments)"
+  - "Query plans / EXPLAIN output"
+  - "Whatever the role can mutate (INSERT/UPDATE/DELETE) if those tools are exposed"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Three core tools: `list_tables` (every table the role can see), `describe_table` (columns, types, comments, indexes), and `query` (run an arbitrary SELECT). Some forks add `execute` (DDL / DML) and `transaction` wrappers. The canonical version stays close to read.
+
+## When you actually need it
+
+Plain-English questions over your own database. *"How many users signed up last week, broken down by source?"* — the agent calls `list_tables`, picks the right table from the schema, drafts the query, runs it, returns the answer with the SQL it ran. The honesty of having the agent show its query is the whole point.
+
+## Setup
+
+```bash
+"postgres": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-postgres",
+    "postgresql://agent:password@localhost:5432/mydb"
+  ]
+}
+```
+
+The connection string carries the credentials. Two non-negotiables:
+
+1. **Use a dedicated role.** Not `postgres`. Not your app's role. A new role with only `CONNECT` to the database, only `SELECT` on the tables you've thought about, and a `statement_timeout` set short.
+2. **Default to read-only.** Add `default_transaction_read_only = on` for the role.
+
+```sql
+CREATE ROLE agent_reader LOGIN PASSWORD 'rotate-this';
+GRANT CONNECT ON DATABASE mydb TO agent_reader;
+GRANT USAGE ON SCHEMA public TO agent_reader;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO agent_reader;
+ALTER ROLE agent_reader SET default_transaction_read_only = on;
+ALTER ROLE agent_reader SET statement_timeout = '30s';
+```
+
+Now even if the agent invents a `DROP TABLE users`, Postgres refuses.
+
+## The catch
+
+The agent will sometimes write a query that returns a million rows. It will sometimes run a query that takes ten minutes. The MCP server doesn't paginate — it returns whatever Postgres returns, and your context window is the limit.
+
+Defensive moves: the role-level `statement_timeout`, plus a prompt rule (*"if a query would return more than 200 rows, narrow it first"*), plus a follow-the-money habit of watching pg_stat_activity while the agent is exploring an unfamiliar database.

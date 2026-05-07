@@ -4,6 +4,60 @@ import './CommandPalette.css';
 
 const RECENT_KEY = 'ap_recent_pages';
 const MAX_RECENT = 4;
+const PAGEFIND_LIMIT = 5;
+const PAGEFIND_DEBOUNCE_MS = 180;
+
+interface PagefindResult {
+  url: string;
+  meta?: { title?: string; description?: string };
+  excerpt?: string;
+  // Custom meta we attach via data-pagefind-meta in templates.
+  // Pagefind exposes anything present as flat keys on `meta`.
+  [key: string]: any;
+}
+
+interface PagefindEntry extends SearchEntry {
+  _source: 'pagefind';
+  _excerpt?: string;
+}
+
+let pagefindPromise: Promise<any> | null = null;
+function loadPagefind(): Promise<any> {
+  if (pagefindPromise) return pagefindPromise;
+  pagefindPromise = new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(null);
+      return;
+    }
+    // Pagefind ships /pagefind/pagefind.js at runtime — Vite shouldn't try to
+    // resolve it at build. Inject a module script that imports it and stashes
+    // the namespace on window.
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.textContent = [
+      "import * as pf from '/pagefind/pagefind.js';",
+      "window.__pagefind = pf;",
+      "if (typeof pf.options === 'function') { pf.options({ excerptLength: 24 }); }",
+      "window.dispatchEvent(new CustomEvent('agentic-pagefind-ready'));",
+    ].join('\n');
+    script.onerror = () => {
+      console.warn('CommandPalette: Pagefind script failed to load');
+      resolve(null);
+    };
+    const onReady = () => {
+      window.removeEventListener('agentic-pagefind-ready', onReady);
+      resolve((window as any).__pagefind ?? null);
+    };
+    window.addEventListener('agentic-pagefind-ready', onReady, { once: true });
+    document.head.appendChild(script);
+    // 5-second timeout fallback if Pagefind fails silently
+    setTimeout(() => {
+      window.removeEventListener('agentic-pagefind-ready', onReady);
+      resolve((window as any).__pagefind ?? null);
+    }, 5000);
+  });
+  return pagefindPromise;
+}
 
 function getRecent(): string[] {
   if (typeof window === 'undefined') return [];
@@ -77,7 +131,9 @@ export default function CommandPalette({ initiallyOpen = false }: Props) {
   const [query, setQuery] = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
   const [recent, setRecent] = useState<string[]>([]);
+  const [pagefindHits, setPagefindHits] = useState<PagefindEntry[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<number | null>(null);
 
   // Open on Cmd/Ctrl+K, close on Escape
   useEffect(() => {
@@ -110,9 +166,60 @@ export default function CommandPalette({ initiallyOpen = false }: Props) {
       setRecent(getRecent());
       setQuery('');
       setActiveIdx(0);
+      setPagefindHits([]);
       requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [open]);
+
+  // Pagefind query (debounced) — kicks in for queries ≥ 3 chars
+  useEffect(() => {
+    if (!open) return;
+    if (debounceRef.current) {
+      window.clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    const q = query.trim();
+    if (q.length < 3) {
+      setPagefindHits([]);
+      return;
+    }
+    debounceRef.current = window.setTimeout(async () => {
+      const pagefind = await loadPagefind();
+      if (!pagefind || typeof pagefind.search !== 'function') return;
+      try {
+        const result = await pagefind.search(q);
+        const items = await Promise.all(
+          (result.results ?? []).slice(0, PAGEFIND_LIMIT).map(async (r: any) => {
+            const data: PagefindResult = await r.data();
+            return data;
+          })
+        );
+        // Map Pagefind results into SearchEntry shape, suppress duplicates of the static index.
+        const staticUrls = new Set(SEARCH_INDEX.map((e) => e.url));
+        const mapped: PagefindEntry[] = items
+          .filter((it) => it && it.url && !staticUrls.has(it.url))
+          .map((it) => ({
+            url: it.url,
+            title: it.meta?.title ?? it.url,
+            description: stripHtml(it.excerpt ?? ''),
+            kicker: it.kind ? String(it.kind).toUpperCase() : 'PAGE',
+            category: 'deep' as any,
+            _source: 'pagefind',
+            _excerpt: stripHtml(it.excerpt ?? ''),
+          } as PagefindEntry));
+        setPagefindHits(mapped);
+      } catch (e) {
+        console.warn('CommandPalette: Pagefind search failed', e);
+        setPagefindHits([]);
+      }
+    }, PAGEFIND_DEBOUNCE_MS);
+    return () => {
+      if (debounceRef.current) {
+        window.clearTimeout(debounceRef.current);
+        debounceRef.current = null;
+      }
+    };
+  }, [open, query]);
 
   const recentEntries = useMemo(
     () => recent.map((url) => SEARCH_INDEX.find((e) => e.url === url)).filter(Boolean) as SearchEntry[],
@@ -135,8 +242,11 @@ export default function CommandPalette({ initiallyOpen = false }: Props) {
         orderedGroups.push({ key: cat, label: CATEGORY_LABELS[cat as SearchEntry['category']], entries: byCat[cat] });
       }
     }
+    if (pagefindHits.length > 0) {
+      orderedGroups.push({ key: 'pagefind', label: 'DEEP CONTENT (PAGEFIND)', entries: pagefindHits });
+    }
     return orderedGroups;
-  }, [query, recentEntries]);
+  }, [query, recentEntries, pagefindHits]);
 
   // Flat list of entries in display order, for keyboard nav
   const flatEntries = useMemo(() => groups.flatMap((g) => g.entries), [groups]);
@@ -181,7 +291,7 @@ export default function CommandPalette({ initiallyOpen = false }: Props) {
             ref={inputRef}
             className="cmdk__input"
             type="search"
-            placeholder="Search the planet… (pages, MCPs, recipes, FAQ)"
+            placeholder="Search the planet… (pages + deep content)"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setActiveIdx(0); }}
             onKeyDown={onInputKeyDown}
@@ -201,10 +311,11 @@ export default function CommandPalette({ initiallyOpen = false }: Props) {
               {g.entries.map((entry) => {
                 const idx = flatEntries.indexOf(entry);
                 const isActive = idx === activeIdx;
+                const isPagefind = (entry as PagefindEntry)._source === 'pagefind';
                 return (
                   <button
                     key={entry.url}
-                    className={`cmdk__item ${isActive ? 'cmdk__item--active' : ''}`}
+                    className={`cmdk__item ${isActive ? 'cmdk__item--active' : ''} ${isPagefind ? 'cmdk__item--pagefind' : ''}`}
                     onClick={() => handleNavigate(entry)}
                     onMouseEnter={() => setActiveIdx(idx)}
                   >
@@ -230,4 +341,8 @@ export default function CommandPalette({ initiallyOpen = false }: Props) {
       </div>
     </div>
   );
+}
+
+function stripHtml(s: string): string {
+  return (s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 }

@@ -1,0 +1,50 @@
+{
+  "slug": "notion-mcp",
+  "displayName": "notion-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "MIT", "note": "Notion's open-source MCP server licence." },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/makenotion/notion-mcp-server/security" },
+    "signedReleases": { "value": "yes", "note": "npm package published with provenance attestations." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes", "note": "Maintained by Notion's API team." },
+    "secretsHandling": { "value": "scoped", "note": "Internal Integration Token via env. Server doesn't log it." },
+    "credentialStorage": { "value": "memory" },
+    "oauthHandling": { "value": "scoped", "note": "Notion integrations support per-page sharing — the strongest safety lever. Walk the page tree before sharing parents." },
+    "sandboxModel": { "value": "process" },
+    "filesystemAccess": { "value": "none" },
+    "shellAccess": { "value": "no" },
+    "networkEgress": { "value": "allow-list", "note": "api.notion.com only." },
+    "telemetry": { "value": "none", "note": "Notion's server-side request logs apply (governed by Notion's privacy policy)." },
+    "dataResidency": { "value": "cloud", "note": "Notion's cloud (US for most workspaces; EU for EU-region workspaces under Enterprise tier)." },
+    "defaultPermissions": { "value": "minimal", "note": "Until you share specific pages, the integration sees nothing. The model is opt-in by design." },
+    "destructiveTools": {
+      "present": ["update_page", "append_block_children", "update_block", "delete_block", "create_database_item", "update_database_item"],
+      "humanApproval": "optional",
+      "note": "Notion writes are visible immediately to anyone who has the page open. Treat as production posts; gate at the host for any agent that writes."
+    },
+    "promptInjectionExposure": { "value": "high", "note": "Notion pages contain user-authored content — comments, embedded notes, callouts. Hostile content in any read result can attempt to redirect the agent. Treat all page content as untrusted text." },
+    "supplyChainSurface": { "value": "low", "depCount": 16, "directDeps": 2, "note": "MCP SDK + @notionhq/client (official Notion SDK)." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "high", "note": "Notion's 3 RPS limit is the strictest of the common MCPs. Block-level ops on a single page can serialise into many calls; agents hit 429s easily." },
+    "maintainerType": { "value": "corp", "busFactor": 4, "releaseCadence": "monthly", "note": "Maintained by Notion's API team." },
+    "issueResponseMedianDays": 4,
+    "incidents": []
+  },
+  "verdict": "ADOPT",
+  "verdictScope": "Notion workspace operations where pages shared with the integration are scoped to a dedicated agent-workspace tree.",
+  "verdictNote": "Use it. The page-level sharing model is genuinely strong — exploit it. Create a dedicated 'Agent Workspace' parent page and only put pages the agent should access under it. Add a rate-limit-aware rule in the prompt to avoid 429s.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/makenotion/notion-mcp-server" },
+    { "label": "npm package", "url": "https://www.npmjs.com/package/@notionhq/notion-mcp-server" },
+    { "label": "Notion integrations docs", "url": "https://developers.notion.com/docs/getting-started" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=notion-mcp"
+}

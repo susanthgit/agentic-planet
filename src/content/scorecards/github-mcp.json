@@ -6,9 +6,9 @@
   "reviewedBy": "Sush",
   "methodologyVersion": "1.0",
   "confidence": "high",
-  "status": "review",
-  "noindex": true,
-  "sushReviewNeeded": true,
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
   "scorecard": {
     "licence": {
       "value": "MIT",

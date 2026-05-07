@@ -141,6 +141,18 @@
   background: var(--accent-hi);
 }
 
+.cmdk__item--pagefind .cmdk__kicker {
+  border-color: var(--signal-cyan);
+  color: var(--signal-cyan);
+  text-shadow: var(--text-glow-cyan);
+}
+
+.cmdk__item--pagefind.cmdk__item--active .cmdk__kicker {
+  background: var(--signal-cyan);
+  color: var(--bg-base);
+  text-shadow: none;
+}
+
 .cmdk__kicker {
   font-size: 9px;
   font-weight: 700;
