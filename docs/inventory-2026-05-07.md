@@ -1,5 +1,5 @@
 # Agentic Planet — Inventory & claim matrix
-*Generated 2026-05-07T02:13:14.809Z by `scripts/audit-claims.mjs`*
+*Generated 2026-05-07T02:21:26.045Z by `scripts/audit-claims.mjs`*
 
 This report is the Session 1 Phase A artefact. It captures every claim, link, count, route, and data row in the repo so Phases B–E have a baseline to fix against.
 
@@ -67,18 +67,7 @@ Numbers typed directly in `.astro` / `.mdx` / `.json` that should be replaced wi
 
 Links referenced from templates / data that don't resolve to a real route.
 
-| URL | Detail | Referenced from |
-|-----|--------|------------------|
-| `/mcp/azure-mcp/` | dynamic /mcp/[slug] · slug `azure-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/browserbase-mcp/` | dynamic /mcp/[slug] · slug `browserbase-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/cloudflare-mcp/` | dynamic /mcp/[slug] · slug `cloudflare-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/figma-mcp/` | dynamic /mcp/[slug] · slug `figma-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/filesystem-mcp/` | dynamic /mcp/[slug] · slug `filesystem-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/linear-mcp/` | dynamic /mcp/[slug] · slug `linear-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/notion-mcp/` | dynamic /mcp/[slug] · slug `notion-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/postgres-mcp/` | dynamic /mcp/[slug] · slug `postgres-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/slack-mcp/` | dynamic /mcp/[slug] · slug `slack-mcp` not in collection | `src/data/mcp-health.json` |
-| `/mcp/stripe-mcp/` | dynamic /mcp/[slug] · slug `stripe-mcp` not in collection | `src/data/mcp-health.json` |
+_None._
 
 ## Public assets
 
@@ -92,10 +81,11 @@ Links referenced from templates / data that don't resolve to a real route.
 | File | Size |
 |------|------|
 | `src/data/featured-recipes.json` | 768 bytes |
-| `src/data/mcp-health.json` | 5260 bytes |
+| `src/data/mcp-health.json` | 9606 bytes |
 | `src/data/pillars.json` | 2363 bytes |
 | `src/data/pulse.json` | 1149 bytes |
 | `src/data/search-index.ts` | 5541 bytes |
+| `src/data/targets.json` | 708 bytes |
 
 ## Pillars metadata claims (`src/data/pillars.json`)
 
@@ -123,21 +113,21 @@ Links referenced from templates / data that don't resolve to a real route.
 
 | Health row slug | Stars | URL claimed | Review file? |
 |----------|------:|-------------|--------------|
-| `github-mcp` | 29550 | `/mcp/github-mcp/` | ✓ |
-| `playwright-mcp` | 32090 | `/mcp/playwright-mcp/` | ✓ |
-| `filesystem-mcp` | 85152 | `/mcp/filesystem-mcp/` | ✗ (404 risk) |
-| `postgres-mcp` | 85152 | `/mcp/postgres-mcp/` | ✗ (404 risk) |
-| `slack-mcp` | 85152 | `/mcp/slack-mcp/` | ✗ (404 risk) |
-| `cloudflare-mcp` | 3707 | `/mcp/cloudflare-mcp/` | ✗ (404 risk) |
-| `notion-mcp` | 4301 | `/mcp/notion-mcp/` | ✗ (404 risk) |
-| `figma-mcp` | 14634 | `/mcp/figma-mcp/` | ✗ (404 risk) |
-| `azure-mcp` | 1213 | `/mcp/azure-mcp/` | ✗ (404 risk) |
-| `stripe-mcp` | 1528 | `/mcp/stripe-mcp/` | ✗ (404 risk) |
-| `browserbase-mcp` | 3315 | `/mcp/browserbase-mcp/` | ✗ (404 risk) |
-| `linear-mcp` | 1280 | `/mcp/linear-mcp/` | ✗ (404 risk) |
-| `legacy-agent-x` | 1100 | `/mcp/` | ✗ (404 risk) |
+| `github-mcp` | 29550 | `undefined` | ✓ |
+| `playwright-mcp` | 32090 | `undefined` | ✓ |
+| `filesystem-mcp` | 0 | `undefined` | ✗ (404 risk) |
+| `postgres-mcp` | 0 | `undefined` | ✗ (404 risk) |
+| `slack-mcp` | 0 | `undefined` | ✗ (404 risk) |
+| `cloudflare-mcp` | 3707 | `undefined` | ✗ (404 risk) |
+| `notion-mcp` | 4301 | `undefined` | ✗ (404 risk) |
+| `figma-mcp` | 14634 | `undefined` | ✗ (404 risk) |
+| `azure-mcp` | 1213 | `undefined` | ✗ (404 risk) |
+| `stripe-mcp` | 1528 | `undefined` | ✗ (404 risk) |
+| `browserbase-mcp` | 3315 | `undefined` | ✗ (404 risk) |
+| `linear-mcp` | 1280 | `undefined` | ✗ (404 risk) |
+| `legacy-agent-x` | 1100 | `undefined` | ✗ (404 risk) |
 
-**⚠ Duplicate star counts (likely monorepo collision):** 85152
+**⚠ Duplicate star counts (likely monorepo collision):** 0
 
 ## Claim matrix (the big one)
 

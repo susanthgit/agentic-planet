@@ -26,8 +26,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build site
-        run: npm run build:no-search
+      - name: Build site (with Pagefind index)
+        run: npm run build
 
       - name: Deploy to Cloudflare Pages
         env:

@@ -21,7 +21,6 @@
         29545,
         29550
       ],
-      "url": "/mcp/github-mcp/",
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
@@ -53,7 +52,6 @@
         32084,
         32090
       ],
-      "url": "/mcp/playwright-mcp/",
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
@@ -85,7 +83,6 @@
         85137,
         85152
       ],
-      "url": "/mcp/filesystem-mcp/",
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
@@ -119,7 +116,6 @@
         85137,
         85152
       ],
-      "url": "/mcp/postgres-mcp/",
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
@@ -153,7 +149,6 @@
         85137,
         85152
       ],
-      "url": "/mcp/slack-mcp/",
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
@@ -187,7 +182,6 @@
         3706,
         3707
       ],
-      "url": "/mcp/cloudflare-mcp/",
       "sourceType": "repo",
       "repo": "cloudflare/mcp-server-cloudflare",
       "packagePath": null,
@@ -219,7 +213,6 @@
         4300,
         4301
       ],
-      "url": "/mcp/notion-mcp/",
       "sourceType": "repo",
       "repo": "makenotion/notion-mcp-server",
       "packagePath": null,
@@ -251,7 +244,6 @@
         14631,
         14634
       ],
-      "url": "/mcp/figma-mcp/",
       "sourceType": "repo",
       "repo": "GLips/Figma-Context-MCP",
       "packagePath": null,
@@ -283,7 +275,6 @@
         1213,
         1213
       ],
-      "url": "/mcp/azure-mcp/",
       "sourceType": "repo",
       "repo": "Azure/azure-mcp",
       "packagePath": null,
@@ -315,7 +306,6 @@
         1528,
         1528
       ],
-      "url": "/mcp/stripe-mcp/",
       "sourceType": "repo",
       "repo": "stripe/agent-toolkit",
       "packagePath": null,
@@ -347,7 +337,6 @@
         3312,
         3315
       ],
-      "url": "/mcp/browserbase-mcp/",
       "sourceType": "repo",
       "repo": "browserbase/mcp-server-browserbase",
       "packagePath": null,
@@ -379,7 +368,6 @@
         1274,
         1280
       ],
-      "url": "/mcp/linear-mcp/",
       "sourceType": "repo",
       "repo": "linear/linear-mcp",
       "packagePath": null,
@@ -411,7 +399,6 @@
         1102,
         1100
       ],
-      "url": "/mcp/",
       "sourceType": "repo",
       "repo": null,
       "packagePath": null,

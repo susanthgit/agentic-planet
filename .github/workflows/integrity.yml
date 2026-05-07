@@ -1,0 +1,46 @@
+name: Integrity Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    name: Build + link audit + voice lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (catches schema + type errors)
+        run: npm run build:no-search
+
+      - name: Internal-link integrity check (HARD FAIL on broken internal links)
+        run: node scripts/integrity-check.mjs
+
+      - name: Voice lint (advisory)
+        run: node scripts/voice-lint.mjs --warn
+
+      - name: Surface the inventory in CI logs
+        if: always()
+        run: |
+          echo "## Inventory snapshot"
+          echo ""
+          if [ -f docs/inventory-*.md ]; then
+            head -200 docs/inventory-*.md
+          fi

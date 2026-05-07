@@ -33,9 +33,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           if [[ -n "$(git status --porcelain src/data/mcp-health.json)" ]]; then
             git add src/data/mcp-health.json
-            git commit -m "chore: refresh MCP health data [skip ci]
+            git commit -m "chore: refresh MCP health data
 
-            Auto-refreshed by GitHub Actions cron."
+            Auto-refreshed by GitHub Actions cron. Triggers redeploy via push."
             git push
           else
             echo "No changes to MCP health data."
