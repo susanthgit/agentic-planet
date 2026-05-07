@@ -1,0 +1,57 @@
+---
+title: "Computer Use — agents that drive real screens"
+summary: "Why Claude Computer Use and OpenAI Operator are different from MCP-style tool agents. When you actually need them."
+depth: "5-min"
+concept: "Computer Use"
+sushReviewNeeded: false
+status: published
+---
+
+# Computer Use — agents that drive real screens
+
+Most agents call tools (MCP servers, APIs). **Computer Use** is a different shape: the agent literally controls a screen — moves a cursor, clicks buttons, types into text fields, reads what's rendered.
+
+Anthropic's *Computer Use API* and OpenAI's *Operator* are the two production-grade implementations in 2026. Both work. Both have limits worth understanding before you reach for them.
+
+## When you actually need it
+
+There's a clear hierarchy of options. Always work down this list:
+
+1. **Is there a public API?** Use it. Faster, more reliable, more auditable.
+2. **Is there a feed (RSS, sitemap, GraphQL endpoint)?** Use it.
+3. **Is the page static enough to fetch + parse?** Use a fetch + parse MCP.
+4. **Does the workflow need a real browser? Use playwright-mcp.** It runs headless, drives a real browser, and returns DOM data the model can reason about. Most ``agent on a website'' tasks fit here.
+5. **Only then: Computer Use.**
+
+Computer Use is for tasks that need to *see the rendered screen* — a desktop app with no API, a SaaS UI that breaks every selector, a workflow where the agent must respond to visual cues.
+
+## Why it's different
+
+playwright-mcp gives the model an *accessibility tree* — a structured representation of the page (elements, roles, names). That's text-like. The model reasons about it textually.
+
+Computer Use gives the model *screenshots*. The model has to *see* the page. It clicks at coordinates. It reads pixels.
+
+This is much harder for the model. Visual reasoning trails text reasoning by years. Accuracy on Computer Use tasks is improving fast but still well below MCP-style tool calls.
+
+## What it's good for
+
+- **Desktop apps with no API.** Legacy CRMs, internal tools, design software.
+- **Tasks that legitimately need visual confirmation.** ``Did the deploy succeed? Look at the dashboard.''
+- **Chained workflows that span multiple apps.** Read in app A, switch to app B, paste, save — when API integration would take longer to build than the workflow saves.
+
+## What it's bad for
+
+- **Anything an API can do.** Slower, less reliable, more expensive (more tokens for the screenshots, more latency for visual reasoning).
+- **Production workflows that need 99% reliability.** Computer Use doesn't get there yet for most non-trivial tasks. Drift in UIs breaks it. New popups break it. A Cloudflare CAPTCHA stops it cold.
+- **Tasks with sensitive data.** Screenshots can leak more than you intend. The model sees the whole screen, not just the field you wanted.
+
+## Real-world pattern
+
+Production systems use Computer Use as a *fallback*: try the API first, try the browser-automation MCP next, fall back to Computer Use only when the previous two fail. Each step costs more and is less reliable than the last.
+
+Treat Computer Use as the option of last resort, not the default.
+
+## What to read next
+
+- [playwright-mcp scorecard](/mcp/playwright-mcp/#scorecard) — the MCP-shaped browser-automation alternative
+- [Anthropic vendor page](/vendors/anthropic/) — Computer Use is one of Anthropic's signature products

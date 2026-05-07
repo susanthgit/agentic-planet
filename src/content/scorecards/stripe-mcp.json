@@ -1,0 +1,50 @@
+{
+  "slug": "stripe-mcp",
+  "displayName": "stripe-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "MIT" },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/stripe/agent-toolkit/security", "note": "Stripe's responsible disclosure policy applies." },
+    "signedReleases": { "value": "yes", "note": "npm package with provenance attestations." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes" },
+    "secretsHandling": { "value": "scoped", "note": "Stripe restricted keys are best-in-class for fine-grained scoping. Use them — never live full secret keys." },
+    "credentialStorage": { "value": "memory" },
+    "oauthHandling": { "value": "scoped", "note": "Restricted keys are scoped per-resource and per-permission (Customers:Read, Refunds:Write, etc.)." },
+    "sandboxModel": { "value": "process" },
+    "filesystemAccess": { "value": "none" },
+    "shellAccess": { "value": "no" },
+    "networkEgress": { "value": "allow-list", "note": "api.stripe.com only." },
+    "telemetry": { "value": "none", "note": "Stripe's API request logs apply (governed by Stripe's privacy policy + PCI compliance)." },
+    "dataResidency": { "value": "cloud", "note": "Stripe's infrastructure. PCI-regulated for cardholder data." },
+    "defaultPermissions": { "value": "moderate", "note": "Per the restricted key scope. Defaults are narrow if you scope properly." },
+    "destructiveTools": {
+      "present": ["create_refund", "cancel_subscription", "update_customer", "create_dispute_response"],
+      "humanApproval": "optional",
+      "note": "Refunds and subscription cancellations move real money. Always gate at the host. Pair with a 'never refund > $X' rule in the prompt for unsupervised agents."
+    },
+    "promptInjectionExposure": { "value": "medium", "note": "Customer descriptions, charge metadata, dispute reason fields can contain user-authored text. Treat as untrusted." },
+    "supplyChainSurface": { "value": "low", "depCount": 12, "directDeps": 2, "note": "Stripe SDK + MCP SDK as direct deps." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "medium", "note": "Stripe rate limits per API key — typically generous, but bulk operations can throttle." },
+    "maintainerType": { "value": "corp", "busFactor": 5, "releaseCadence": "monthly" },
+    "issueResponseMedianDays": 3,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Stripe operations using a properly-scoped restricted key, with destructive tools gated by host-level approval.",
+  "verdictNote": "Use restricted keys exclusively. Start with read-only scopes; add Write scopes only when you genuinely need them. Test in test mode first. Add a 'never refund > $X' rule for unsupervised agents that have refund authority.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/stripe/agent-toolkit" },
+    { "label": "Restricted keys docs", "url": "https://docs.stripe.com/keys" },
+    { "label": "API rate limits", "url": "https://docs.stripe.com/rate-limits" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=stripe-mcp"
+}

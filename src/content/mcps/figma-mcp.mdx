@@ -1,0 +1,77 @@
+---
+title: "figma-mcp review"
+name: "figma-mcp"
+repo: "https://github.com/GLips/Figma-Context-MCP"
+category: "Design"
+summary: "Community-maintained MCP server that reads Figma designs and exports the visual + structural context to LLMs. Read-focused — turns designs into something agents can reason about and code against."
+verdict: "Default for design-to-code workflows. Read-only by design (the right call). The 'Figma is the source of truth, agent translates to code' pattern works."
+pros:
+  - "Active community-maintained project — keeps up with Figma API changes"
+  - "Read-only: no risk of an agent editing a designer's file"
+  - "Returns rich structural data (layers, components, styles) — not just a screenshot"
+  - "Works well as the 'visual context' input to coding agents"
+cons:
+  - "Community-maintained — bus factor smaller than corp-backed MCPs"
+  - "Figma's read-only personal access tokens are still account-wide"
+  - "Large design files can blow context windows — need to scope to specific frames"
+  - "Real-time collaboration features not exposed"
+setupTime: "5 minutes"
+catch: "Figma personal access tokens grant access to every Team and File the user can see. Workspace-scoped or project-scoped tokens don't exist at the personal level. For a solo designer-developer or small team, this is fine. For larger orgs: create a dedicated Figma user with explicit project memberships, generate the PAT as that user. There's no built-in revocation per-agent — token rotation is your only lever."
+dataAccess:
+  - "Every Team / File the PAT's user can see"
+  - "Layer trees, component definitions, style variables"
+  - "Comments and version history"
+  - "Image renders of frames (PNG export)"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Reads Figma designs and exposes them as MCP tools. Tools include `get_file` (full file structure), `get_component`, `get_node` (specific frame or component), `get_style_variables`, `export_image` (PNG of a frame). The output is rich enough that a coding agent can translate a design into HTML / React / Tailwind / Flutter etc.
+
+## When you actually need it
+
+The headline use case in 2026 is *design-to-code with the design as ground truth*. Pattern:
+
+1. Designer ships a frame in Figma.
+2. Coding agent (Claude Code, Cursor) reads the frame via figma-mcp.
+3. Agent translates the layer tree + style variables into code.
+4. Engineer reviews, refines, ships.
+
+This works because Figma's data model is structured: layers have properties (fills, strokes, layout, auto-layout), components are reusable, style variables are referenced by name. The agent isn't guessing from a screenshot — it's reading metadata.
+
+Other use cases:
+
+- **Documentation generation.** Agent reads a design system file, generates component docs.
+- **Accessibility review.** Agent reads contrast pairs, flags anything below WCAG AA.
+- **Asset extraction.** Agent pulls icons / illustrations as SVG, exports them into a code repo.
+
+## Setup
+
+Generate a personal access token at figma.com → Settings → Personal access tokens. The token is account-wide.
+
+```bash
+"figma": {
+  "command": "npx",
+  "args": ["-y", "figma-developer-mcp"],
+  "env": {
+    "FIGMA_API_KEY": "figd_…"
+  }
+}
+```
+
+Some hosts and forks support newer auth shapes (OAuth-style) — check the README for the version you install.
+
+## The catch
+
+The PAT is account-wide. Three implications:
+
+1. **For solo designer-developers**: not really a problem. Your access is appropriate.
+2. **For small teams**: fine if everyone trusts the agent owner. Generate the PAT for one person, agree on the agent's purpose.
+3. **For larger orgs**: bot-user pattern. Create a dedicated Figma user, add to specific projects only, generate the PAT as that user. No per-resource scoping is available — you scope by *what teams the user is in*.
+
+For sensitive design work (unreleased products, competitive features): the agent reads what the user reads. If the agent's outputs go into code repos, prompts, or tool results that leak more broadly than the original Figma access, that's a real exposure. Treat figma-mcp output the same way you'd treat the design files themselves.

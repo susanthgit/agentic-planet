@@ -4,42 +4,51 @@ import PillarHeader from '@components/panels/PillarHeader.astro';
 import Panel from '@components/primitives/Panel.astro';
 import Tag from '@components/primitives/Tag.astro';
 import Button from '@components/primitives/Button.astro';
+import { getCollection } from 'astro:content';
 
-const vendors = [
-  {
-    slug: 'microsoft',
-    name: 'Microsoft',
+// Pull vendor entries from the content collection so they stay in sync with the
+// per-vendor MDX deep-dive pages. Each vendor here renders as a card linking to
+// its own /vendors/<slug>/ page.
+
+const vendorEntries = await getCollection('vendors');
+const vendorMeta: Record<string, { products: string[]; strategy: string; color: string; disclosure?: string }> = {
+  microsoft: {
     products: ['Copilot Studio', 'Foundry', 'Connectors', 'Agent 365', 'Declarative Agents', 'Apps SDK plugins'],
     strategy: 'M365 / Azure-native enterprise agents. Tight integration into existing IT estate.',
     color: 'cyan',
     disclosure: 'Sush works at Microsoft. Independent take.',
-    populated: true,
   },
-  {
-    slug: 'anthropic',
-    name: 'Anthropic',
+  anthropic: {
     products: ['Claude', 'MCP', 'Skills', 'Computer Use', 'Agent SDK'],
-    strategy: 'Protocol-led, capability-led, safety-led. Open ecosystem via MCP.',
+    strategy: 'Protocol-led, capability-led, safety-led. Open MCP-based interop.',
     color: 'amber',
-    populated: true,
   },
-  {
-    slug: 'openai',
-    name: 'OpenAI',
+  openai: {
     products: ['GPTs', 'Apps SDK', 'Agents SDK', 'Operator', 'Realtime API'],
-    strategy: 'Platform + ecosystem. Massive consumer + developer reach.',
+    strategy: 'Platform + reach. Massive consumer + developer footprint.',
     color: 'green',
-    populated: false,
   },
-  {
-    slug: 'google',
-    name: 'Google',
+  google: {
     products: ['Gemini', 'Vertex Agents', 'A2A', 'Notebook LM', 'AI Studio'],
-    strategy: 'Multi-modal, long-context, deep workspace integration.',
+    strategy: 'Multimodal, long-context, deep Workspace integration.',
     color: 'magenta',
-    populated: false,
   },
-];
+};
+
+const order = ['microsoft', 'anthropic', 'openai', 'google'];
+const vendors = order.map((slug) => {
+  const entry = vendorEntries.find((e) => e.id === slug);
+  const meta = vendorMeta[slug];
+  return {
+    slug,
+    name: entry?.data.title ?? slug,
+    products: meta.products,
+    strategy: meta.strategy,
+    color: meta.color,
+    disclosure: meta.disclosure,
+    populated: !!entry && entry.data.status === 'published',
+  };
+});
 ---
 
 <BaseLayout
@@ -52,9 +61,9 @@ const vendors = [
     title="Vendor deep-dives, no spin."
     description="Microsoft, Anthropic, OpenAI, Google — what they're actually building, where they lead, where they lag. From someone who deploys this for a living."
     count={vendors.filter((v) => v.populated).length}
-    countLabel="vendors live (4 planned)"
-    meta="DAY 1 // 2 OF 4"
-    status="EXPANDING"
+    countLabel="vendors live"
+    meta={`${vendors.filter((v) => v.populated).length} OF 4 LIVE`}
+    status={vendors.every((v) => v.populated) ? 'COMPLETE' : 'EXPANDING'}
   />
 
   <section class="container-wide section">

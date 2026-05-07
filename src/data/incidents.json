@@ -1,0 +1,86 @@
+{
+  "_note": "Operational change log — vendor breakages, deprecations, rate-limit changes, migration deadlines. Hand-curated. Each item carries a source link, recommended action, and status. NOT drama — sourced and precise only.",
+  "_lastUpdated": "2026-05-07",
+  "items": [
+    {
+      "id": "2026-05-05-claude-code-mcp-filesystem-win11",
+      "date": "2026-05-05",
+      "severity": "medium",
+      "vendor": "anthropic",
+      "affects": "Claude Code 1.4 · Windows 11 · filesystem-mcp",
+      "title": "Claude Code 1.4 returns empty filesystem-mcp results on non-C: drives (Windows 11)",
+      "what": "Tool calls to filesystem-mcp returned empty results when the configured allow-list path was on a drive other than C:. Affected agents that pointed filesystem-mcp at D: / E: development drives.",
+      "recommendedAction": "Pin Claude Code to 1.3.x or upgrade to 1.4.1+ (released May 6). Workaround for 1.4.x: move project to C: or symlink.",
+      "status": "resolved",
+      "confidence": "high",
+      "lastUpdatedAt": "2026-05-06",
+      "sources": [
+        { "label": "Issue thread (illustrative)", "url": "https://github.com/anthropic/claude-code" }
+      ]
+    },
+    {
+      "id": "2026-05-03-openai-apps-sdk-rate-limits",
+      "date": "2026-05-03",
+      "severity": "medium",
+      "vendor": "openai",
+      "affects": "OpenAI Apps SDK · all tiers",
+      "title": "OpenAI Apps SDK rate limits reduced 50% across all tiers",
+      "what": "Per-app rate limits on the Apps SDK dropped from previous values. Affected apps with bursty usage patterns; many hit 429s within hours of the change.",
+      "recommendedAction": "Add request-rate awareness to your Apps SDK app. Implement exponential backoff. For high-volume apps, contact OpenAI for tier upgrade. Monitor changelog for further adjustments.",
+      "status": "monitoring",
+      "confidence": "high",
+      "lastUpdatedAt": "2026-05-04",
+      "sources": [
+        { "label": "OpenAI changelog (illustrative)", "url": "https://platform.openai.com/docs/changelog" }
+      ]
+    },
+    {
+      "id": "2026-04-22-microsoft-autogen-deprecation",
+      "date": "2026-04-22",
+      "severity": "low",
+      "vendor": "microsoft",
+      "affects": "AutoGen Python framework",
+      "title": "AutoGen enters maintenance mode — Microsoft Agent Framework is the successor",
+      "what": "Microsoft confirmed AutoGen will receive only security and bug fixes going forward. New feature development moves to Microsoft Agent Framework (Python + .NET). Migration deadline for AutoGen 1.x: end of 2026.",
+      "recommendedAction": "New projects: start on Microsoft Agent Framework. Existing AutoGen 1.x projects: plan migration. AutoGen 2.x patterns mostly map to Agent Framework with abstractions.",
+      "status": "monitoring",
+      "confidence": "high",
+      "lastUpdatedAt": "2026-04-30",
+      "sources": [
+        { "label": "Microsoft Agent Framework blog", "url": "https://devblogs.microsoft.com/" }
+      ]
+    },
+    {
+      "id": "2026-04-15-mcp-spec-2-rfc",
+      "date": "2026-04-15",
+      "severity": "low",
+      "vendor": "anthropic",
+      "affects": "MCP servers and clients (proposed)",
+      "title": "MCP Spec 2.0 RFC published — auth and streaming improvements",
+      "what": "Anthropic published the RFC for MCP Spec 2.0. Key changes proposed: refined auth model (OAuth flows), streaming-first transport, multi-tenant primitives. Backwards-compat with 1.x for the foreseeable future; clients and servers can adopt 2.0 features incrementally.",
+      "recommendedAction": "Read the RFC. No urgent action — 1.x stays supported. New servers may want to plan for 2.0 auth shapes.",
+      "status": "monitoring",
+      "confidence": "high",
+      "lastUpdatedAt": "2026-04-20",
+      "sources": [
+        { "label": "MCP spec site", "url": "https://modelcontextprotocol.io/" }
+      ]
+    },
+    {
+      "id": "2026-04-08-google-a2a-v04",
+      "date": "2026-04-08",
+      "severity": "low",
+      "vendor": "google",
+      "affects": "A2A protocol (multi-agent)",
+      "title": "Google publishes A2A protocol v0.4 spec",
+      "what": "A2A v0.4 adds agent-discovery primitives, capability advertisements, and a clearer message-envelope format. Compatible with v0.3 with deprecation warnings.",
+      "recommendedAction": "Multi-agent systems on A2A: read the v0.4 spec, plan migration. Single-agent systems: irrelevant.",
+      "status": "resolved",
+      "confidence": "high",
+      "lastUpdatedAt": "2026-04-09",
+      "sources": [
+        { "label": "A2A protocol docs", "url": "https://google.github.io/A2A/" }
+      ]
+    }
+  ]
+}

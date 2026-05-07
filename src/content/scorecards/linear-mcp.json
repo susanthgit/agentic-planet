@@ -1,0 +1,50 @@
+{
+  "slug": "linear-mcp",
+  "displayName": "linear-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "MIT" },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/linear/linear-mcp/security" },
+    "signedReleases": { "value": "yes", "note": "npm package with provenance attestations." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes" },
+    "secretsHandling": { "value": "scoped", "note": "API key via env. Server doesn't log or persist." },
+    "credentialStorage": { "value": "memory" },
+    "oauthHandling": { "value": "broad", "note": "Personal API keys inherit user permissions across all team memberships. OAuth bot integrations scope per-workspace and are preferred for shared agents." },
+    "sandboxModel": { "value": "process" },
+    "filesystemAccess": { "value": "none" },
+    "shellAccess": { "value": "no" },
+    "networkEgress": { "value": "allow-list", "note": "api.linear.app only." },
+    "telemetry": { "value": "none" },
+    "dataResidency": { "value": "cloud", "note": "Linear's infrastructure (US primarily; EU region for EU customers)." },
+    "defaultPermissions": { "value": "broad", "note": "Personal keys: whatever the user can see. Dedicated bot user: scoped to bot's team membership. Use the latter for shared agents." },
+    "destructiveTools": {
+      "present": ["create_issue", "update_issue", "add_comment", "assign_issue", "delete_issue", "archive_issue", "move_issue"],
+      "humanApproval": "optional",
+      "note": "Issue creation and re-assignment are visible to the team immediately. Gate destructive ops at the host. 'Move issue to a different team' can be a project-disruption event — particularly cautious."
+    },
+    "promptInjectionExposure": { "value": "high", "note": "Issue bodies, comments, descriptions are full of user-authored content. Hostile content from any team-member or external commenter can attempt to redirect the agent. Treat all output as untrusted." },
+    "supplyChainSurface": { "value": "low", "depCount": 14, "directDeps": 2, "note": "MCP SDK + Linear's official @linear/sdk." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "medium", "note": "Linear API rate limits (1500 req / hour for read, lower for write). Bursty agents hit ceilings faster than steady use." },
+    "maintainerType": { "value": "corp", "busFactor": 4, "releaseCadence": "monthly", "note": "Linear team maintains." },
+    "issueResponseMedianDays": 3,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Linear workspace operations using a dedicated bot user with team-scoped membership.",
+  "verdictNote": "Use a dedicated bot user, not a personal API key, for any shared / production agent. Add the bot only to the teams it should access. Pair destructive tools (create / move / assign) with host-level approval gates.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/linear/linear-mcp" },
+    { "label": "Linear API docs", "url": "https://developers.linear.app/" },
+    { "label": "OAuth flow", "url": "https://developers.linear.app/docs/oauth/authentication" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=linear-mcp"
+}

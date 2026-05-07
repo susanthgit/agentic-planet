@@ -1,0 +1,50 @@
+{
+  "slug": "azure-mcp",
+  "displayName": "azure-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "MIT", "note": "Microsoft's standard OSS licence." },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/Azure/azure-mcp/security", "note": "Microsoft's coordinated vulnerability disclosure applies." },
+    "signedReleases": { "value": "yes", "note": "npm package with provenance attestations; binary releases via Microsoft's signing infrastructure." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes", "note": "Azure team maintains; PRs go through Microsoft internal review." },
+    "secretsHandling": { "value": "scoped", "note": "Service principal credentials passed via env; managed identity is preferred (no secret at rest)." },
+    "credentialStorage": { "value": "memory", "note": "Tokens / secrets live in process env. Managed identity tokens auto-refresh from IMDS." },
+    "oauthHandling": { "value": "scoped", "note": "Azure RBAC + scope is the strongest fine-grained access model in the cloud MCP space — per-resource, per-action, per-condition." },
+    "sandboxModel": { "value": "process" },
+    "filesystemAccess": { "value": "none", "note": "Server itself doesn't read host filesystem; some tools (blob upload) take a path argument from the agent." },
+    "shellAccess": { "value": "no", "note": "No shell exec tools; Run Command on VMs is intentionally not exposed." },
+    "networkEgress": { "value": "allow-list", "note": "management.azure.com, login.microsoftonline.com, and per-service endpoints (storage, cosmos, etc.) only." },
+    "telemetry": { "value": "opt-in", "note": "Microsoft's standard telemetry — disable via env var." },
+    "dataResidency": { "value": "cloud", "note": "Wherever your Azure resources live. Resource data residency is governed by region selection at provisioning." },
+    "defaultPermissions": { "value": "moderate", "note": "Whatever the auth principal has. With a properly-scoped reader role: small. With Owner: very broad." },
+    "destructiveTools": {
+      "present": ["start_vm", "stop_vm", "update_resource_tags", "set_keyvault_secret", "delete_resource"],
+      "humanApproval": "optional",
+      "note": "Management-plane writes affect billing and configuration. Always gate at the host."
+    },
+    "promptInjectionExposure": { "value": "medium", "note": "Tool output (resource configs, log content, KV secret values) can carry user-authored content. Lower exposure than browser/filesystem MCPs because most output is structured Azure-resource shape." },
+    "supplyChainSurface": { "value": "low", "depCount": 28, "directDeps": 4, "note": "Microsoft-maintained Azure SDKs as direct deps." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "medium", "note": "Azure APIs throttle per-resource-type. Bulk enumeration on busy subscriptions can hit 429s." },
+    "maintainerType": { "value": "corp", "busFactor": 5, "releaseCadence": "monthly", "note": "Maintained by Microsoft Azure team." },
+    "issueResponseMedianDays": 4,
+    "incidents": []
+  },
+  "verdict": "ADOPT",
+  "verdictScope": "Azure infrastructure operations using a managed identity or service principal scoped narrowly via RBAC.",
+  "verdictNote": "Use it. Azure RBAC is best-in-class for fine-grained scope — exploit it. Managed identity beats service principal where available. Pair with Conditional Access policies. Host-side approval gates for destructive ops.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/Azure/azure-mcp" },
+    { "label": "Azure RBAC docs", "url": "https://learn.microsoft.com/en-us/azure/role-based-access-control/overview" },
+    { "label": "Managed identities", "url": "https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=azure-mcp"
+}

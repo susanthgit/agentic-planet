@@ -1,5 +1,5 @@
 # Agentic Planet — Inventory & claim matrix
-*Generated 2026-05-07T03:29:44.044Z by `scripts/audit-claims.mjs`*
+*Generated 2026-05-07T04:10:00.151Z by `scripts/audit-claims.mjs`*
 
 This report is the Session 1 Phase A artefact. It captures every claim, link, count, route, and data row in the repo so Phases B–E have a baseline to fix against.
 
@@ -37,9 +37,11 @@ This report is the Session 1 Phase A artefact. It captures every claim, link, co
 | `/scorecards/` | `src/pages/scorecards/index.astro` |  |
 | `/standards/` | `src/pages/standards/index.astro` |  |
 | `/templates/` | `src/pages/templates/index.astro` |  |
-| `/this-week/` | `src/pages/this-week.astro` |  |
+| `/this-week/` | `src/pages/this-week/index.astro` |  |
+| `/this-week/incidents/` | `src/pages/this-week/incidents.astro` |  |
 | `/tools/` | `src/pages/tools/index.astro` |  |
 | `/vendors/` | `src/pages/vendors/index.astro` |  |
+| `/vendors/[slug]/` | `src/pages/vendors/[slug].astro` | ✓ |
 
 ## Content collections — actual vs declared
 
@@ -48,17 +50,17 @@ Schemas declared in `src/content.config.ts`. Actual files counted below.
 | Collection | Files | Slugs | Sush-review-needed | Sush-verdict-needed |
 |------------|-------|-------|--------------------|---------------------|
 | `recipes` | 1 | `youtube-seo-automation` | 0 | 1 |
-| `mcps` | 7 | `cloudflare-mcp` · `filesystem-mcp` · `github-mcp` · `notion-mcp` · `playwright-mcp` · `postgres-mcp` · `slack-mcp` | 0 | 2 |
+| `mcps` | 12 | `azure-mcp` · `browserbase-mcp` · `cloudflare-mcp` · `figma-mcp` · `filesystem-mcp` · `github-mcp` · `linear-mcp` · `notion-mcp` · `playwright-mcp` · `postgres-mcp` · `slack-mcp` · `stripe-mcp` | 0 | 2 |
 | `tools` | 0 | _(empty)_ | 0 | 0 |
-| `vendors` | 0 | _(empty)_ | 0 | 0 |
+| `vendors` | 4 | `anthropic` · `google` · `microsoft` · `openai` | 0 | 0 |
 | `standards` | 0 | _(empty)_ | 0 | 0 |
-| `explainers` | 5 | `agentic-loops` · `mcp-in-90-seconds` · `tool-calling-vs-mcp` · `what-is-agentic` · `what-is-an-agent` | 5 | 0 |
-| `faq` | 4 | `build-with-zero-dollars` · `is-agentic-ai-hype` · `why-still-hallucinate` · `will-mcp-survive` | 4 | 0 |
+| `explainers` | 10 | `agentic-loops` · `computer-use-screen-driving-agents` · `context-windows-lost-in-the-middle` · `mcp-in-90-seconds` · `multi-agent-vs-single-agent` · `prompt-injection` · `rag-vs-long-context` · `tool-calling-vs-mcp` · `what-is-agentic` · `what-is-an-agent` | 5 | 0 |
+| `faq` | 10 | `agent-vs-workflow` · `agent-write-to-production` · `agents-replacing-developers` · `build-with-zero-dollars` · `framework-or-just-api` · `how-much-do-agents-cost` · `is-agentic-ai-hype` · `local-first-agents-viable` · `why-still-hallucinate` · `will-mcp-survive` | 4 | 0 |
 | `safety` | 0 | _(empty)_ | 0 | 0 |
 | `landscape` | 0 | _(empty)_ | 0 | 0 |
 | `open` | 0 | _(empty)_ | 0 | 0 |
-| `scorecards` | 7 | `cloudflare-mcp` · `filesystem-mcp` · `github-mcp` · `notion-mcp` · `playwright-mcp` · `postgres-mcp` · `slack-mcp` | 0 | 0 |
-| `desk` | 0 | _(empty)_ | 0 | 0 |
+| `scorecards` | 12 | `azure-mcp` · `browserbase-mcp` · `cloudflare-mcp` · `figma-mcp` · `filesystem-mcp` · `github-mcp` · `linear-mcp` · `notion-mcp` · `playwright-mcp` · `postgres-mcp` · `slack-mcp` · `stripe-mcp` | 0 | 0 |
+| `desk` | 3 | `2026-04-06-night-build` · `2026-04-13-four-iteration-rounds` · `2026-05-04-trust-engine-push` | 0 | 0 |
 
 ## Hardcoded count claims in templates
 
@@ -70,6 +72,23 @@ Numbers typed directly in `.astro` / `.mdx` / `.json` that should be replaced wi
 | 4 | faq | `src/components/panels/RoadmapStrip.astro` | …ar surfaces', '5 explainers · 4 FAQ · 1 recipe', 'MCP cron pipeline', 'Cmd+K palette', 'St… |
 | 1 | recipe | `src/components/panels/RoadmapStrip.astro` | …ces', '5 explainers · 4 FAQ · 1 recipe', 'MCP cron pipeline', 'Cmd+K palette', 'Stack diag… |
 | 30 | mcp reviews | `src/components/panels/RoadmapStrip.astro` | …tems: ['5 measured recipes', '30 MCP reviews', 'Vendor expansion (OpenAI + Google)', 'Sear… |
+| 5 | explainers | `src/content/desk/2026-04-06-night-build.mdx` | …pages**: 14 pillar landings, 5 explainers, 4 FAQs, 1 recipe, 2 MCP reviews, glossary, Pic… |
+| 4 | faqs | `src/content/desk/2026-04-06-night-build.mdx` | …illar landings, 5 explainers, 4 FAQs, 1 recipe, 2 MCP reviews, glossary, Pick-Your-Stack w… |
+| 1 | recipe | `src/content/desk/2026-04-06-night-build.mdx` | …ndings, 5 explainers, 4 FAQs, 1 recipe, 2 MCP reviews, glossary, Pick-Your-Stack wizard, /… |
+| 2 | mcp reviews | `src/content/desk/2026-04-06-night-build.mdx` | …explainers, 4 FAQs, 1 recipe, 2 MCP reviews, glossary, Pick-Your-Stack wizard, /colophon,… |
+| 30 | mcp servers | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …audit found a hero promise (``30 MCP servers, 4 vendor takes, 5 recipes that actually save… |
+| 4 | vendor | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …ro promise (``30 MCP servers, 4 vendor takes, 5 recipes that actually save time'') that di… |
+| 5 | recipes | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …MCP servers, 4 vendor takes, 5 recipes that actually save time'') that didn't match reali… |
+| 13 | tracked | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …') that didn't match reality (13 tracked MCPs, 2 vendor takes, 1 draft recipe). For a site… |
+| 2 | vendor | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …tch reality (13 tracked MCPs, 2 vendor takes, 1 draft recipe). For a site whose pillar #5… |
+| 4 | vendor | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …- **S5 — Content backbone.** 4 vendor deep-dives, 5 new explainers, 6 new FAQs. - **S6 —… |
+| 12 | mcps | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …is push. That's 70+ pages, 12 MCPs scored, ~15,000 words of new content, 4 CI workflows… |
+| 13 | mcps | `src/content/desk/2026-05-04-trust-engine-push.mdx` | …ld time. No more hand-typing `13 MCPs` in pillars.json that drifts from reality. - **Voic… |
+| 5 | tools | `src/content/faq/framework-or-just-api.mdx` | …e: - You have **more than ~5 tools** and the wiring becomes repetitive. - You need **s… |
+| 5 | tools | `src/content/faq/framework-or-just-api.mdx` | …\|---\|---\| \| Trying things, ≤5 tools, one model \| Just the API \| \| Building production,… |
+| 5 | tools | `src/content/faq/framework-or-just-api.mdx` | …PI \| \| Building production, ≥5 tools, want pluggable models \| LangChain or Pydantic AI \|… |
+| 10 | tool | `src/content/faq/how-much-do-agents-cost.mdx` | …**Light tool-call agent** (5–10 tool calls, short context): **$0.05–$0.20 per run.** - *… |
+| 50 | tool | `src/content/faq/how-much-do-agents-cost.mdx` | …un.** - **Medium agent** (20–50 tool calls, file reads, small data): **$0.30–$1.50 per ru… |
 | 8 | diagrams | `src/pages/diagrams/index.astro` | …NCHING WITH" title="The first 8 diagrams (planning)" density="loose"> <ul class="dg… |
 | 3 | mcps | `src/pages/lab/index.astro` | …lorer', summary: 'Pick 2–3 MCPs → see existing recipes that combine them.', stat… |
 
@@ -97,6 +116,7 @@ _None._
 | `src/data/compare/protocols.json` | 4235 bytes |
 | `src/data/compare/vendors.json` | 4662 bytes |
 | `src/data/featured-recipes.json` | 768 bytes |
+| `src/data/incidents.json` | 4721 bytes |
 | `src/data/mcp-health.json` | 9606 bytes |
 | `src/data/pillars.json` | 2363 bytes |
 | `src/data/pulse.json` | 1149 bytes |
@@ -129,18 +149,18 @@ _None._
 
 | Health row slug | Stars | URL claimed | Review file? |
 |----------|------:|-------------|--------------|
-| `github-mcp` | 29550 | `undefined` | ✓ |
-| `playwright-mcp` | 32090 | `undefined` | ✓ |
+| `github-mcp` | 29555 | `undefined` | ✓ |
+| `playwright-mcp` | 32102 | `undefined` | ✓ |
 | `filesystem-mcp` | 0 | `undefined` | ✓ |
 | `postgres-mcp` | 0 | `undefined` | ✓ |
 | `slack-mcp` | 0 | `undefined` | ✓ |
-| `cloudflare-mcp` | 3707 | `undefined` | ✓ |
-| `notion-mcp` | 4301 | `undefined` | ✓ |
-| `figma-mcp` | 14634 | `undefined` | ✗ (404 risk) |
-| `azure-mcp` | 1213 | `undefined` | ✗ (404 risk) |
-| `stripe-mcp` | 1528 | `undefined` | ✗ (404 risk) |
-| `browserbase-mcp` | 3315 | `undefined` | ✗ (404 risk) |
-| `linear-mcp` | 1280 | `undefined` | ✗ (404 risk) |
+| `cloudflare-mcp` | 3708 | `undefined` | ✓ |
+| `notion-mcp` | 4302 | `undefined` | ✓ |
+| `figma-mcp` | 14639 | `undefined` | ✓ |
+| `azure-mcp` | 1213 | `undefined` | ✓ |
+| `stripe-mcp` | 1529 | `undefined` | ✓ |
+| `browserbase-mcp` | 3315 | `undefined` | ✓ |
+| `linear-mcp` | 1280 | `undefined` | ✓ |
 | `legacy-agent-x` | 1100 | `undefined` | ✗ (404 risk) |
 
 **⚠ Duplicate star counts (likely monorepo collision):** 0
@@ -153,14 +173,14 @@ Source of truth: counts in `src/data/pillars.json` are the *promises*; collectio
 |--------|------------------:|------------------:|-----------:|-----------:|-------|
 | L01 Landscape | 4 | 1 | 0 | 0 | pillars.json claims 1 but only 0 live |
 | R02 Recipes | 5 | 1 | 1 | 0 | 1 flagged for Sush |
-| M03 MCP Servers | 30 | 13 | 7 | 5 | pillars.json claims 13 but only 7 live · 2 flagged for Sush |
+| M03 MCP Servers | 30 | 13 | 12 | 10 | pillars.json claims 13 but only 12 live · 2 flagged for Sush |
 | T04 Tools | 12 | 0 | 0 | 0 | — |
-| V05 Vendors | 4 | 2 | 0 | 0 | pillars.json claims 2 but only 0 live |
+| V05 Vendors | 4 | 2 | 4 | 4 | — |
 | S06 Safety | 14 | 14 | 0 | 0 | pillars.json claims 14 but only 0 live |
 | P07 Standards | 4 | 4 | 0 | 0 | pillars.json claims 4 but only 0 live |
-| L08 Learn | 10 | 5 | 5 | 0 | 5 flagged for Sush |
+| L08 Learn | 10 | 5 | 10 | 5 | 5 flagged for Sush |
 | X09 Lab | 6 | 1 | (no collection) | — | — |
-| Q10 FAQ | 10 | 4 | 4 | 0 | 4 flagged for Sush |
+| Q10 FAQ | 10 | 4 | 10 | 6 | 4 flagged for Sush |
 
 ## Phase A → Phase B handoff
 
@@ -179,6 +199,6 @@ Phase C will replace the typed counts with computed-at-build queries against con
 
 Every scorecard JSON must point to an existing MCP review file. Orphan scorecards are forbidden.
 
-✓ All 7 scorecard(s) have a matching MCP review file.
+✓ All 12 scorecard(s) have a matching MCP review file.
 
 Scorecard orphans: 0

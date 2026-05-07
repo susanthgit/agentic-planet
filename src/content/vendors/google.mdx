@@ -1,0 +1,51 @@
+---
+title: "Google"
+vendor: "google"
+productName: "Gemini · Vertex AI Agents · A2A · Notebook LM · AI Studio"
+summary: "Long-context multimodal models · multi-agent protocol (A2A) · deep Workspace integration. Best-in-class for long-context and multimodal; fewer cross-vendor integrations than Claude or GPT."
+publishedAt: 2026-05-07
+sushVerdictNeeded: false
+disclosureRequired: false
+status: published
+---
+
+# Where Google is going with agents
+
+Google's strategy is *long-context, multimodal, and Workspace-integrated*. Four products that matter:
+
+1. **Gemini 2.5 Pro** at the model layer — 1M-token context window (some workloads run at 2M), strong multimodal capability, good tool-calling.
+2. **Vertex AI Agents** as the developer platform — agent builder, evaluation, deployment. Sits on GCP infrastructure.
+3. **A2A (Agent-to-Agent)** as Google's protocol contribution — for multi-agent orchestration where one agent delegates to another. Complementary to MCP, not a replacement.
+4. **Notebook LM** as the consumer-facing show-piece — long-context document understanding for everyday users.
+
+Google's positioning has moved from "we're behind" (early 2024) to "we lead in long-context and multimodal" (2026). For tasks where those matter — analysing whole codebases, summarising hour-long meetings, processing video — Google is the right default. For everything else, the field is closer than vendor decks suggest.
+
+## Where they lead
+
+- **Long-context.** 1M tokens means you can put a whole codebase or a whole project's docs in a single prompt. Recall above ~200k drops noticeably (test for your use case), but the ceiling is genuinely higher than Anthropic / OpenAI.
+- **Multimodal in / out.** Image, audio, video — first-party, well-integrated. Notebook LM's "podcast from your docs" feature is the most concrete demo of how multimodal compounds.
+- **Workspace integration.** Gmail, Drive, Docs, Calendar, Meet — Gemini sees them all. For users who live in Google Workspace, the agent has structural visibility no other vendor matches.
+- **A2A protocol.** Important if you're orchestrating multiple agents. Open spec. Vendor-neutral in design (any agent can implement A2A — not just Gemini-based ones).
+
+## Where they lag
+
+- **Tool-calling reliability on agentic loops.** Real-world tool-call agents on Gemini still trail Claude and GPT-5 in 2026. The model can do it; the consistency under load is the gap. Test in your stack before committing.
+- **Fewer cross-vendor host integrations.** Cursor, Cline, Goose, Continue all came up with Claude / GPT-5 first. Gemini integration arrived later and is sometimes second-class. Improving but real.
+- **Smaller MCP server catalog.** Most MCP servers had Claude-shaped tooling first; Gemini-aligned servers exist but the catalog is thinner.
+- **Vertex AI lock-in.** If you build on Vertex Agents, your deployment is GCP-specific. Models are portable in concept, but the platform is not. Anthropic's API is portable in a way Vertex isn't.
+
+## Honest take
+
+> **Google's the right default when your task is genuinely long-context or genuinely multimodal, or when your users live in Google Workspace.** For everything else, the field is closer than vendor positioning suggests, and Anthropic / OpenAI offer cleaner builder experiences with stronger cross-vendor interop.
+>
+> A2A is worth tracking even if you're not building multi-agent today — it's the most coherent protocol for that shape, and the agentic field is converging toward more multi-agent patterns over time.
+
+## Further reading
+
+- Gemini — [gemini.google.com](https://gemini.google.com/)
+- Vertex AI Agents — [cloud.google.com/vertex-ai/generative-ai/docs/agent-builder](https://cloud.google.com/vertex-ai/generative-ai/docs/agent-builder/overview)
+- A2A protocol — search for "agent-to-agent protocol Google" for current spec
+- Notebook LM — [notebooklm.google.com](https://notebooklm.google.com/)
+- AI Studio — [aistudio.google.com](https://aistudio.google.com/)
+
+*Last reviewed 2026-05-07. Next quarterly review due 2026-08-07.*

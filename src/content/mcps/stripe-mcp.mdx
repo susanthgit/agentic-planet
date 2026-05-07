@@ -1,0 +1,70 @@
+---
+title: "stripe-mcp review"
+name: "stripe-mcp"
+repo: "https://github.com/stripe/agent-toolkit"
+category: "Payments"
+summary: "Stripe's official agent toolkit, which includes an MCP server. Read customer / charge / subscription data; create products and prices; refund. Restricted-key authenticated."
+verdict: "Default for any agent that touches payment data. Use restricted keys per agent scope; never give an agent access to live full keys."
+pros:
+  - "Maintained by Stripe directly — API parity stays close"
+  - "Restricted keys give per-resource-and-permission scoping (best-in-class for payment APIs)"
+  - "Idempotency keys baked into write operations — safe to retry"
+  - "Test mode is first-class — develop without touching real money"
+cons:
+  - "Live mode + writes is a high-stakes combination — even with restricted keys, any agent doing real refunds is operationally serious"
+  - "No built-in fraud-pattern detection — that's your responsibility"
+  - "PII handling considerations: Stripe customer data is regulated under PCI / GDPR / etc."
+setupTime: "10 minutes"
+catch: "Stripe restricted keys are excellent — but you have to use them. Don't paste your live secret key into an agent's env. Create a restricted key with read on Customers + Charges and *nothing else* for an analyst-shaped agent. Add Refunds:Write only when you genuinely need refund automation, and only after the workflow has approval gates. Treat any agent with Stripe access the same way you'd treat an external contractor — minimum permissions, audit trail, time-bound."
+dataAccess:
+  - "Customer records (PII — name, email, card last4)"
+  - "Charge / payment / subscription history"
+  - "Product / price catalogue"
+  - "Webhook event history"
+  - "Optionally: refund authority, dispute responses, invoice operations"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Stripe's `agent-toolkit` package ships an MCP server alongside framework SDKs. Tools cover customer search, charge / payment / subscription queries, product / price management, refund creation, and dispute responses. Auth is a restricted Stripe API key.
+
+## When you actually need it
+
+Three patterns I've seen work:
+
+1. **Customer support copilot.** Agent reads recent charges + subscription state, drafts a customer-facing reply. Read-only key. Drafts go into a CRM tool (not auto-sent).
+2. **Refund triage.** Agent reads a refund-request thread, pulls relevant charges, drafts the refund + amount. Human approves before the agent calls the actual refund API.
+3. **Subscription analysis.** Agent answers ``how many subscribers signed up this month, by tier'' from real Stripe data.
+
+## Setup
+
+Create a restricted key at dashboard.stripe.com/apikeys → ``Create restricted key''. Pick the *minimum* scopes:
+
+- **Read-only analyst:** Customers Read, Charges Read, Subscriptions Read. Nothing else.
+- **Refund operator:** plus Refunds Write, plus a host-level approval gate.
+- **Test-mode-only:** restricted key from test environment. Always start here.
+
+```bash
+"stripe": {
+  "command": "npx",
+  "args": ["-y", "@stripe/agent-toolkit-mcp"],
+  "env": {
+    "STRIPE_SECRET_KEY": "rk_test_…"
+  }
+}
+```
+
+## The catch
+
+Restricted keys are the safety lever. Stripe makes it easy to do the right thing — *if you take five minutes to scope the key properly*. Common mistakes:
+
+- **Reusing your full secret key ``just for development''.** No. Always restricted, even in test mode.
+- **Granting Refunds Write without approval gates.** A compromised agent can refund millions of dollars in a script.
+- **Test-mode keys in production agents.** Stripe test mode doesn't move real money — but it also doesn't see real customers. Once you're past development, switch to a *live restricted* key, not the *test full* key.
+
+For PCI-sensitive deployments: Stripe handles cardholder data; the MCP server itself doesn't touch card numbers (you don't get them). PII (customer names, emails) does flow through tool results. Treat tool output as protected data — log appropriately, don't post to public channels.

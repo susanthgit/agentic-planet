@@ -1,0 +1,69 @@
+---
+title: "linear-mcp review"
+name: "linear-mcp"
+repo: "https://github.com/linear/linear-mcp"
+category: "Productivity"
+summary: "Linear's official MCP server. Read and write issues, projects, cycles, comments, and labels. API-key authenticated. The 'agent inside your project tracker' enabler."
+verdict: "Default if your team uses Linear for issue tracking. Workspace-level API keys are coarse — use a dedicated bot user where possible, scope what the bot can see via Linear's permissions."
+pros:
+  - "Maintained by Linear directly — API parity is close"
+  - "GraphQL-shaped tools handle filters, pagination, relations cleanly"
+  - "Comment / label / assignee operations are well-covered"
+  - "Cycle and project context tools let agents reason about timing"
+cons:
+  - "Personal API keys grant the same permissions as your user — agents inherit your access"
+  - "No fine-grained per-resource scoping at the API-key layer"
+  - "Webhook-driven patterns (where the agent reacts to events) need additional plumbing"
+setupTime: "5 minutes"
+catch: "Linear API keys are personal. If you generate a key for an agent under YOUR user, the agent has YOUR permissions across every team you're in. Two cleaner options: (1) create a dedicated 'agent' user with explicit team membership, generate the key as that user, OR (2) use OAuth-based bot integrations where Linear lets you scope per workspace. The personal-key path is fine for solo or small-team use; the bot-user path is required for larger teams."
+dataAccess:
+  - "Every issue the API key's user can see"
+  - "All comments, labels, assignees, project / cycle metadata"
+  - "Document content (Linear's wiki-style docs)"
+  - "Workspace-level analytics and reports the user has access to"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Linear's MCP server wraps their GraphQL API. Tools cover `search_issues`, `get_issue`, `create_issue`, `update_issue`, `add_comment`, `assign_issue`, `move_issue_to_project`, `list_cycles`, `list_projects`. Auth is a Linear API key (personal or — better — bot-user-issued).
+
+## When you actually need it
+
+Linear sits in the middle of many engineering teams' workflows — issues, projects, cycles. An agent that reads and writes Linear is a fit for:
+
+1. **Issue triage automation.** When a new issue lands in a configured team, agent reads the body, drafts a label set + priority + assignee suggestion, posts a comment. Human approves the actual assignment.
+2. **Standup summaries.** Agent reads what each team-member has done this cycle (issue status changes, comments), drafts a stand-up summary.
+3. **Cross-tool orchestration.** Issue arrives in Linear → agent finds related Slack thread → agent finds related GitHub PR → drafts a connection comment that ties them together.
+4. **Cycle planning prep.** Agent surfaces issues that are blocked, stale, or scope-creeping for the next cycle planning meeting.
+
+## Setup
+
+Generate an API key at linear.app → Settings → API → Personal API keys. Or — preferred — create a dedicated bot user with team-scoped membership and generate the key as that user.
+
+```bash
+"linear": {
+  "command": "npx",
+  "args": ["-y", "@linear/mcp-server"],
+  "env": {
+    "LINEAR_API_KEY": "lin_api_…"
+  }
+}
+```
+
+## The catch
+
+**Personal API keys inherit your access.** Anything you can see, the agent can see. For a 50-person engineering org, this is usually fine for read-only agents (your access is appropriate). For agents that *write* — create issues, change assignees, move issues — the blast radius is whatever team-set you have permission for.
+
+Two cleaner patterns:
+
+1. **Dedicated bot user.** Create a `Linear bot` user. Add to specific teams only. Generate the API key as that user. Now the agent's blast radius is exactly the teams you've added the bot to.
+2. **OAuth bot integration.** For workspace-installed bots, Linear's OAuth flow scopes per-workspace and includes revocation. More setup; cleaner story for shared agents.
+
+For agents that comment / write but don't change assignment / status: even the personal-key path is reasonable, paired with host-level approval gates on writes.
+
+For agents that change priority, assign issues, move issues across projects: bot-user path is required.

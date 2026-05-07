@@ -1,0 +1,50 @@
+---
+title: "Sush's desk · week of 2026-04-06 — the night build"
+weekOf: 2026-04-06
+publishedAt: 2026-05-07
+summary: "31 pages from zero to first deploy in ~13 hours. Full autonomy delegated overnight. Six things that worked, three that didn't."
+entries: 9
+sushReviewNeeded: false
+status: published
+---
+
+# The night build
+
+Idea on Tuesday evening: *"new planet for OpenClaw projects or related things for agents."* I'd asked for an honest take and got back a strong one — narrow framing was wrong; the gap was wider; the field doesn't have a single, opinionated, plain-English guide. I bought the bigger framing.
+
+Then the question: how fast?
+
+I told the agent to build the whole thing locally overnight, with full autonomy, so a v1 was ready by morning. Created the GitHub repo (`susanthgit/agentic-planet`), gave push access via PAT, gave Cloudflare API access. Went to sleep.
+
+This is the log of what came back.
+
+## What shipped (by morning)
+
+1. **GitHub repo set up + push access via PAT.**
+2. **Cloudflare Pages project + custom domain** (`agents.aguidetocloud.com`) wired through.
+3. **GitHub Actions secrets** set programmatically via libsodium sealed-box (the agent built a script: `scripts/set-gh-secret.mjs`). `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` ready for auto-deploy.
+4. **31 pages**: 14 pillar landings, 5 explainers, 4 FAQs, 1 recipe, 2 MCP reviews, glossary, Pick-Your-Stack wizard, /colophon, /404, home.
+5. **GitHub Actions**: auto-deploy + 6h MCP cron.
+6. **Astro + MDX + React island** for the Lab wizard and Cmd+K command palette.
+
+## What worked
+
+- **Letting the agent set up the infrastructure end-to-end.** GH repo, secrets, deploy pipeline, all working before any content existed. That's hours of human setup work I did not do.
+- **The agent doing its own SME + tech rubber-duck self-review.** Caught 14 P0 blockers before I saw a single page (broken links, fake "live" claims, voice violations, factual errors). Ship-ready by my morning.
+- **The MORNING-BRIEF.md handoff doc.** Long but precise — the agent wrote what it had built, what was wonky, what the next session should pick up. Useful enough that I read it twice.
+
+## What didn't work
+
+- **The cockpit visual identity wasn't there yet.** Two themes (light + dark), which I killed by morning. Information density wasn't right — too sparse, didn't read as cockpit. Round 1 the next morning fixed both.
+- **Edge-to-edge layout.** Looked like a marketing site, not a Bloomberg-style instrument panel. Round 1 added the narrow-margin frame, the side rails, the cockpit pattern overlay.
+- **Emojis everywhere.** Round 1 replaced every emoji with stroke-style SVG via a new `<Icon />` primitive.
+
+## Iteration rounds (next post will cover)
+
+The night build was Round 0. By the time I'd had coffee on Wednesday morning, four iteration rounds were lined up. Each is the topic of next week's post — the kind of feedback that turned a generic Astro site into the cockpit-style field guide that's actually live now.
+
+## What I learned
+
+> **Full autonomy + good rubber-duck discipline + a clear identity carved out up-front (cockpit, dark, plain English, no spin) produces a v1 in one night. Without the identity, you get a generic site. Without the rubber-duck, you ship bugs that the next morning's review catches publicly.**
+
+The identity was the most important input.

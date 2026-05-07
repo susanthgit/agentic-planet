@@ -1,0 +1,70 @@
+---
+title: "browserbase-mcp review"
+name: "browserbase-mcp"
+repo: "https://github.com/browserbase/mcp-server-browserbase"
+category: "Browser"
+summary: "Cloud-hosted browser automation. Like playwright-mcp but the browser runs on Browserbase's infrastructure, with persistent sessions, captcha solving, and stealth features."
+verdict: "Worth it when local browser automation hits scaling or detection walls. For most workflows, playwright-mcp local is enough — Browserbase wins for production scrapers and high-volume agentic browsing."
+pros:
+  - "Sessions persist across calls — useful for multi-step authenticated workflows"
+  - "Built-in captcha solving (paid tier)"
+  - "Stealth defaults reduce bot-detection blocking compared to vanilla Playwright"
+  - "No local resource use — agents on small machines can drive heavyweight browsing"
+cons:
+  - "Cloud dependency — extra latency, extra cost, extra failure mode"
+  - "Pricing tier required for serious volume — free tier is small"
+  - "Sites that detect Browserbase IP ranges still block (it's an arms race)"
+  - "Data flows through Browserbase's infrastructure — review their privacy posture"
+setupTime: "10 minutes"
+catch: "Browserbase is a third-party service. Pages your agent navigates flow through their infrastructure. Read their privacy + data-handling docs before pointing agents at sensitive sites or pages with PII. For internal-facing automation (your own dashboards, your own SaaS), the trade-off is worth it. For scraping competitor sites or anything legally grey — your legal exposure goes up because the activity is logged on a third-party platform."
+dataAccess:
+  - "Any URL the agent navigates to (data flows via Browserbase)"
+  - "Form data the agent submits (visible to Browserbase as well as the destination site)"
+  - "Persisted session state (cookies, storage) on Browserbase's side"
+  - "Screenshots and DOM dumps stored by Browserbase per their retention policy"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Wraps Browserbase's cloud browser API as MCP tools. The agent gets `create_session`, `navigate`, `click`, `fill`, `screenshot`, `extract_text`, `solve_captcha` (paid tier). Each session runs a real browser on Browserbase's infrastructure, optionally persisting state across calls.
+
+## When you actually need it
+
+If playwright-mcp running locally has hit a wall:
+
+1. **Scaling.** Spinning up 10 browsers locally eats RAM. Spinning up 10 browsers on Browserbase eats your wallet, but doesn't crash your laptop.
+2. **Bot-detection.** Sites that block obvious automation (Playwright's default user-agent / fingerprint) sometimes accept Browserbase. Not always, but more often.
+3. **Captcha-heavy workflows.** Browserbase's captcha-solving (paid) is the only realistic option short of human-in-the-loop.
+4. **Persistent authenticated sessions.** Log in once on Browserbase, reuse the session across multiple agent calls without re-authing.
+5. **Production agents on small infra.** Your Lambda or Cloud Run instance doesn't need to host Chromium.
+
+## Setup
+
+```bash
+"browserbase": {
+  "command": "npx",
+  "args": ["-y", "@browserbasehq/mcp"],
+  "env": {
+    "BROWSERBASE_API_KEY":  "bb_…",
+    "BROWSERBASE_PROJECT_ID": "…"
+  }
+}
+```
+
+You'll burn free-tier session-minutes quickly during development. Plan for the paid tier if this is going to production.
+
+## The catch
+
+You're outsourcing the browser. That's the entire benefit and the entire catch.
+
+- **Privacy posture changes.** Browserbase sees every URL, every page, every form. For your own SaaS dashboards: usually fine (you're already trusting Cloudflare, AWS, etc.). For competitor sites or PII-handling sites: read their docs.
+- **Latency floor.** Local browsing has a 50-100ms latency floor on click/navigate. Browserbase adds 100-300ms per call (network round-trip + server processing). For interactive workflows this matters.
+- **Detection arms race.** Sites that fingerprint browser sessions sometimes detect Browserbase IP ranges. Workarounds (residential proxies, paid tiers) help but aren't guaranteed.
+- **Vendor lock-in.** Migrating from Browserbase to playwright-mcp local is a non-trivial code change because Browserbase exposes session-management primitives that local Playwright doesn't have built in.
+
+For most teams: start with playwright-mcp local. Move to Browserbase only when you've genuinely hit a wall the local version can't overcome.

@@ -1,0 +1,50 @@
+{
+  "slug": "browserbase-mcp",
+  "displayName": "browserbase-mcp",
+  "lastReviewedAt": "2026-05-07",
+  "nextReviewDue": "2026-08-07",
+  "reviewedBy": "Sush",
+  "methodologyVersion": "1.0",
+  "confidence": "high",
+  "status": "published",
+  "noindex": false,
+  "sushReviewNeeded": false,
+  "scorecard": {
+    "licence": { "value": "Apache-2.0" },
+    "securityPolicy": { "value": "yes", "contact": "https://github.com/browserbase/mcp-server-browserbase/security" },
+    "signedReleases": { "value": "yes", "note": "npm package with provenance attestations." },
+    "installMethods": ["npm", "source"],
+    "codeReview": { "value": "yes", "note": "Browserbase team maintains; PRs go through Browserbase internal review." },
+    "secretsHandling": { "value": "scoped", "note": "API key + project ID via env. Browserbase's keys are per-project, scoped." },
+    "credentialStorage": { "value": "memory" },
+    "oauthHandling": { "value": "n/a", "note": "API-key auth, not OAuth." },
+    "sandboxModel": { "value": "container", "note": "Browser runs in Browserbase's sandbox infrastructure (real isolation between tenants)." },
+    "filesystemAccess": { "value": "scoped", "note": "Local server doesn't touch host fs; downloads happen on Browserbase side." },
+    "shellAccess": { "value": "no" },
+    "networkEgress": { "value": "open", "note": "Agent navigates anywhere — that's the whole point. Lock down target URLs at the prompt level." },
+    "telemetry": { "value": "forced", "note": "Browserbase logs every session for billing + debugging. Their server-side retention policy applies." },
+    "dataResidency": { "value": "cloud", "note": "Browserbase's infrastructure (US primarily). Page contents visited flow through their servers." },
+    "defaultPermissions": { "value": "broad", "note": "Cloud browser drives anywhere agent points it. No 'read-only browse' mode." },
+    "destructiveTools": {
+      "present": ["click", "fill", "press_key", "navigate", "submit_form"],
+      "humanApproval": "optional",
+      "note": "Same shape as playwright-mcp — clicks and submits are destructive on remote systems. Gate at the host."
+    },
+    "promptInjectionExposure": { "value": "high", "note": "Same as any browser-driving MCP. Pages can contain hostile DOM. Treat all extracted text as untrusted." },
+    "supplyChainSurface": { "value": "low", "depCount": 18, "directDeps": 3, "note": "MCP SDK + Browserbase official client + Playwright (for some local fallbacks)." },
+    "depCveSurface": { "value": "clean", "lastScannedAt": "2026-05-07" },
+    "rateLimitRisk": { "value": "medium", "note": "Free tier: limited session minutes; paid tier: per-tier concurrency limits. Burst patterns hit rate limits faster than steady use." },
+    "maintainerType": { "value": "corp", "busFactor": 4, "releaseCadence": "monthly", "note": "Browserbase team (Series A startup, well-funded)." },
+    "issueResponseMedianDays": 3,
+    "incidents": []
+  },
+  "verdict": "ADOPT WITH LIMITS",
+  "verdictScope": "Cloud browser automation where local Playwright has hit scaling, detection, or persistence walls.",
+  "verdictNote": "Worth it when local hits a wall. For most projects, playwright-mcp local is sufficient and avoids the third-party data flow. Read Browserbase's privacy and retention docs before pointing agents at PII-handling sites.",
+  "sources": [
+    { "label": "Source repo", "url": "https://github.com/browserbase/mcp-server-browserbase" },
+    { "label": "Browserbase docs", "url": "https://docs.browserbase.com/" },
+    { "label": "Privacy + data handling", "url": "https://www.browserbase.com/legal" }
+  ],
+  "correctionUrl": "https://github.com/susanthgit/agentic-planet/issues/new?template=scorecard-correction.md&slug=browserbase-mcp"
+}

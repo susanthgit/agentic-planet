@@ -1,0 +1,51 @@
+---
+title: "Microsoft"
+vendor: "microsoft"
+productName: "Copilot Studio · Foundry · Agent 365"
+summary: "Enterprise-first agentic platform inside the M365 / Azure estate. Strong governance, broad reach, multiple product lines that increasingly converge on MCP."
+publishedAt: 2026-05-07
+sushVerdictNeeded: false
+disclosureRequired: true
+status: published
+---
+
+# Where Microsoft is going with agents
+
+Microsoft's strategy is *enterprise-first agents in the M365 and Azure estate*. That isn't a single product — it's a spectrum:
+
+- **Copilot Studio** (low-code agent builder; runs on the Power Platform).
+- **Foundry / Azure AI Foundry** (full-code, multi-model, evaluation-led; the platform side).
+- **Connectors + Declarative Agents** (pre-built integrations into M365).
+- **Agent 365** (enterprise governance plane — usage, audit, identity for agents themselves; GA imminent).
+- **Apps SDK plugins** for ChatGPT (Microsoft is investing here too — distribution where users are).
+
+Every one of these has converged on **MCP** as the tool-connection layer. Foundry agents speak MCP. Copilot Studio added MCP support. VS Code's GitHub Copilot uses MCP. That convergence is genuine; it's the most important architectural decision Microsoft's made in this space.
+
+## Where they lead
+
+- **Enterprise IT integration.** If your data lives in M365 / SharePoint / Dataverse, agents that touch it via Microsoft's connectors avoid a long tail of bespoke plumbing.
+- **Governance + identity.** Entra-based identity for agents themselves (Agent 365) is a real differentiator — you can audit which agent did what, attach RBAC, rotate credentials, scope permissions. No other vendor matches this depth on the management plane.
+- **Multi-product reach.** Same agent author can publish to Teams, Outlook, M365 Chat, ChatGPT, even external surfaces.
+- **Hybrid-cloud paths.** For regulated industries that need on-prem / sovereign cloud, Microsoft has clearer paths than Anthropic / OpenAI.
+
+## Where they lag
+
+- **Pricing complexity.** Multiple SKUs, tier-gated features, and add-ons make total cost-of-ownership genuinely hard to model up front. Get a Microsoft FastTrack engagement before sizing a deployment — the math is non-obvious.
+- **Brand / pace lag on protocols.** Anthropic ships protocol updates faster. By the time Microsoft adopts a new MCP spec version, Claude Desktop and Cursor have shipped support already. This is fine — Microsoft optimises for stability — but it's a real lag if your engineering team is moving at startup pace.
+- **Inside-the-fence default.** Microsoft's defaults assume your data is in M365 / Azure. Agents that need to reach across into AWS / GCP / arbitrary SaaS are workable but not first-class.
+
+## Honest take
+
+> **Microsoft's the right default if your org already runs on M365 / Azure and you need the governance story.** Agent 365's audit + identity model is genuinely ahead of every other vendor on the management plane. The product depth covers everything from low-code business builders to high-code Foundry workflows.
+>
+> If you're a small team building from scratch with no Microsoft footprint, the licensing model is heavier than you need. Anthropic + MCP is lighter to start, and you can add Microsoft surfaces later via Apps SDK or connectors when the business case appears.
+
+## Further reading
+
+- Microsoft Copilot Studio — [microsoft.com/copilot-studio](https://www.microsoft.com/en-us/microsoft-copilot/microsoft-copilot-studio)
+- Azure AI Foundry — [azure.microsoft.com/foundry](https://azure.microsoft.com/en-us/products/ai-foundry/)
+- Agent 365 — [microsoft.com/agent-365](https://www.microsoft.com/en-us/microsoft-365/blog/) (search for Agent 365)
+- MCP support roadmap — [github.com/microsoft](https://github.com/microsoft) (search for "mcp")
+- Sush's MS-side blog posts — [aguidetocloud.com](https://aguidetocloud.com/) (Microsoft Copilot tag)
+
+*Last reviewed 2026-05-07. Next quarterly review due 2026-08-07. Disclosed: Sush works at Microsoft NZ — independent take.*

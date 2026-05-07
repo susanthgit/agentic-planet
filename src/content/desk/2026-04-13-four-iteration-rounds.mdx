@@ -1,0 +1,83 @@
+---
+title: "Sush's desk · week of 2026-04-13 — four iteration rounds"
+weekOf: 2026-04-13
+publishedAt: 2026-05-07
+summary: "From v1 night build to the cockpit it is now. Four rounds of feedback that turned a generic Astro site into something with its own physics."
+entries: 10
+sushReviewNeeded: false
+status: published
+---
+
+# Four iteration rounds
+
+The night build (last week's post) shipped 31 pages but didn't have the cockpit identity yet. This week was the rounds that fixed it.
+
+## Round 1 (Tuesday morning, after coffee)
+
+I gave terse feedback:
+
+> *"Instead of offering two themes there is only dark theme so we don't have to worry. Edge to edge — give a narrow margin. By dense rich information I was referring to card compactness. We will not use emojies — use cool SVGs. Home page can be rearranged to bring sharpness, in two-three vertical stack rather than one single column."*
+
+Five minutes of writing, hours of agent work. Outcomes:
+
+- **Light theme killed entirely.** CSS, toggle, all variants. Dark-only forever.
+- **Cockpit side-rail frame** via `body::after` on viewports ≥1100px. The narrow-margin instrument-panel feel.
+- **47 stroke-based SVGs** in a new `Icon.astro` + `icons.ts` primitive. Every emoji on the site replaced.
+- **Self-hosted Inter + JetBrains Mono** via @fontsource. No Google Fonts CDN. Faster, more privacy-respecting.
+- **Homepage as 2-col bento.** 60-40 and 50-50 splits. Sharper than a single column.
+
+## Round 2 (Wednesday — background colour question + senior dev review)
+
+> *"Is the dark blue background the best for showing information? Should we go dark?"*
+
+After looking at Bloomberg, Linear, NASA mission control: yes. I deepened the base colour to `#07090E` and added a subtle radial vignette + grid pattern.
+
+Then I asked for ``15 senior-dev recommendations'' and said implement them all. The agent shipped:
+
+- **Command Bridge hero** with Pulse + ThisWeek inline.
+- **Real Cmd+K command palette** (React island, fuzzy search, recent items).
+- **AgenticStackDiagram** — the 5-layer SVG.
+- **Coverage Matrix** — pillars at-a-glance.
+- **G+letter pillar shortcut codes.**
+- **Vendor monogram bricks.**
+- **Copyable install hook** on the homepage.
+
+## Round 3 (Wednesday afternoon — diagram polish + more cockpit)
+
+> *"The agentic stack image nearly works but needs polishing — overflow on lines etc."*
+
+Installed Playwright. Screenshotted. Found L05 text overflow and FEATURE/pulse collision. Rebuilt the diagram with a `720x320` viewBox (was `600x240`), proper arrow markers, no overflow.
+
+Then more:
+
+- **Coverage matrix and Agent Architecture side-by-side.**
+- **ActivityHeatmap** (7-day commit heatmap).
+- **TotalStarsMetric.**
+- **MiniTerminal** (decorative cockpit terminal).
+- **RoadmapStrip** (Phase 1/2/3 horizontal).
+- **DidYouKnow** (rotating trivia).
+- **/pulse and /this-week pages with full feeds.**
+
+## Round 4 (Thursday — user-POV restructure)
+
+> *"Look at it from a user POV. How else would you change the dashboards to make sense for a real user including me. All at once please."*
+
+I'd been treating the homepage as a designer would — shipping panels because they looked good. The agent gave a real-user critique: hero was too dense for first-time visitors, Pulse/ThisWeek panels assumed context, 3 equal CTAs caused choice paralysis.
+
+All-at-once outcome:
+
+- Hero cleaned: single-column, ONE primary CTA + 2 ghost.
+- **StartHereRail** — 3-step onboarding (Read MCP-90s → Pick Stack → Browse Recipe).
+- Hero subtitle had concrete numbers.
+- Stack Diagram promoted to right-after-hero (educational placement).
+- Pulse + ThisWeek moved into a "WHAT'S MOVING NOW" section with intro context.
+- **FeaturedPicks** — Recipe of the Week + MCP of the Month.
+- Vendor "SOON" → "PHASE 2" (clearer it's a plan, not a delay).
+
+## What I learned
+
+Four rounds. Same site. Each round was a small change in framing that produced a big change in the result.
+
+> **The single biggest unlock was Round 4 — the user-POV reframe. The site looked good before that round, but Round 4 made it useful.** Designer-eyes optimise for what looks shipped; user-eyes optimise for what's actually answerable. They're not the same.
+
+If I'd known to ask for the user-POV reframe earlier, I'd have saved myself two rounds. Note for next time.

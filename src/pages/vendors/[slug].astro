@@ -1,0 +1,184 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Tag from '@components/primitives/Tag.astro';
+import Button from '@components/primitives/Button.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('vendors');
+  return all.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, vendor, productName, summary, publishedAt, disclosureRequired, sushVerdictNeeded, status } = entry.data;
+
+const fmtDate = (d?: Date) => d ? new Date(d).toISOString().slice(0, 10) : '';
+const isReview = status !== 'published';
+
+const colorMap: Record<string, string> = {
+  microsoft: 'cyan',
+  anthropic: 'amber',
+  openai:    'green',
+  google:    'magenta',
+  meta:      'accent',
+  other:     'accent',
+};
+const monoMap: Record<string, string> = {
+  microsoft: 'M',
+  anthropic: 'A',
+  openai:    'O',
+  google:    'G',
+  meta:      'M',
+  other:     '?',
+};
+const color = colorMap[vendor];
+const monogram = monoMap[vendor];
+---
+
+<BaseLayout title={`${title} — vendor deep-dive`} description={summary} noIndex={isReview}>
+  <article class="vendor-page" data-pagefind-meta={`kind:vendor,vendor:${vendor}`}>
+    <header class="vendor-page__head">
+      <div class="container-wide">
+        <nav class="breadcrumb mono">
+          <a href="/vendors/">Vendors</a>
+          <span aria-hidden="true">/</span>
+          <span>{vendor.toUpperCase()}</span>
+        </nav>
+
+        <div class="vendor-page__bracket">
+          <span class={`vendor-page__monogram vendor-page__monogram--${color}`}>{monogram}</span>
+          <div class="vendor-page__head-text">
+            <span class="vendor-page__kicker mono">VENDOR FILE · {vendor.toUpperCase()}</span>
+            <h1 class="vendor-page__title">{title}</h1>
+            <p class="vendor-page__summary">{summary}</p>
+          </div>
+        </div>
+
+        {disclosureRequired && (
+          <div class="banner banner--disclosure">
+            <span class="banner__label mono">⚠ DISCLOSURE</span>
+            <span>Sush is a Copilot Solution Engineer at Microsoft New Zealand. The takes on this page reflect Sush's independent engineering judgement — not Microsoft's official position.</span>
+          </div>
+        )}
+
+        {isReview && (
+          <div class="banner">
+            <span class="banner__label mono">⚠ STATUS · {(status ?? 'review').toUpperCase()}</span>
+            <span>{sushVerdictNeeded ? 'Drafted in Sush\'s style. Pending human voice pass.' : 'In review — verdicts may evolve.'}</span>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <div class="container-prose section vendor-page__body">
+      <Content />
+    </div>
+
+    <footer class="container-prose section vendor-page__foot">
+      <Button href="/vendors/" variant="ghost" iconLeft="←">All vendors</Button>
+      <Button href="/compare/vendors/" variant="ghost" iconRight="→">Compare vendors side-by-side</Button>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .vendor-page__head {
+    padding: var(--space-10) 0 var(--space-6);
+    border-bottom: 1px solid var(--border-dim);
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-4);
+  }
+  .breadcrumb a { color: var(--accent-hi); }
+  .vendor-page__bracket {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+  .vendor-page__monogram {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: var(--fw-bold);
+    border: 2px solid currentColor;
+    border-radius: var(--radius-xs);
+  }
+  .vendor-page__monogram--cyan    { color: var(--signal-cyan); }
+  .vendor-page__monogram--amber   { color: var(--signal-amber); }
+  .vendor-page__monogram--green   { color: var(--signal-green); }
+  .vendor-page__monogram--magenta { color: var(--signal-magenta); }
+  .vendor-page__monogram--accent  { color: var(--accent-hi); }
+  .vendor-page__head-text { flex: 1; }
+  .vendor-page__kicker {
+    display: block;
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: var(--space-1);
+  }
+  .vendor-page__title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: var(--fw-bold);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-2);
+  }
+  .vendor-page__summary {
+    font-size: var(--fs-md);
+    color: var(--text-mute);
+    margin: 0;
+    max-width: 720px;
+  }
+  .banner {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    margin-top: var(--space-4);
+    padding: var(--space-3);
+    border: 1px solid var(--signal-amber);
+    border-radius: var(--radius-xs);
+    background: rgba(251, 191, 36, 0.05);
+    color: var(--text-bright);
+  }
+  .banner--disclosure {
+    border-color: var(--signal-cyan);
+    background: rgba(103, 232, 249, 0.05);
+  }
+  .banner--disclosure .banner__label { color: var(--signal-cyan); }
+  .banner__label {
+    color: var(--signal-amber);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+  }
+  .vendor-page__body { padding-block: var(--space-6); }
+  .vendor-page__foot {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    border-top: 1px solid var(--border-dim);
+    padding-top: var(--space-6);
+  }
+</style>

@@ -1,0 +1,72 @@
+---
+title: "azure-mcp review"
+name: "azure-mcp"
+repo: "https://github.com/Azure/azure-mcp"
+category: "Cloud"
+summary: "Microsoft's official MCP server for Azure resources: subscriptions, resource groups, storage, Cosmos DB, Key Vault, Monitor, and more. Workload-aware scopes."
+verdict: "Default for Azure-side agentic infra ops. Microsoft's RBAC + Conditional Access give you the strongest fine-grained access story of any cloud MCP — exploit it."
+pros:
+  - "Maintained by Microsoft directly — keeps up with Azure API changes"
+  - "RBAC-aware: token / managed identity scope determines what tools succeed"
+  - "Broad surface coverage (Compute, Storage, Cosmos, Key Vault, Monitor, RG)"
+  - "Works with Azure CLI auth, managed identity, or service principal — choose for the deployment shape"
+cons:
+  - "Service principal secrets in env are workable but not ideal — managed identity is better when available"
+  - "Not every Azure service is exposed yet (less common ones lag)"
+  - "Resource enumeration on a busy subscription can be slow / token-heavy"
+setupTime: "10 minutes"
+catch: "Azure RBAC is the safety lever. A service principal scoped 'Reader on one resource group' is a fundamentally different agent than one scoped 'Owner on the subscription'. Always start narrow. Pair with Conditional Access policies that limit *where* the agent can authenticate from (your machine, your CI runner — not 'anywhere on the internet')."
+dataAccess:
+  - "Every resource in the scope the auth principal can read"
+  - "Resource configurations (settings, properties)"
+  - "Monitor logs / metrics if granted"
+  - "Key Vault secrets (only if explicitly granted)"
+health: "alive"
+recommend: true
+status: published
+sushVerdictNeeded: false
+reviewedAt: 2026-05-07
+---
+
+# What it does
+
+Wraps the Azure REST API as MCP tools. Tools cover resource enumeration (`list_subscriptions`, `list_resource_groups`, `list_resources`), per-service operations (Cosmos DB queries, Storage blob ops, Key Vault secret retrieval, Log Analytics queries), and management plane changes (start/stop VMs, update tags).
+
+## When you actually need it
+
+If your infra is on Azure and you want an agent that can answer questions or take actions across it. Common patterns:
+
+1. **``What's running in resource group X right now?''** Agent enumerates, returns a structured summary.
+2. **Log analytics queries from natural language.** Agent translates ``why was the API slow yesterday'' into a KQL query, runs it, summarises the result.
+3. **Tag governance.** Agent finds resources missing required tags, drafts the tag updates, waits for approval, applies.
+4. **Cost investigation.** Agent pulls cost data, identifies anomalies, drafts a writeup.
+
+## Setup
+
+Three auth options — pick for your deployment:
+
+- **Azure CLI auth** (development): the agent inherits whatever `az login` produced. Works locally; not for production.
+- **Managed identity** (preferred for production agents): no secrets at rest, scope via RBAC.
+- **Service principal** (for CI / cross-cloud): client ID + secret in env. Workable; rotate often.
+
+```bash
+"azure": {
+  "command": "npx",
+  "args": ["-y", "@azure/mcp"],
+  "env": {
+    "AZURE_TENANT_ID":     "…",
+    "AZURE_CLIENT_ID":     "…",
+    "AZURE_CLIENT_SECRET": "…",
+    "AZURE_SUBSCRIPTION_ID": "…"
+  }
+}
+```
+
+## The catch
+
+Azure RBAC is the safety lever. The agent's permissions are *exactly* what the auth principal has — no more, no less. Two non-negotiables:
+
+1. **Scope the role assignment narrowly.** ``Reader on one resource group'' for explore-only agents. Custom roles with specific `Microsoft.Storage/*/read` actions for narrower needs. Never `Owner` or `Contributor` at the subscription level.
+2. **Pair with Conditional Access.** Block authentication from countries you don't operate in, require trusted networks, require device compliance. The agent's effective blast radius drops to ``what this principal can do, FROM these network locations''.
+
+For agents that write (start VMs, update configurations, write to Key Vault), add a host-level approval gate so destructive Azure ops require explicit per-call confirmation.

@@ -1,0 +1,63 @@
+---
+title: "Do I need a framework or can I just use the API?"
+question: "Do I need a framework (LangChain, LlamaIndex, DSPy) or can I just use the API?"
+summary: "Both work. Here's what you trade for what."
+category: "technical"
+sushReviewNeeded: false
+lastReviewedAt: 2026-05-07
+status: published
+---
+
+# Do I need a framework or can I just use the API?
+
+You don't *need* a framework. You probably want one once you go past 50 lines of agent code.
+
+## What ``just the API'' looks like
+
+You call `anthropic.messages.create()` (or the OpenAI / Gemini equivalent). You handle:
+
+- Tool definitions in the format the API expects.
+- The loop: send messages, read response, if it called a tool, execute the tool, send the result back, repeat.
+- Conversation history management (token counting, compaction).
+- Error handling (rate limits, timeouts, malformed responses).
+- Tool implementations themselves.
+
+For a one-off script, this is fine. **Maybe better than a framework** because there's nothing between you and the API.
+
+## When a framework starts winning
+
+Once any of these become true:
+
+- You have **more than ~5 tools** and the wiring becomes repetitive.
+- You need **streaming output** (frameworks usually have cleaner abstractions).
+- You need **pluggable LLMs** (this code should work with Claude OR GPT-5).
+- You're integrating **MCP servers** as tools (frameworks handle the bridging cleanly).
+- You want **RAG primitives** (vector store, retrieval, document loaders — LlamaIndex's bread and butter).
+- You need **multi-agent orchestration** (LangGraph, CrewAI, Microsoft Agent Framework).
+- You want **prompt evaluation and tuning** (DSPy is purpose-built for this).
+
+The framework absorbs glue code and gives you well-tested patterns.
+
+## What you give up
+
+Frameworks add abstraction. Cost: when something goes wrong, you debug *the framework's* assumptions plus *your* code. LangChain especially has a reputation for ``you fight the abstraction more than the problem.'' That's improved in 2026 but still real.
+
+You also pay version-tax — frameworks evolve, and pinning to old versions vs upgrading is its own project management.
+
+## The pragmatic recommendation
+
+| If you're… | Use… |
+|---|---|
+| Trying things, ≤5 tools, one model | Just the API |
+| Building production, ≥5 tools, want pluggable models | LangChain or Pydantic AI |
+| RAG-first | LlamaIndex |
+| Prompt quality matters most | DSPy |
+| Multi-agent | LangGraph or Microsoft Agent Framework |
+| In the .NET / Microsoft stack | Microsoft Agent Framework |
+
+For most projects starting in 2026, **Pydantic AI** is the smallest sensible framework — type-safe, low-magic, MCP-aware, easy to graduate from if you outgrow it.
+
+## What to read next
+
+- [Frameworks compared](/compare/frameworks/) — side-by-side
+- [Stack decision view](/compare/stack/) — where frameworks fit in the 5-layer stack

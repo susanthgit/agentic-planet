@@ -1,0 +1,58 @@
+---
+title: "Are local-first agents (Ollama / LM Studio) actually viable?"
+question: "Are local-first agents (Ollama / LM Studio) actually viable?"
+summary: "For some workloads, yes. For frontier-quality reasoning, the gap is still real. Here's where each side wins in 2026."
+category: "technical"
+sushReviewNeeded: false
+lastReviewedAt: 2026-05-07
+status: published
+---
+
+# Are local-first agents (Ollama / LM Studio) actually viable?
+
+**Short answer: yes for some shapes of work, no for the hardest tasks.** The gap between local open-weights models and frontier closed models has narrowed but hasn't closed in 2026.
+
+## The local stack in 2026
+
+- **Models:** Llama 3.3 (70B), Qwen 2.5, Mistral Large, DeepSeek V3, Phi-4. Open weights, runnable locally with enough hardware.
+- **Runners:** Ollama (easiest), LM Studio (GUI), llama.cpp (most control), vLLM (production-grade serving).
+- **Hosts:** Cline, Continue, Goose — all support local models via OpenAI-compatible API endpoints.
+
+You can have a fully-local agent stack: Ollama running Llama 3.3 70B, Cline as the host inside VS Code, MCP servers for tools. End-to-end on your machine. No data leaves the network.
+
+## Where local wins
+
+- **Data residency.** Sensitive data, regulated industries, sovereign-cloud requirements. Local is the only honest answer.
+- **Cost predictability at scale.** Token costs at $0.30+/M for closed-frontier models add up. A good GPU box pays back at high volume.
+- **Privacy posture.** Even if your provider's privacy policy is fine, ``the data never left'' is a stronger claim than ``the data left and they promise.''
+- **Offline / air-gapped environments.** No alternative. Local is the only option.
+- **Specialised fine-tuning.** Open weights mean you can fine-tune. Closed models don't (mostly).
+
+## Where local lags
+
+- **Reasoning on the hardest tasks.** Hard agentic loops with many tool calls, ambiguous requirements, complex code refactors — Llama 3.3 70B trails Claude Sonnet 4.5 measurably. Sometimes by a little, sometimes by a lot, depending on the task.
+- **Tool-calling reliability.** Open models do tool calling but the consistency is lower. More retries, more malformed JSON, more ``the model decided to ignore the tool''.
+- **Long-context handling.** Open models say 128k. Real-world recall above ~32k drops. Closed models do better at the same window size.
+- **Operational overhead.** *You* run the inference. Hardware sizing, model serving, scaling, model swaps, backups — all on your team. Closed-model inference is someone else's problem.
+
+## Practical sizing
+
+For local agents to be useful:
+
+- **GPU with ≥48GB VRAM** to run 70B models at reasonable speed (RTX 6000 Ada, A100, H100).
+- **Or accept lower-tier models** (8B, 13B) with significantly reduced reasoning quality. Fine for narrow tasks, bad for general agentic work.
+- **CPU / Apple Silicon** can run 8B-class models for personal use; production-scale needs GPUs.
+
+Total cost for a serious local-first setup: hardware ($5–30k upfront) + ongoing power + operational time. Compared against closed-model API costs, the breakeven is usually around 2–10M tokens/day depending on model choice.
+
+## When local-first is the right call
+
+> **Local-first is the right default if any one of: regulated data, offline operation, predictable high-volume usage, or strong privacy posture.** For everything else, the operational complexity is real and the closed-model gap on hardest tasks is real.
+
+A common production pattern: closed models for hardest tasks (whole-codebase analysis, complex agentic loops); local models for high-volume narrow tasks (classification, summarisation, simple tool calls). Best of both, at the cost of two stacks.
+
+## What to read next
+
+- [LLMs compared](/compare/llms/) — Llama 3.3 vs Claude vs GPT-5 vs Gemini
+- [What can I build with $0?](/faq/build-with-zero-dollars/) — local models work on a budget
+- [Stack decision view](/compare/stack/) — local-first / data-residency-strict pattern

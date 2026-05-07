@@ -1,0 +1,53 @@
+---
+title: "Multi-agent vs single-agent — when you actually need it"
+summary: "Multi-agent systems sound impressive. Most workflows shouldn't be one. The decision rule and the costs nobody mentions."
+depth: "5-min"
+concept: "Multi-agent"
+sushReviewNeeded: false
+status: published
+---
+
+# Multi-agent vs single-agent — when you actually need it
+
+A multi-agent system is two or more agents that each have their own loop, often coordinating via a protocol like A2A. They sound impressive in demos. They're frequently the wrong shape for the problem.
+
+## What you can do with one agent
+
+A single agent with multiple tools can:
+
+- Read from many sources (filesystem, GitHub, Slack, Notion, web).
+- Reason across them in one context.
+- Take action through many channels.
+- Maintain coherent memory across the workflow.
+
+This is the *vast majority* of real-world workflows. ``Read this email, find the relevant doc, draft a reply, post to Slack'' — one agent, four tool calls, one loop.
+
+## When you actually need multi-agent
+
+Three patterns where it's worth the cost:
+
+1. **Specialised expertise.** When one task genuinely needs a different system prompt than another. Example: a *researcher* agent (tuned for web search and synthesis) handing off to a *writer* agent (tuned for long-form prose). The role separation is real.
+2. **Independent context budgets.** When subtasks would blow up a single context window. The orchestrator delegates with a focused brief; the worker fills its own context with task-specific material; only the result comes back.
+3. **Parallel work that's truly independent.** When 5 things can happen simultaneously and don't depend on each other. Multiple agents in parallel beat one agent doing them serially — *if* coordination overhead is low.
+
+If your case isn't one of those, single-agent is almost certainly right.
+
+## The costs nobody mentions
+
+Multi-agent adds:
+
+- **Latency.** Every hand-off is at least one round-trip. Multi-agent loops get slow.
+- **Failure surface.** Agent A times out. Agent B gets a malformed message. Agent C loops on the same delegation. Single-agent failures are easier to reason about.
+- **Token cost.** Each agent has its own context. The orchestrator sees the brief AND the result. Total token spend often beats single-agent by 2–3x for the same outcome.
+- **Debugging difficulty.** ``Why did the agent decide X?'' becomes ``why did the orchestrator brief the worker like Y, and why did the worker interpret Y as X?''
+
+## The rule
+
+> **Default to single-agent. Reach for multi-agent when (1) specialised system prompts genuinely matter, (2) context isolation is required, or (3) parallel independent work is the dominant pattern.**
+
+If you're shipping multi-agent because it sounds futuristic — that's a sign you should ship single-agent first and prove the workflow.
+
+## What to read next
+
+- [How agentic loops work](/learn/agentic-loops/) — the loop is the same shape in single- vs multi-agent
+- [A2A in compare](/compare/protocols/) — A2A is the protocol for genuine multi-agent systems

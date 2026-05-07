@@ -1,0 +1,51 @@
+---
+title: "RAG vs long-context — when to use which"
+summary: "Two answers to the same problem ('how does the model know my data?'). The trade-offs, and a decision rule."
+depth: "5-min"
+concept: "RAG"
+sushReviewNeeded: false
+status: published
+---
+
+# RAG vs long-context — when to use which
+
+Same problem: *the model doesn't know your data*. Two solutions:
+
+- **Long-context.** Put the data in the prompt. Bigger context windows make this viable.
+- **RAG (Retrieval-Augmented Generation).** Index the data separately. At query time, fetch the relevant chunks and put only those in the prompt.
+
+Vendors love long-context because it's simpler ("just send us the tokens"). Reality is more nuanced.
+
+## Long-context wins when…
+
+- Your corpus *fits* in the window.
+- Relevance is *unpredictable* — you don't know which part of the corpus will matter until the model reads.
+- The corpus is *cohesive* — it reads as one document (a codebase, a transcript, a book).
+- Token cost is acceptable — input pricing × corpus size × number of queries.
+
+Examples that fit: analysing a 200-page contract, reviewing a 50-file codebase, summarising a 2-hour transcript.
+
+## RAG wins when…
+
+- Your corpus is *bigger than the window* (most real-world cases — wikis, document stores, knowledge bases).
+- Relevance is *narrow* — most queries hit a small fraction of the corpus.
+- You want *citations* — RAG naturally cites the chunk it retrieved.
+- You need *fresh data* — re-indexing a vector store is faster and cheaper than reloading megabytes into every prompt.
+- Cost matters — RAG sends a few hundred tokens of context per query; long-context sends millions.
+
+Examples that fit: customer support over a 10,000-page docs site, legal research, internal knowledge base, product Q&A.
+
+## The decision rule (rough)
+
+1. **Does it fit in the window?** No → RAG.
+2. **Yes? Will you query it more than 5 times?** No → long-context (cheaper to send each time than to set up RAG).
+3. **More than 5 times?** Compare cost: input tokens × corpus size × queries vs the one-time RAG setup + small per-query cost. RAG wins past a threshold.
+
+## Hybrid is real
+
+Many production systems do *both*: RAG to retrieve the top-N most-relevant chunks, then long-context to give the model enough surrounding pages so the chunks make sense. Best of both — retrieval focuses attention, context preserves coherence.
+
+## What to read next
+
+- [Context windows — lost in the middle](/learn/context-windows-lost-in-the-middle/) — why bigger isn't always better
+- [How agentic loops work](/learn/agentic-loops/) — RAG fits naturally inside a loop as a tool call

@@ -1,0 +1,50 @@
+---
+title: "Anthropic"
+vendor: "anthropic"
+productName: "Claude · MCP · Skills · Computer Use · Agent SDK"
+summary: "Protocol-led, capability-led, safety-led. Created MCP. Strongest cross-vendor interop story of the four. Smaller distribution than ChatGPT but cleaner builder experience."
+publishedAt: 2026-05-07
+sushVerdictNeeded: false
+disclosureRequired: false
+status: published
+---
+
+# Where Anthropic is going with agents
+
+Anthropic's strategy is *capability and protocols, not platform lock-in*. Three commitments:
+
+1. **MCP as an open protocol.** Anthropic introduced MCP in November 2024 and explicitly shipped it as a vendor-neutral standard. Microsoft, OpenAI (via Apps SDK), and Google have all since adopted it. That cross-vendor adoption was the strategic point — Anthropic doesn't win by trapping users.
+2. **Capability over breadth.** Claude Sonnet 4.5 is positioned as the *best* tool-calling and agentic model, not the cheapest or the broadest. Pricing reflects that — Sonnet is more expensive than GPT-5 per token, less than the highest reasoning tiers.
+3. **Skills + Computer Use as composable agentic primitives.** Skills bundle Claude-tuned prompts + tools + examples into reusable capabilities. Computer Use lets the model drive a real screen. Both are positioned as building blocks rather than fixed products.
+
+The Anthropic ecosystem is thinner than Microsoft's (no SharePoint, no M365, no Azure-equivalent platform) but the pieces that exist are the cleanest in the field.
+
+## Where they lead
+
+- **MCP, period.** Strongest first-class implementation. Most servers in the catalog have Anthropic-authored or Anthropic-aligned reference implementations.
+- **Honest model behaviour.** Claude is unusually willing to say "I don't know" or "I'm not sure how to do this safely." That sounds soft, but in agentic loops it prevents whole classes of confident-but-wrong tool calls that wreck workflows.
+- **Skills.** Bundling capability + prompt + examples means you can ship one Skill that does X reliably, instead of writing the prompt every conversation. Public Skills marketplace is GA.
+- **Computer Use API.** The most production-deployed "drive a real browser" model in 2026. Used in real workflows (booking, research, data extraction).
+
+## Where they lag
+
+- **No image / audio out of the box.** Claude is text-only at the model level. If your task needs image generation or audio output, you're combining Claude with another model — workable, but not one-stop-shop.
+- **Smaller distribution than ChatGPT.** OpenAI's consumer reach via ChatGPT is several orders of magnitude bigger. If your audience-find strategy is "where people already are", Apps SDK on ChatGPT is a more direct path.
+- **Less hands-on for non-developers.** Claude.ai is excellent for chat but doesn't have ChatGPT's GPTs marketplace or M365-style business surfaces. Building agents for end-users not via developers means Claude needs an integration on top.
+- **Smaller enterprise sales motion.** Anthropic is growing this fast (Claude Enterprise, Claude for Government), but Microsoft's footprint inside large orgs is still the realistic comparison if your stakeholder is a CISO.
+
+## Honest take
+
+> **Anthropic's the right default for builders who care about protocols, plain behaviour, and cross-vendor interop.** MCP is the most important architectural decision in agentic AI in 2026, and Anthropic is its most coherent implementer. Skills + Computer Use give you composable primitives that don't feel like vendor lock-in.
+>
+> If your audience or org doesn't naturally land in Claude's surfaces (no Claude.ai usage, no Anthropic API access yet), the friction is real — you can still use Claude via API, but the UI / distribution work is yours. For most engineering teams building tools-shaped agents, this is the cleanest place to start.
+
+## Further reading
+
+- Claude — [claude.ai](https://claude.ai/)
+- MCP spec — [modelcontextprotocol.io](https://modelcontextprotocol.io/)
+- Claude Skills — [anthropic.com/skills](https://www.anthropic.com/skills) (or check Claude Desktop)
+- Computer Use API — [anthropic.com/computer-use](https://www.anthropic.com/news/computer-use)
+- Sush's Claude-side recipes — [/recipes/](/recipes/)
+
+*Last reviewed 2026-05-07. Next quarterly review due 2026-08-07.*

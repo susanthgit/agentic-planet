@@ -1,0 +1,61 @@
+---
+title: "What's the difference between an agent and a workflow?"
+question: "What's the difference between an agent and a workflow?"
+summary: "An agent decides. A workflow follows steps. Both have their place. Knowing which you need saves time."
+category: "big-picture"
+sushReviewNeeded: false
+lastReviewedAt: 2026-05-07
+status: published
+---
+
+# What's the difference between an agent and a workflow?
+
+A common confusion. Both involve LLMs and chained steps. They're not the same.
+
+## A workflow
+
+- A **workflow** is a fixed sequence of steps. Step 1 → Step 2 → Step 3.
+- An LLM might do one or more of those steps (extract entities, summarise, classify), but the *path* is decided by you, the engineer, ahead of time.
+- If something goes wrong at step 2, the error handling is also fixed (retry, fall through, alert).
+
+Examples:
+
+- ``When a customer email arrives → extract sentiment → if angry, route to senior support; if not, route to standard.''
+- ``Every Monday at 9am → fetch sales data → summarise → email to leadership.''
+- ``On every PR → ask the LLM to summarise the diff → post the summary as a PR comment.''
+
+These are **deterministic LLM-augmented workflows**. They're useful, low-risk, well-understood. Most ``AI in production'' you see is this.
+
+## An agent
+
+- An **agent** decides what to do next based on what it observes.
+- The path is *not* fixed. The agent has a goal and a set of tools, and it chooses which tools to call, in what order, until the goal is met.
+- The same prompt can result in different paths on different runs.
+
+Examples:
+
+- ``Help me migrate this codebase from React 17 to React 19.'' Agent reads files, runs tools, updates code, runs tests, fixes failures, asks you when stuck.
+- ``Triage these 50 GitHub issues.'' Agent decides per issue which label, which assignee, whether to close as duplicate, whether to ask for more info.
+
+These are **non-deterministic agentic loops**. Higher risk, much higher capability.
+
+## The key tell
+
+If you can draw the flowchart up front, it's a workflow.
+If the flowchart depends on what the LLM decides at each step, it's an agent.
+
+## Why it matters
+
+- Workflows are easier to test, easier to debug, easier to audit, easier to cost. Use them whenever the path is fixed.
+- Agents are needed when the path *can't* be fixed because the inputs are too varied.
+- Mixing the two is fine: a workflow that calls an agent for one step (the ambiguous one) is often the right shape — predictable boundaries, agentic flexibility where it matters.
+
+## Why this site is called ``Agentic Planet''
+
+> Because the *agent* end of the spectrum is the harder, newer, more interesting problem in 2026 — and most useful content about LLM-driven systems is workflow-shaped, not agent-shaped. We focus on the harder half.
+
+## What to read next
+
+- [How agentic loops work](/learn/agentic-loops/) — the structure of an agent's decision loop
+- [What 'agentic' actually means](/learn/what-is-agentic/) — disentangling buzzwords
+- [Multi-agent vs single-agent](/learn/multi-agent-vs-single-agent/) — agent shapes

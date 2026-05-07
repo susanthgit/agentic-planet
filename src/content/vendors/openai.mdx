@@ -1,0 +1,50 @@
+---
+title: "OpenAI"
+vendor: "openai"
+productName: "ChatGPT · Apps SDK · Agents SDK · Operator · Realtime API"
+summary: "Massive consumer + developer reach via ChatGPT. Apps SDK builds on MCP-style servers but adds ChatGPT-specific UI hooks. The 'where users already are' platform."
+publishedAt: 2026-05-07
+sushVerdictNeeded: false
+disclosureRequired: false
+status: published
+---
+
+# Where OpenAI is going with agents
+
+OpenAI's strategy is *platform + reach*. Three pillars in 2026:
+
+1. **ChatGPT as the distribution channel.** Hundreds of millions of weekly users. If your agent runs as an Apps SDK app inside ChatGPT, you reach an audience that no other vendor can match.
+2. **Apps SDK for tool layer.** Apps SDK uses MCP-style servers for tool calling, with ChatGPT-specific UI / widget rendering hooks layered on top. The tool layer is portable — the UI bindings aren't. That's a deliberate trade-off: easier for ChatGPT users, harder to migrate elsewhere.
+3. **Operator + Agents SDK as the autonomous tier.** Operator does Computer-Use-style browser autonomy. Agents SDK provides programmatic agent orchestration. Both are real products with active iteration.
+
+The model side (GPT-5) ships fast — sometimes faster than docs catch up. Reasoning effort settings and tool-calling behaviour have shifted between minor versions in ways that broke production agents. That's the OpenAI texture: heavy iteration, frequent capability gains, occasional churn.
+
+## Where they lead
+
+- **Distribution.** ChatGPT's user count is the lever. If your agent's value depends on "people will try it", being inside ChatGPT shortens the loop.
+- **Multimodal in / out.** Image generation (DALL-E), image understanding (vision), audio (Realtime API), video (Sora) — all first-party. Useful when your task isn't pure text.
+- **Realtime API.** Voice agents are an emerging shape, and OpenAI's Realtime API is the most mature voice agent infrastructure available.
+- **Apps SDK ecosystem.** Building blocks for in-chat experiences — payments, widgets, sign-in flows — that other platforms haven't matched yet.
+
+## Where they lag
+
+- **Reasoning settings opaqueness.** GPT-5's reasoning effort levels affect token usage and latency in ways that aren't always predictable. Real-world agents need to test extensively.
+- **Pace of API churn.** Smaller breaking changes happen between minor versions. Production agents pin to specific model dates and test before upgrading.
+- **Fewer cross-vendor host integrations than Claude.** Cursor, Cline, and most IDE-based agent tools came up around Claude. OpenAI integrations exist but the polish often follows Anthropic's lead.
+- **MCP support is via Apps SDK rather than native.** Direct MCP support in the OpenAI API is improving but Apps SDK is the canonical path. That works, but is one more layer of indirection compared to Claude's direct MCP.
+
+## Honest take
+
+> **OpenAI's the right default if your audience lives in ChatGPT, or if you need image / audio / realtime out of the box.** Apps SDK is the most important platform decision OpenAI's made on the agentic side — it bridges ChatGPT distribution with MCP-style tool portability.
+>
+> For pure tool-call agents that don't need ChatGPT's distribution, the trade-offs lean toward Anthropic or self-hosted. For consumer-facing agents where reach matters, OpenAI is hard to beat.
+
+## Further reading
+
+- ChatGPT — [chatgpt.com](https://chatgpt.com/)
+- Apps SDK — [platform.openai.com/docs/apps](https://platform.openai.com/docs/apps)
+- Agents SDK — [platform.openai.com/docs/agents](https://platform.openai.com/docs/agents)
+- Operator — [openai.com/operator](https://openai.com/index/operator/)
+- Realtime API — [platform.openai.com/docs/guides/realtime](https://platform.openai.com/docs/guides/realtime)
+
+*Last reviewed 2026-05-07. Next quarterly review due 2026-08-07.*

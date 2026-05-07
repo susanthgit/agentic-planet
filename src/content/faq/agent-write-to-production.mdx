@@ -1,0 +1,65 @@
+---
+title: "Should I let an agent write to production?"
+question: "Should I let an agent write to production?"
+summary: "Almost always no. Here's the small set of cases where it's reasonable, and the guardrails."
+category: "safety"
+sushReviewNeeded: false
+lastReviewedAt: 2026-05-07
+status: published
+---
+
+# Should I let an agent write to production?
+
+**Short answer: almost always no.** Here's the long answer.
+
+## The default
+
+In 2026, agents writing to production is the wrong shape for most workflows. Reasons:
+
+- **Prompt injection is unsolved.** A compromised agent with production write access is a worst-case incident.
+- **LLM behaviour drifts.** A prompt that worked yesterday returns slightly different output today. ``Slightly different'' is fine for chat; it's not fine for `DROP TABLE`.
+- **Audit trails are weaker.** When a human deploys, you have a PR, a reviewer, a ticket, a deploy log. When an agent deploys, you have… the agent's reasoning trace, which is harder to audit and easier to forge.
+- **Reversibility is asymmetric.** A bad code commit gets reverted. A bad email send doesn't unsend.
+
+## The pattern that works
+
+**Agents draft. Humans approve. Systems apply.**
+
+- Agent reads everything it needs (production data, current state, history).
+- Agent drafts the change (a PR, an email, a config update).
+- Human reviews, edits, approves.
+- A regular CI/CD pipeline applies the approved change.
+
+The agent never has direct production write. The agent's role is *cognitive*, not *executive*.
+
+## When direct write IS reasonable
+
+Three cases:
+
+1. **The blast radius is genuinely small.** Agent posts to a `#agent-log` Slack channel. Worst-case it spams the channel. That's recoverable.
+2. **The action is reversible AND tracked.** Agent creates a draft email, doesn't send it; agent creates an issue, you can close it. Anything where the human downstream still has a clear stop point.
+3. **The decision is mechanical and well-bounded.** Agent purges Cloudflare cache for paths matching `/blog/*` after a publish. The decision space is narrow, the action is reversible (just stale-then-fresh cache).
+
+In all three: the agent has a tightly-scoped credential, a clear audit log, and a reversibility story.
+
+## Red flags
+
+If your agent design includes any of these, you're not ready for production write:
+
+- Broad credentials (admin DB role, full GitHub `repo` scope, `chat:write.public` on Slack).
+- No human review step.
+- ``We'll add audit logging later.''
+- Workflows where the agent's decision can't be reversed.
+- The agent runs unsupervised on a schedule.
+
+## A useful question
+
+> *"What's the worst thing that happens if the agent gets prompt-injected by content it reads?"*
+
+Answer that explicitly. If the answer involves data loss, customer impact, or compliance violations — the agent shouldn't have that write.
+
+## What to read next
+
+- [Prompt injection — the architectural problem](/learn/prompt-injection/) — why this isn't solvable
+- [Safety pillar](/safety/) — full risk catalog
+- [MCP scorecards](/scorecards/) — every scorecard rates default-permissions and destructive-tools

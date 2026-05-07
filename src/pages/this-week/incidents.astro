@@ -1,0 +1,204 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PillarHeader from '@components/panels/PillarHeader.astro';
+import Panel from '@components/primitives/Panel.astro';
+import Button from '@components/primitives/Button.astro';
+import LiveDot from '@components/data/LiveDot.astro';
+
+import incidents from '@data/incidents.json';
+
+const items = (incidents.items ?? []).slice().sort((a, b) =>
+  new Date(b.date).getTime() - new Date(a.date).getTime()
+);
+
+const sevColor = (sev: string) => {
+  switch (sev) {
+    case 'critical': return 'red';
+    case 'high':     return 'red';
+    case 'medium':   return 'amber';
+    case 'low':      return 'mute';
+    default:         return 'mute';
+  }
+};
+
+const statusLabel = (s: string) => {
+  switch (s) {
+    case 'monitoring':  return '◉ MONITORING';
+    case 'resolved':    return '✓ RESOLVED';
+    case 'false-alarm': return '○ FALSE ALARM';
+    default:            return s.toUpperCase();
+  }
+};
+
+const fmtDate = (d: string) => new Date(d).toISOString().slice(0, 10);
+
+const lastUpdated = incidents._lastUpdated ?? new Date().toISOString().slice(0, 10);
+---
+
+<BaseLayout
+  title="Incidents — operational change log for the agentic stack"
+  description="Vendor breakages, deprecations, rate-limit changes, migration deadlines. Sourced and precise. Not drama."
+>
+  <PillarHeader
+    code="INC-01"
+    color="amber"
+    title="Incidents — what's broken or changing"
+    description="Operational change log for the agentic stack. Sourced links, recommended actions, status updates. Not drama — sourced and precise only."
+    count={items.length}
+    countLabel="incidents on record"
+    meta={`LAST UPDATED ${lastUpdated} · ${items.filter(i => i.status === 'monitoring').length} ACTIVE`}
+    status="LIVE"
+  />
+
+  <section class="container-prose section">
+    <Panel kicker="WHAT THIS IS" title="Operational change log" density="loose">
+      <p>
+        The thing techies actually share on Slack: <em>failures, breakages, deprecations, rate-limit changes,
+        migration deadlines.</em> Hand-curated weekly. Every entry has a source link, a precise summary,
+        a recommended action, and a status (`monitoring`, `resolved`, or `false-alarm`).
+      </p>
+      <p>
+        Not drama. Sourced and precise only. ``Vendor X broke everything'' phrasing doesn't make the cut.
+      </p>
+    </Panel>
+
+    <Panel kicker={`${items.length} ENTRIES`} title="Recent incidents" density="tight">
+      {items.length === 0 ? (
+        <p>No incidents on record. Quiet week.</p>
+      ) : (
+        <ul class="inclist">
+          {items.map((it) => (
+            <li class="incrow">
+              <header class="incrow__head">
+                <span class={`incrow__sev mono incrow__sev--${sevColor(it.severity)}`}>{it.severity.toUpperCase()}</span>
+                <span class="incrow__date mono">{fmtDate(it.date)}</span>
+                <span class="incrow__vendor mono">{(it.vendor ?? 'unknown').toUpperCase()}</span>
+                <span class="incrow__status mono">{statusLabel(it.status)}</span>
+              </header>
+              <h3 class="incrow__title">{it.title}</h3>
+              <p class="incrow__affects mono">AFFECTS // {it.affects ?? '—'}</p>
+              <p class="incrow__what">{it.what}</p>
+              <p class="incrow__action"><strong>Recommended action:</strong> {it.recommendedAction}</p>
+              {it.sources && it.sources.length > 0 && (
+                <p class="incrow__sources">
+                  <span class="mono">SOURCES // </span>
+                  {it.sources.map((s, i) => (
+                    <>
+                      <a href={s.url} rel="noopener" target="_blank" class="incrow__source">{s.label}</a>
+                      {i < it.sources.length - 1 && <span class="mono"> · </span>}
+                    </>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Panel>
+
+    <Panel kicker="EDITORIAL POLICY" title="What gets included" density="loose">
+      <ul>
+        <li><strong>Sourced.</strong> Every entry has a public link. No anonymous tips, no rumours.</li>
+        <li><strong>Affecting.</strong> Real impact on builders. Not vendor PR cycles or feature releases (those go in Pulse).</li>
+        <li><strong>Specific.</strong> ``Version X broke Y on platform Z'' shape. Avoids generality.</li>
+        <li><strong>Confidence-rated.</strong> If we're not sure, we say so explicitly.</li>
+        <li><strong>Tracked.</strong> Status updates as situations evolve (`monitoring` → `resolved`).</li>
+      </ul>
+      <p>
+        <strong>Submit an incident:</strong> Open an issue on the GitHub repo. Include sources.
+      </p>
+      <Button href="https://github.com/susanthgit/agentic-planet/issues/new" variant="ghost" iconLeft="✎">Submit an incident</Button>
+    </Panel>
+
+    <Panel kicker="ALSO SEE" title="Adjacent surfaces" density="tight">
+      <ul class="adjacent">
+        <li><a href="/pulse/">Pulse — vendor releases + protocol updates</a></li>
+        <li><a href="/this-week/">This Week — MCP star deltas + recent commits</a></li>
+        <li><a href="/safety/">Safety pillar — risk catalog + decision trees</a></li>
+        <li><a href="/scorecards/">MCP Security Scorecards — adoption posture per server</a></li>
+      </ul>
+    </Panel>
+  </section>
+</BaseLayout>
+
+<style>
+  .inclist { list-style: none; padding: 0; margin: 0; }
+  .incrow {
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-3);
+    background: var(--bg-base);
+  }
+  .incrow__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .incrow__sev {
+    font-size: var(--fs-2xs);
+    font-weight: var(--fw-bold);
+    padding: 1px 6px;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-xs, 2px);
+    letter-spacing: var(--tracking-wider);
+  }
+  .incrow__sev--red   { color: var(--signal-red); }
+  .incrow__sev--amber { color: var(--signal-amber); }
+  .incrow__sev--mute  { color: var(--text-mute); }
+  .incrow__date {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    letter-spacing: var(--tracking-wider);
+  }
+  .incrow__vendor {
+    font-size: var(--fs-2xs);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .incrow__status {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    margin-left: auto;
+    letter-spacing: var(--tracking-wider);
+  }
+  .incrow__title {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--text-bright);
+    margin: 0 0 var(--space-1);
+  }
+  .incrow__affects {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0 0 var(--space-2);
+  }
+  .incrow__what {
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--text);
+    margin: 0 0 var(--space-2);
+  }
+  .incrow__action {
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--text-bright);
+    margin: 0 0 var(--space-2);
+  }
+  .incrow__sources {
+    font-size: var(--fs-xs);
+    color: var(--text-mute);
+    margin: 0;
+  }
+  .incrow__source {
+    color: var(--accent-hi);
+    border-bottom: 1px dotted var(--accent-hi);
+  }
+  .adjacent { padding-left: 1.2em; }
+  .adjacent a { color: var(--accent-hi); border-bottom: 1px dotted; }
+</style>

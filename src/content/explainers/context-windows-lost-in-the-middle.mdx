@@ -1,0 +1,55 @@
+---
+title: "Context windows — what 'lost in the middle' actually means"
+summary: "Why bigger context windows aren't always better. The recall curve, the 'middle' problem, and how to design around both."
+depth: "5-min"
+concept: "Context window"
+sushReviewNeeded: false
+status: published
+---
+
+# Context windows — what 'lost in the middle' actually means
+
+A model's **context window** is the amount of text it can read at once. GPT-5: 256k tokens. Claude Sonnet 4.5: 200k. Gemini 2.5 Pro: 1M. You'd think bigger is always better. It isn't.
+
+## The recall curve
+
+Researchers test ``can the model find information at position X?'' across the context window. The result is consistent across vendors:
+
+- **Beginning of the window:** strong recall.
+- **End of the window:** strong recall.
+- **The middle:** noticeably weaker.
+
+This is the *lost-in-the-middle* phenomenon, and it gets worse the bigger your context. A model with a 1M-token window doesn't necessarily reason well over 1M tokens — it reasons well over the *parts of those 1M tokens it actually pays attention to*.
+
+## What this means for agents
+
+If you stuff your entire codebase into the prompt, the agent isn't actually using all of it. It's using the first ~50k and the last ~50k carefully, and the middle 900k as background noise.
+
+Two practical rules:
+
+1. **Put the question (and any tool results) at the END.** The model attends most strongly to recent tokens. Anything you want it to act on should be near the end of the prompt.
+2. **Put the most-important reference material at the START.** System prompts work because they sit at the top of the window where attention is reliable.
+
+The middle is for *bulk* — files the agent might need but probably won't, RAG context that didn't quite match. Don't put your goal there.
+
+## Long-context vs RAG
+
+This is why RAG (retrieve only the relevant chunks and put them in the prompt) often beats ``just give the model everything''. RAG concentrates attention on a small number of relevant chunks; long-context spreads it thin.
+
+- **RAG wins when:** your corpus is bigger than your context window, OR the relevant content is a small fraction of the total.
+- **Long-context wins when:** the corpus genuinely fits AND the relevant content is unpredictable (you don't know what's relevant until you read).
+
+For most agent workflows the answer is RAG. ``Just put it all in the prompt'' is a vendor pitch, not engineering.
+
+## Practical signs your context is too big
+
+- Tool calls picking up on stale data from earlier turns.
+- The agent forgetting an instruction it received 10 turns ago.
+- Output quality degrading the longer the conversation runs.
+
+Fix: shorten. Compact older turns into summaries. Drop tool results once consumed. Restart the conversation with a fresh context if the workflow naturally allows.
+
+## What to read next
+
+- [How agentic loops work](/learn/agentic-loops/) — the loop that fills the context window
+- [MCP in 90 seconds](/learn/mcp-in-90-seconds/) — context windows are what tool results compete for

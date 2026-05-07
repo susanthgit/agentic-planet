@@ -1,0 +1,63 @@
+---
+title: "How much does a real agent cost to run?"
+question: "How much does a real agent cost to run?"
+summary: "Token math + infra cost + operational time. Real numbers from real workflows."
+category: "cost"
+sushReviewNeeded: false
+lastReviewedAt: 2026-05-07
+status: published
+---
+
+# How much does a real agent cost to run?
+
+Three components. Most teams underestimate at least one.
+
+## Token costs
+
+For a typical Claude-Sonnet-or-GPT-5-class agent doing one workflow run:
+
+- **Light tool-call agent** (5–10 tool calls, short context): **$0.05–$0.20 per run.**
+- **Medium agent** (20–50 tool calls, file reads, small data): **$0.30–$1.50 per run.**
+- **Heavy long-context agent** (whole-codebase analysis, multi-document RAG): **$2–$10 per run.**
+
+Multiply by frequency. A workflow that runs 100 times per day at $0.50/run is $1,500/month. That sounds small until you remember it replaces an hour of human work each time — at which point it's wildly cheap.
+
+## Hidden token cost: input is most of the bill
+
+Most teams budget for output tokens (``the agent wrote a 500-word reply''). The bill is dominated by **input tokens** — system prompt, tool definitions, conversation history, every tool result. A long-context agent reading a codebase pays for *every byte of every file*, every turn.
+
+Mitigations:
+- **Use input caching** (Anthropic, OpenAI both support it). Repeated context costs ~10% on cache hit.
+- **Compact older turns into summaries.** Don't drag the full transcript through every step.
+- **Drop tool results once consumed.** Most workflows don't need the raw data after the model has reasoned about it.
+
+## Infra cost (often $0)
+
+For most agents in 2026, the infra is the host (Claude Desktop, Cursor, Cline) which the human already pays for. Agents running in production (server-side) need:
+
+- **Compute** to invoke the model API. A small Lambda or Cloud Run is fine — the LLM does the work.
+- **A queue / scheduler.** GitHub Actions cron is free and works.
+- **Observability.** Cheap if you log to CloudWatch / DataDog / etc; significant if you adopt LangSmith / Helicone / similar dedicated tools.
+
+For a startup or solo project, infra cost typically rounds to zero. For an enterprise running thousands of agents, observability tools become the real line item.
+
+## Operational time
+
+This is the real cost everyone misses.
+
+- **Drafting prompts.** First version: hours. Refining over the next month: more hours. Treating prompts as production artefacts (versioned, reviewed, tested): hours per change.
+- **Watching the agent run.** Until you trust it, you watch every turn. ``It works'' takes weeks of observed runs.
+- **Handling regressions.** Vendor model updates change behaviour. Agents that worked yesterday may fail today. Allow ~10% of someone's time for ongoing tuning.
+
+For a single agent in a team's ongoing rotation, budget 4–8 hours/month of operational time at human salaries. That's *more* than the token bill on most projects.
+
+## A useful framing
+
+> **Agents are cheap to run and expensive to operate.** Token cost is rarely the bottleneck. Operational discipline is.
+
+If your agent project planning has a token budget but no engineering-time budget, you're missing the bigger number.
+
+## What to read next
+
+- [What can I build with $0?](/faq/build-with-zero-dollars/) — yes, really, $0 is feasible
+- [Recipes](/recipes/) — every recipe lists per-run cost (when measured)
