@@ -8,6 +8,7 @@ import Icon from '@components/primitives/Icon.astro';
 import LiveDot from '@components/data/LiveDot.astro';
 import DeltaPill from '@components/data/DeltaPill.astro';
 import { getCollection } from 'astro:content';
+import { computeUniqueRepoStars } from '@lib/counts';
 
 import mcpHealth from '@data/mcp-health.json';
 
@@ -27,11 +28,11 @@ const movers = [...withDeltas]
   .filter((r) => r.health !== 'abandoned')
   .sort((a, b) => Math.abs(b._delta) - Math.abs(a._delta));
 
-const recentlyCommitted = [...withDeltas]
-  .filter((r) => r.health !== 'abandoned')
+const recentlyCommitted = [...rows]
+  .filter((r) => r.lastCommitDays != null)
   .sort((a, b) => a.lastCommitDays - b.lastCommitDays);
 
-const totalStars = rows.reduce((s, r) => s + r.stars, 0);
+const { totalStars } = computeUniqueRepoStars(rows);
 const totalDelta = withDeltas.reduce((s, r) => s + r._delta, 0);
 
 const cronAge = Date.now() - new Date(mcpHealth._lastUpdated).getTime();

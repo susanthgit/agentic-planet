@@ -1,0 +1,17 @@
+{
+  "_note": "Pillar targets — the future-state goals. Single source of truth. Updated as scope evolves.",
+  "_lastUpdated": "2026-05-07",
+  "targets": {
+    "L01": { "title": "Landscape", "target": 4 },
+    "R02": { "title": "Recipes", "target": 5 },
+    "M03": { "title": "MCP Servers", "target": 30 },
+    "T04": { "title": "Tools", "target": 12 },
+    "V05": { "title": "Vendors", "target": 4 },
+    "S06": { "title": "Safety", "target": 14 },
+    "P07": { "title": "Standards", "target": 4 },
+    "L08": { "title": "Learn", "target": 10 },
+    "X09": { "title": "Lab", "target": 6 },
+    "Q10": { "title": "FAQ", "target": 10 },
+    "D13": { "title": "Diagrams", "target": 30 }
+  }
+}

@@ -11,6 +11,10 @@ import Sparkline from '@components/data/Sparkline.astro';
 interface McpRow {
   stars: number;
   trend: number[];
+  sourceType?: 'repo' | 'monorepo-subdir';
+  repo?: string;
+  repoStars?: number;
+  representativeStars?: number | null;
 }
 
 export interface Props {
@@ -21,14 +25,30 @@ export interface Props {
 
 const { rows, label = 'Total Stars Tracked', href = '/this-week/' } = Astro.props;
 
-const total = rows.reduce((s, r) => s + (r.stars || 0), 0);
+// Dedupe by repo to avoid triple-counting monorepo packages.
+// Each repo contributes its repoStars once, regardless of how many MCPs share it.
+const repoTotals = new Map<string, number>();
+for (const r of rows) {
+  if (r.sourceType === 'monorepo-subdir') {
+    const key = r.repo ?? 'unknown-monorepo';
+    repoTotals.set(key, r.repoStars ?? 0);
+  } else {
+    // Standalone repo — use its representativeStars (or stars).
+    const key = r.repo ?? `__row_${repoTotals.size}`;
+    const stars = r.representativeStars ?? r.stars ?? 0;
+    repoTotals.set(key, stars);
+  }
+}
+const total = [...repoTotals.values()].reduce((s, n) => s + n, 0);
+const distinctRepos = repoTotals.size;
 
-// Compute aggregate trend (sum each timestep across all rows)
-const minTrend = Math.min(...rows.map((r) => r.trend?.length || 0));
+// Compute aggregate trend (sum each timestep across all rows that have a meaningful trend).
+const trendableRows = rows.filter((r) => r.sourceType !== 'monorepo-subdir' && r.trend?.length);
+const minTrend = trendableRows.length === 0 ? 0 : Math.min(...trendableRows.map((r) => r.trend?.length || 0));
 const aggTrend: number[] = [];
 for (let i = 0; i < minTrend; i++) {
   let sum = 0;
-  for (const r of rows) {
+  for (const r of trendableRows) {
     sum += r.trend?.[r.trend.length - minTrend + i] ?? 0;
   }
   aggTrend.push(sum);
@@ -58,7 +78,7 @@ function fmt(n: number): string {
     </div>
 
     <div class="tsm__meta">
-      <span class="tsm__sub mono">across {rows.length} tracked MCPs</span>
+      <span class="tsm__sub mono">across {distinctRepos} tracked repos · {rows.length} MCPs</span>
       {aggTrend.length >= 2 && (
         <span class="tsm__delta mono">
           {trendDelta >= 0 ? '+' : '−'}{fmt(Math.abs(trendDelta))} ★ since cron 0

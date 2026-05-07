@@ -18,6 +18,7 @@ import DidYouKnow from '@components/panels/DidYouKnow.astro';
 import StartHereRail from '@components/panels/StartHereRail.astro';
 import FeaturedPicks from '@components/panels/FeaturedPicks.astro';
 import { getCollection } from 'astro:content';
+import { computeUniqueRepoStars } from '@lib/counts';
 
 import mcpHealth from '@data/mcp-health.json';
 import pulseData from '@data/pulse.json';
@@ -32,7 +33,7 @@ const totals = { recipes: recipesData.recipes.length, mcps: mcpHealth.rows.lengt
 const reviewedMcps = await getCollection('mcps');
 const reviewedSlugs = reviewedMcps.map((m) => m.id);
 
-const totalStars = mcpHealth.rows.reduce((s, r) => s + r.stars, 0);
+const { totalStars } = computeUniqueRepoStars(mcpHealth.rows);
 function fmtK(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1).replace('.0', '')}M`;
   if (n >= 1000) return `${Math.round(n / 1000)}k`;

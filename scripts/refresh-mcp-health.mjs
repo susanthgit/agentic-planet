@@ -7,6 +7,15 @@
  *
  * Required env (in Actions):
  *   GITHUB_TOKEN — auto-provided by Actions
+ *
+ * 2026-05-07 (Session 1 Phase C): schema reworked to distinguish
+ *   - sourceType: 'repo' (whole repo is the MCP) vs 'monorepo-subdir' (one of many MCPs in a shared repo)
+ *   - repo (owner/name) and packagePath (subdir within monorepo) are stored separately
+ *   - For 'monorepo-subdir' rows, stars are recorded as `repoStars` (the shared repo total) and
+ *     `representativeStars` is null until per-package metrics are available. The UI must not
+ *     display `representativeStars` when null — show '(monorepo)' instead.
+ *   - This stops the previous bug of three rows all showing 85,152 stars from the shared
+ *     `modelcontextprotocol/servers` repo.
  */
 
 import { readFile, writeFile } from 'node:fs/promises';
@@ -14,21 +23,21 @@ import { readFile, writeFile } from 'node:fs/promises';
 const TOKEN = process.env.GITHUB_TOKEN;
 const HEALTH_PATH = 'src/data/mcp-health.json';
 
-// Map slug → owner/repo. Update as catalog grows.
+// Map slug → { repo, sourceType, packagePath? }
 const REPO_MAP = {
-  'github-mcp': 'github/github-mcp-server',
-  'playwright-mcp': 'microsoft/playwright-mcp',
-  'filesystem-mcp': 'modelcontextprotocol/servers',
-  'postgres-mcp': 'modelcontextprotocol/servers',
-  'slack-mcp': 'modelcontextprotocol/servers',
-  'cloudflare-mcp': 'cloudflare/mcp-server-cloudflare',
-  'notion-mcp': 'makenotion/notion-mcp-server',
-  'figma-mcp': 'GLips/Figma-Context-MCP',
-  'azure-mcp': 'Azure/azure-mcp',
-  'stripe-mcp': 'stripe/agent-toolkit',
-  'browserbase-mcp': 'browserbase/mcp-server-browserbase',
-  'linear-mcp': 'linear/linear-mcp',
-  'legacy-agent-x': null, // intentionally absent — example abandoned
+  'github-mcp':       { repo: 'github/github-mcp-server',          sourceType: 'repo' },
+  'playwright-mcp':   { repo: 'microsoft/playwright-mcp',          sourceType: 'repo' },
+  'filesystem-mcp':   { repo: 'modelcontextprotocol/servers',      sourceType: 'monorepo-subdir', packagePath: 'src/filesystem' },
+  'postgres-mcp':     { repo: 'modelcontextprotocol/servers',      sourceType: 'monorepo-subdir', packagePath: 'src/postgres' },
+  'slack-mcp':        { repo: 'modelcontextprotocol/servers',      sourceType: 'monorepo-subdir', packagePath: 'src/slack' },
+  'cloudflare-mcp':   { repo: 'cloudflare/mcp-server-cloudflare',  sourceType: 'repo' },
+  'notion-mcp':       { repo: 'makenotion/notion-mcp-server',      sourceType: 'repo' },
+  'figma-mcp':        { repo: 'GLips/Figma-Context-MCP',           sourceType: 'repo' },
+  'azure-mcp':        { repo: 'Azure/azure-mcp',                   sourceType: 'repo' },
+  'stripe-mcp':       { repo: 'stripe/agent-toolkit',              sourceType: 'repo' },
+  'browserbase-mcp':  { repo: 'browserbase/mcp-server-browserbase', sourceType: 'repo' },
+  'linear-mcp':       { repo: 'linear/linear-mcp',                 sourceType: 'repo' },
+  'legacy-agent-x':   null, // intentionally absent — example abandoned
 };
 
 async function fetchRepo(repo) {
@@ -66,37 +75,62 @@ async function main() {
   const data = JSON.parse(await readFile(HEALTH_PATH, 'utf8'));
   const updatedRows = [];
 
+  // Cache repo API responses so monorepo-subdir rows share the call
+  const repoCache = new Map();
+
   for (const row of data.rows) {
-    const repo = REPO_MAP[row.slug];
-    if (!repo) {
+    const cfg = REPO_MAP[row.slug];
+    if (!cfg) {
       // Preserve existing row (e.g., abandoned example)
       updatedRows.push(row);
       continue;
     }
-    const apiData = await fetchRepo(repo);
+    const { repo, sourceType, packagePath } = cfg;
+    let apiData = repoCache.get(repo);
+    if (apiData === undefined) {
+      apiData = await fetchRepo(repo);
+      repoCache.set(repo, apiData);
+    }
     if (!apiData) {
       updatedRows.push(row);
       continue;
     }
-    const newStars = apiData.stargazers_count ?? row.stars;
+    const repoStars = apiData.stargazers_count ?? row.repoStars ?? row.stars ?? 0;
     const days = daysSince(apiData.pushed_at);
-    const oldStars = row.stars;
-    const delta7d = newStars - (row.trend?.[0] ?? oldStars);
-    const trend = (row.trend ?? []).slice(-6).concat([newStars]);
+    // For monorepo-subdir, representative stars = null (we cannot attribute repo stars to one package).
+    // For 'repo' source type, representativeStars === repoStars.
+    const representativeStars = sourceType === 'repo' ? repoStars : null;
+    // delta7d only meaningful for `repo` rows where the displayed value moves.
+    const oldDisplayedStars = sourceType === 'repo' ? (row.stars ?? row.representativeStars ?? 0) : 0;
+    const delta7d = sourceType === 'repo' ? repoStars - (row.trend?.[0] ?? oldDisplayedStars) : 0;
+    const trend = sourceType === 'repo'
+      ? (row.trend ?? []).slice(-6).concat([repoStars])
+      : (row.trend ?? []);
     updatedRows.push({
       ...row,
-      stars: newStars,
+      sourceType,
+      repo,
+      packagePath: packagePath ?? null,
+      repoStars,
+      representativeStars,
+      // Backwards-compat: keep `stars` as the displayed value (representativeStars or 0 for monorepo)
+      stars: representativeStars ?? 0,
       delta7d,
       lastCommit: lastCommitLabel(days),
       lastCommitDays: days,
       health: healthFromDays(days),
       trend,
+      healthSignalsMeasured: ['repoStars', 'lastCommitDays'],
+      healthSignalsMissing: sourceType === 'monorepo-subdir'
+        ? ['per-package stars', 'per-package commit cadence', 'issue-response time']
+        : ['issue-response time'],
     });
   }
 
   data.rows = updatedRows;
   data._lastUpdated = new Date().toISOString();
   data._source = 'GitHub API · refreshed by GitHub Actions cron';
+  data._schemaVersion = 2;
 
   await writeFile(HEALTH_PATH, JSON.stringify(data, null, 2));
   console.log(`✅ Refreshed ${updatedRows.length} MCP rows`);
@@ -106,3 +140,4 @@ main().catch((e) => {
   console.error('❌', e);
   process.exit(1);
 });
+

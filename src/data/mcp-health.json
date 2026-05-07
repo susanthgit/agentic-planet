@@ -1,6 +1,6 @@
 {
-  "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production.",
-  "_lastUpdated": "2026-05-06T19:49:21.979Z",
+  "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
+  "_lastUpdated": "2026-05-07T02:16:09.884Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
@@ -21,7 +21,19 @@
         29545,
         29550
       ],
-      "url": "/mcp/github-mcp/"
+      "url": "/mcp/github-mcp/",
+      "sourceType": "repo",
+      "repo": "github/github-mcp-server",
+      "packagePath": null,
+      "repoStars": 29550,
+      "representativeStars": 29550,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "playwright-mcp",
@@ -41,14 +53,26 @@
         32084,
         32090
       ],
-      "url": "/mcp/playwright-mcp/"
+      "url": "/mcp/playwright-mcp/",
+      "sourceType": "repo",
+      "repo": "microsoft/playwright-mcp",
+      "packagePath": null,
+      "repoStars": 32090,
+      "representativeStars": 32090,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "filesystem-mcp",
       "name": "filesystem-mcp",
       "category": "Dev",
-      "stars": 85152,
-      "delta7d": 78702,
+      "stars": 0,
+      "delta7d": 0,
       "lastCommit": "2w ago",
       "lastCommitDays": 18,
       "health": "alive",
@@ -61,14 +85,28 @@
         85137,
         85152
       ],
-      "url": "/mcp/filesystem-mcp/"
+      "url": "/mcp/filesystem-mcp/",
+      "sourceType": "monorepo-subdir",
+      "repo": "modelcontextprotocol/servers",
+      "packagePath": "src/filesystem",
+      "repoStars": 85152,
+      "representativeStars": null,
+      "healthSignalsMissing": [
+        "per-package stars",
+        "per-package commit cadence",
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "postgres-mcp",
       "name": "postgres-mcp",
       "category": "Data",
-      "stars": 85152,
-      "delta7d": 80182,
+      "stars": 0,
+      "delta7d": 0,
       "lastCommit": "2w ago",
       "lastCommitDays": 18,
       "health": "alive",
@@ -81,14 +119,28 @@
         85137,
         85152
       ],
-      "url": "/mcp/postgres-mcp/"
+      "url": "/mcp/postgres-mcp/",
+      "sourceType": "monorepo-subdir",
+      "repo": "modelcontextprotocol/servers",
+      "packagePath": "src/postgres",
+      "repoStars": 85152,
+      "representativeStars": null,
+      "healthSignalsMissing": [
+        "per-package stars",
+        "per-package commit cadence",
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "slack-mcp",
       "name": "slack-mcp",
       "category": "Productivity",
-      "stars": 85152,
-      "delta7d": 81252,
+      "stars": 0,
+      "delta7d": 0,
       "lastCommit": "2w ago",
       "lastCommitDays": 18,
       "health": "alive",
@@ -101,7 +153,21 @@
         85137,
         85152
       ],
-      "url": "/mcp/slack-mcp/"
+      "url": "/mcp/slack-mcp/",
+      "sourceType": "monorepo-subdir",
+      "repo": "modelcontextprotocol/servers",
+      "packagePath": "src/slack",
+      "repoStars": 85152,
+      "representativeStars": null,
+      "healthSignalsMissing": [
+        "per-package stars",
+        "per-package commit cadence",
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "cloudflare-mcp",
@@ -121,7 +187,19 @@
         3706,
         3707
       ],
-      "url": "/mcp/cloudflare-mcp/"
+      "url": "/mcp/cloudflare-mcp/",
+      "sourceType": "repo",
+      "repo": "cloudflare/mcp-server-cloudflare",
+      "packagePath": null,
+      "repoStars": 3707,
+      "representativeStars": 3707,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "notion-mcp",
@@ -141,7 +219,19 @@
         4300,
         4301
       ],
-      "url": "/mcp/notion-mcp/"
+      "url": "/mcp/notion-mcp/",
+      "sourceType": "repo",
+      "repo": "makenotion/notion-mcp-server",
+      "packagePath": null,
+      "repoStars": 4301,
+      "representativeStars": 4301,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "figma-mcp",
@@ -161,7 +251,19 @@
         14631,
         14634
       ],
-      "url": "/mcp/figma-mcp/"
+      "url": "/mcp/figma-mcp/",
+      "sourceType": "repo",
+      "repo": "GLips/Figma-Context-MCP",
+      "packagePath": null,
+      "repoStars": 14634,
+      "representativeStars": 14634,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "azure-mcp",
@@ -181,7 +283,19 @@
         1213,
         1213
       ],
-      "url": "/mcp/azure-mcp/"
+      "url": "/mcp/azure-mcp/",
+      "sourceType": "repo",
+      "repo": "Azure/azure-mcp",
+      "packagePath": null,
+      "repoStars": 1213,
+      "representativeStars": 1213,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "stripe-mcp",
@@ -201,7 +315,19 @@
         1528,
         1528
       ],
-      "url": "/mcp/stripe-mcp/"
+      "url": "/mcp/stripe-mcp/",
+      "sourceType": "repo",
+      "repo": "stripe/agent-toolkit",
+      "packagePath": null,
+      "repoStars": 1528,
+      "representativeStars": 1528,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "browserbase-mcp",
@@ -221,7 +347,19 @@
         3312,
         3315
       ],
-      "url": "/mcp/browserbase-mcp/"
+      "url": "/mcp/browserbase-mcp/",
+      "sourceType": "repo",
+      "repo": "browserbase/mcp-server-browserbase",
+      "packagePath": null,
+      "repoStars": 3315,
+      "representativeStars": 3315,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "linear-mcp",
@@ -241,7 +379,19 @@
         1274,
         1280
       ],
-      "url": "/mcp/linear-mcp/"
+      "url": "/mcp/linear-mcp/",
+      "sourceType": "repo",
+      "repo": "linear/linear-mcp",
+      "packagePath": null,
+      "repoStars": 1280,
+      "representativeStars": 1280,
+      "healthSignalsMissing": [
+        "issue-response time"
+      ],
+      "healthSignalsMeasured": [
+        "repoStars",
+        "lastCommitDays"
+      ]
     },
     {
       "slug": "legacy-agent-x",
@@ -261,7 +411,13 @@
         1102,
         1100
       ],
-      "url": "/mcp/"
+      "url": "/mcp/",
+      "sourceType": "repo",
+      "repo": null,
+      "packagePath": null,
+      "repoStars": 1100,
+      "representativeStars": 1100
     }
-  ]
+  ],
+  "_schemaVersion": 2
 }

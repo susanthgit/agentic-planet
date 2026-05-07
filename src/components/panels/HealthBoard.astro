@@ -19,6 +19,10 @@ export interface HealthRow {
   health: 'alive' | 'slowing' | 'abandoned' | 'unknown';
   trend?: number[];
   url?: string;
+  sourceType?: 'repo' | 'monorepo-subdir';
+  repoStars?: number;
+  representativeStars?: number | null;
+  packagePath?: string | null;
 }
 
 export interface Props {
@@ -51,28 +55,36 @@ function formatStars(n: number): string {
     const hasReview = reviewedSlugs.includes(r.slug);
     const Tag = hasReview ? 'a' : 'div';
     const linkProps = hasReview ? { href: r.url ?? `/mcp/${r.slug}/` } : {};
+    const isMonorepo = r.sourceType === 'monorepo-subdir';
     return (
       <Tag
-        class:list={['hb__row', { 'hb__row--no-review': !hasReview }]}
+        class:list={['hb__row', { 'hb__row--no-review': !hasReview, 'hb__row--monorepo': isMonorepo }]}
         {...linkProps}
         data-status={r.health}
       >
         <span class="hb__col hb__col--name">
           <span class="hb__name">{r.name}</span>
           {!hasReview && <span class="hb__pending mono">REVIEW PENDING</span>}
+          {isMonorepo && r.packagePath && <span class="hb__monorepo mono">in {r.repo} / {r.packagePath}</span>}
         </span>
         <span class="hb__col hb__col--cat">
           <span class="hb__cat">{r.category}</span>
         </span>
         <span class="hb__col hb__col--stars mono">
-          <span class="hb__stars">{formatStars(r.stars)}</span>
+          {isMonorepo ? (
+            <span class="hb__stars hb__stars--shared" title={`Repo stars: ${formatStars(r.repoStars ?? 0)} (shared across monorepo packages)`}>
+              ({formatStars(r.repoStars ?? 0)} repo)
+            </span>
+          ) : (
+            <span class="hb__stars">{formatStars(r.stars)}</span>
+          )}
         </span>
         <span class="hb__col hb__col--delta">
-          <DeltaPill value={r.delta7d} />
+          {isMonorepo ? <span class="hb__delta-na mono">—</span> : <DeltaPill value={r.delta7d} />}
         </span>
         {showSparkline && (
           <span class="hb__col hb__col--trend">
-            {r.trend && r.trend.length > 0 ? (
+            {r.trend && r.trend.length > 0 && !isMonorepo ? (
               <Sparkline data={r.trend} stroke={r.health === 'alive' ? 'green' : r.health === 'slowing' ? 'amber' : 'red'} />
             ) : (
               <span class="hb__trend-empty">—</span>
@@ -91,6 +103,23 @@ function formatStars(n: number): string {
 </div>
 
 <style>
+  .hb__monorepo {
+    display: block;
+    margin-top: 2px;
+    font-size: var(--fs-3xs, 0.65rem);
+    color: var(--text-faint);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .hb__stars--shared {
+    color: var(--text-mute);
+    font-style: italic;
+  }
+
+  .hb__delta-na {
+    color: var(--text-faint);
+  }
+
   .hb__row--no-review {
     cursor: default;
   }

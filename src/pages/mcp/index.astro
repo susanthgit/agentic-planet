@@ -7,6 +7,7 @@ import MetricTile from '@components/data/MetricTile.astro';
 import Tag from '@components/primitives/Tag.astro';
 import Button from '@components/primitives/Button.astro';
 import { getCollection } from 'astro:content';
+import { computeUniqueRepoStars } from '@lib/counts';
 
 import mcpHealth from '@data/mcp-health.json';
 
@@ -17,7 +18,7 @@ const totals = {
   abandoned: rows.filter((r) => r.health === 'abandoned').length,
 };
 const categories = Array.from(new Set(rows.map((r) => r.category))).sort();
-const totalStars = rows.reduce((sum, r) => sum + r.stars, 0);
+const { totalStars } = computeUniqueRepoStars(rows);
 
 const reviewedMcps = await getCollection('mcps');
 const reviewedSlugs = reviewedMcps.map((m) => m.id);
