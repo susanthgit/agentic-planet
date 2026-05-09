@@ -41,3 +41,6 @@ public/pagefind/
 # Local
 *.local
 .history/
+home-audit.png
+home-audit-desktop.png
+home-audit-mobile.png

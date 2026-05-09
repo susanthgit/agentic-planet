@@ -42,17 +42,8 @@ body {
   overflow-x: hidden;
 }
 
-/* Subtle scanline overlay across whole document — cockpit screen feel */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: var(--scanline-pattern);
-  pointer-events: none;
-  z-index: var(--z-toast);
-  mix-blend-mode: overlay;
-  opacity: 0.6;
-}
+/* Soft Cockpit: document-wide scanline overlay removed.
+   Scanlines now live inside data panels only, where they earn their place. */
 
 /* ──────────────────────────────────────────────────────
    TYPOGRAPHY
@@ -256,21 +247,7 @@ blockquote {
   padding: 0 var(--gutter);
 }
 
-/* Cockpit frame — subtle vertical rails on viewport edges, gives the
-   "you're inside a screen" feel without being distracting. */
-@media (min-width: 1100px) {
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: var(--z-base);
-    background:
-      linear-gradient(90deg, var(--accent) 0, var(--accent) 1px, transparent 1px) left center / var(--frame-inset) 100% no-repeat,
-      linear-gradient(90deg, transparent calc(100% - 1px), var(--accent) calc(100% - 1px), var(--accent) 100%) right center / var(--frame-inset) 100% no-repeat;
-    opacity: 0.18;
-  }
-}
+/* Soft Cockpit: viewport-edge frame rails removed. Was framing nothing. */
 
 .mono { font-family: var(--font-mono); }
 .display { font-family: var(--font-display); }
@@ -287,11 +264,13 @@ blockquote {
 .text-red { color: var(--signal-red); }
 .text-magenta { color: var(--signal-magenta); }
 
-.phosphor-cyan { color: var(--signal-cyan); text-shadow: var(--text-glow-cyan); }
-.phosphor-green { color: var(--signal-green); text-shadow: var(--text-glow-green); }
-.phosphor-amber { color: var(--signal-amber); text-shadow: var(--text-glow-amber); }
-.phosphor-red { color: var(--signal-red); text-shadow: var(--text-glow-red); }
-.phosphor-accent { color: var(--accent-hi); text-shadow: var(--text-glow-accent); }
+/* Soft Cockpit: phosphor utilities = colour only (no text-shadow).
+   Glowing text fatigues a reading site. Glow stays on signals (LiveDot, alarms). */
+.phosphor-cyan { color: var(--signal-cyan); }
+.phosphor-green { color: var(--signal-green); }
+.phosphor-amber { color: var(--signal-amber); }
+.phosphor-red { color: var(--signal-red); }
+.phosphor-accent { color: var(--accent-hi); }
 
 .sr-only {
   position: absolute;

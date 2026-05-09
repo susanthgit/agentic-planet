@@ -17,6 +17,7 @@ import RoadmapStrip from '@components/panels/RoadmapStrip.astro';
 import DidYouKnow from '@components/panels/DidYouKnow.astro';
 import StartHereRail from '@components/panels/StartHereRail.astro';
 import FeaturedPicks from '@components/panels/FeaturedPicks.astro';
+import Sparkline from '@components/data/Sparkline.astro';
 import { getCollection } from 'astro:content';
 import { computeUniqueRepoStars } from '@lib/counts';
 
@@ -25,7 +26,7 @@ import pulseData from '@data/pulse.json';
 import recipesData from '@data/featured-recipes.json';
 import pillarsData from '@data/pillars.json';
 
-const topMcps = mcpHealth.rows.slice(0, 5);
+const topMcps = mcpHealth.rows.slice(0, 8);
 const featuredRecipes = recipesData.recipes.slice(0, 3);
 const pillars = pillarsData.pillars;
 const totals = { recipes: recipesData.recipes.length, mcps: mcpHealth.rows.length };
@@ -52,15 +53,71 @@ const vendors = [
 ];
 
 const faqs = [
-  { slug: 'is-agentic-ai-hype', q: 'Is agentic AI hype?', hint: 'Some of it. Here is how to tell.' },
-  { slug: 'will-mcp-survive', q: 'Will MCP survive 18 months?', hint: 'Probably yes. Here is why.' },
-  { slug: 'build-with-zero-dollars', q: 'What can I build with $0?', hint: 'More than you think.' },
-  { slug: 'why-still-hallucinate', q: 'Why do agents still hallucinate?', hint: 'Pattern completion vs truth.' },
+  { slug: 'is-agentic-ai-hype', q: 'Is agentic AI hype?', tease: 'Some of it — most consumer demos are. The honest test: does it execute multi-step work without you holding its hand?' },
+  { slug: 'will-mcp-survive', q: 'Will MCP survive 18 months?', tease: 'Probably yes. Claude Desktop adoption, GitHub MCP at 29.5k★, and OpenAI shipping a compatible Apps SDK adapter — that\'s a moat.' },
+  { slug: 'build-with-zero-dollars', q: 'What can I build with $0?', tease: 'A capable research + writing + scheduling stack — Claude Free + GitHub MCP + Brave Search MCP + Filesystem MCP. Real workflows, no credit card.' },
+  { slug: 'why-still-hallucinate', q: 'Why do agents still hallucinate?', tease: 'They\'re trained to predict plausible next-tokens, not to verify truth. RAG and tool-calls reduce it; nothing eliminates it. Always verify.' },
 ];
 
 const featuredPillarSlugs = ['R02', 'M03'];
-const featured = pillars.filter((p) => featuredPillarSlugs.includes(p.code));
-const standard = pillars.filter((p) => !featuredPillarSlugs.includes(p.code));
+const featured = pillars.filter((p) => featuredPillarSlugs.includes(p.code)); void featured;
+const standard = pillars.filter((p) => !featuredPillarSlugs.includes(p.code)); void standard;
+
+function pillarCount(code: string): number {
+  return pillars.find((p) => p.code === code)?.count ?? 0;
+}
+
+const heroStats = [
+  { value: fmtK(totalStars), suffix: '★', label: 'tracked', color: 'cyan' },
+  { value: String(pillarCount('M03')), suffix: '', label: 'mcps reviewed', color: 'cyan' },
+  { value: String(totals.recipes), suffix: '', label: 'recipes', color: 'magenta' },
+  { value: String(pillarCount('V05')), suffix: '', label: 'vendors', color: 'amber' },
+  { value: String(pillarCount('P07')), suffix: '', label: 'standards', color: 'accent' },
+  { value: String(pillarCount('S06')), suffix: '', label: 'safety lenses', color: 'red' },
+];
+
+// Ecosystem-at-a-glance: 7 mono telemetry tiles below the hero
+const aliveCount = mcpHealth.rows.filter((r) => r.health === 'alive').length;
+const slowingCount = mcpHealth.rows.filter((r) => r.health === 'slowing').length;
+const totalDelta = mcpHealth.rows.reduce((sum, r) => sum + (r.delta7d ?? 0), 0);
+const lastCommitDaysList = mcpHealth.rows
+  .filter((r) => typeof r.lastCommitDays === 'number')
+  .map((r) => r.lastCommitDays);
+const avgFreshness = lastCommitDaysList.length
+  ? Math.round(lastCommitDaysList.reduce((a, b) => a + b, 0) / lastCommitDaysList.length)
+  : 0;
+const categoryCounts = mcpHealth.rows.reduce<Record<string, number>>((acc, r) => {
+  acc[r.category] = (acc[r.category] ?? 0) + 1;
+  return acc;
+}, {});
+const topCategoryEntry = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0];
+const topCategoryName = topCategoryEntry ? topCategoryEntry[0] : '—';
+const distinctCategories = Object.keys(categoryCounts).length;
+
+const ecosystemStats = [
+  { value: String(totals.mcps), label: 'tracked mcps', color: 'cyan' },
+  { value: `${fmtK(totalStars)}★`, label: 'total stars', color: 'cyan' },
+  { value: `+${totalDelta}`, label: 'stars / 7d', color: 'green' },
+  { value: String(aliveCount), label: 'alive', color: 'green' },
+  { value: String(slowingCount), label: 'slowing', color: 'amber' },
+  { value: `${avgFreshness}d`, label: 'avg freshness', color: 'mute' },
+  { value: topCategoryName, label: 'top category', color: 'accent' },
+  { value: String(distinctCategories), label: 'categories', color: 'mute' },
+];
+
+// Top movers — top 8 MCPs by 7-day star delta (matches HealthBoard row count)
+const topMovers = [...mcpHealth.rows]
+  .filter((r) => (r.delta7d ?? 0) > 0 && r.sourceType !== 'monorepo-subdir')
+  .sort((a, b) => (b.delta7d ?? 0) - (a.delta7d ?? 0))
+  .slice(0, 8);
+
+// Quick install snippets — popular MCPs, all reviewed
+const quickInstalls = [
+  { slug: 'github-mcp', name: 'GitHub', cmd: 'npx -y @github/mcp-server', category: 'Dev' },
+  { slug: 'playwright-mcp', name: 'Playwright', cmd: 'npx -y @playwright/mcp', category: 'Browser' },
+  { slug: 'filesystem-mcp', name: 'Filesystem', cmd: 'npx -y @modelcontextprotocol/server-filesystem', category: 'Dev' },
+  { slug: 'postgres-mcp', name: 'Postgres', cmd: 'npx -y @modelcontextprotocol/server-postgres', category: 'Data' },
+];
 
 const coverage = pillars.map((p) => ({
   code: p.code,
@@ -106,35 +163,62 @@ const featuredMcp = {
         <LiveDot color="green" size="sm" />
         <span>AGENTS // FIELD GUIDE // ONLINE</span>
       </span>
-      <span class="hero__count mono">
-        {fmtK(totalStars)}★ tracked · {totals.mcps} MCPs · cron {cronLabel} ago
-      </span>
+      <span class="hero__count mono">cron {cronLabel} ago</span>
     </div>
 
-    <div class="hero__body">
-      <h1 class="hero__title">
-        <span class="hero__line">A field guide for</span>
-        <span class="hero__line hero__line--accent">building with agents.<span class="hero__cursor" aria-hidden="true">▌</span></span>
-      </h1>
+    <div class="hero__main">
+      <div class="hero__body">
+        <h1 class="hero__title">
+          A field guide for <span class="hero__title-accent">building with agents.</span><span class="hero__cursor" aria-hidden="true">▌</span>
+        </h1>
 
-      <p class="hero__sub">
-        Vendor docs are pitch. Hacker News is a lottery. This is the cockpit: honest MCP reviews, side-by-side vendor takes, and recipes with measured numbers. Plain English. Built by an engineer who deploys this for a living.
-      </p>
+        <p class="hero__sub">
+          Vendor docs are pitch. Hacker News is a lottery. <strong>Honest MCP reviews, side-by-side vendor takes, and recipes with measured numbers</strong> — by an engineer who deploys this for a living.
+        </p>
 
-      <div class="hero__cta">
-        <Button href="/lab/pick-your-stack/" variant="primary"><Icon name="beaker" size={14} /> Pick Your Stack →</Button>
-        <Button href="/recipes/" variant="ghost"><Icon name="flask" size={14} /> Browse Recipes</Button>
-        <Button href="/learn/what-is-an-agent/" variant="ghost"><Icon name="help" size={14} /> What is this?</Button>
+        <div class="hero__cta">
+          <Button href="/lab/pick-your-stack/" variant="primary"><Icon name="beaker" size={14} /> Pick Your Stack →</Button>
+          <Button href="/recipes/" variant="ghost"><Icon name="flask" size={14} /> Browse Recipes</Button>
+          <Button href="/learn/what-is-an-agent/" variant="ghost"><Icon name="help" size={14} /> What is this?</Button>
+        </div>
+
+        <dl class="hero__stats" aria-label="Site coverage at a glance">
+          {heroStats.map((s) => (
+            <div class="hero__stat">
+              <dt class={`hero__stat-val hero__stat-val--${s.color} mono`}>
+                {s.value}<span class="hero__stat-suffix">{s.suffix}</span>
+              </dt>
+              <dd class="hero__stat-label mono">{s.label}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <aside class="hero__visual" aria-label="The agentic stack at a glance">
+        <AgenticStackDiagram />
+      </aside>
+    </div>
+  </section>
+
+  <section class="container-wide section section--tight">
+    <div class="ecosys-strip" role="region" aria-label="Ecosystem at a glance">
+      <span class="ecosys-strip__label mono">
+        <LiveDot color="cyan" size="sm" />
+        <span>ECOSYSTEM // 24H SNAPSHOT</span>
+      </span>
+      <div class="ecosys-strip__items">
+        {ecosystemStats.map((s) => (
+          <span class="ecosys-stat">
+            <span class={`ecosys-stat__val mono ecosys-stat__val--${s.color}`}>{s.value}</span>
+            <span class="ecosys-stat__lbl mono">{s.label}</span>
+          </span>
+        ))}
       </div>
     </div>
   </section>
 
   <section class="container-wide section section--tight">
     <StartHereRail />
-  </section>
-
-  <section class="container-wide section">
-    <AgenticStackDiagram />
   </section>
 
   <section class="container-wide section">
@@ -166,19 +250,9 @@ const featuredMcp = {
     </header>
 
     <div class="pillars-bento">
-      {featured.map((p) => (
-        <div class="pillars-bento__cell pillars-bento__cell--feature">
-          <PillarTile href={p.href} code={p.code} title={p.title} description={p.description} count={p.count} target={p.target} fillPercent={p.fillPercent} color={p.color} icon={p.icon} />
-        </div>
-      ))}
-      {standard.slice(0, 2).map((p) => (
+      {pillars.map((p) => (
         <div class="pillars-bento__cell">
-          <PillarTile href={p.href} code={p.code} title={p.title} description={p.description} count={p.count} target={p.target} fillPercent={p.fillPercent} color={p.color} icon={p.icon} />
-        </div>
-      ))}
-      {standard.slice(2).map((p) => (
-        <div class="pillars-bento__cell">
-          <PillarTile href={p.href} code={p.code} title={p.title} description={p.description} count={p.count} target={p.target} fillPercent={p.fillPercent} color={p.color} icon={p.icon} />
+          <PillarTile href={p.href} code={p.code} title={p.title} description={p.description} count={p.count} target={p.target} fillPercent={p.fillPercent} color={p.color as 'accent' | 'cyan' | 'green' | 'amber' | 'magenta' | 'violet'} icon={p.icon as 'globe' | 'flask' | 'plug' | 'wrench' | 'building' | 'shield' | 'book' | 'brain' | 'beaker' | 'help'} />
         </div>
       ))}
     </div>
@@ -211,41 +285,29 @@ const featuredMcp = {
       </div>
 
       <div class="bento__cell">
-        <Panel kicker="RECIPE BENCH" title="Recent Recipes" variant="default" density="tight">
-          <div class="rstack">
-            {featuredRecipes.map((r) => (
-              <a class="rmini" href={`/recipes/${r.slug}/`}>
-                <div class="rmini__head">
-                  <Icon name="flask" size={14} />
-                  <h4 class="rmini__title">{r.title}</h4>
-                </div>
-                <div class="rmini__metrics">
-                  <span class="rmini__before">{r.before}</span>
-                  <Icon name="arrow-right" size={10} />
-                  <span class="rmini__after phosphor-green mono">{r.after}</span>
-                  {r.cost && <span class="rmini__cost mono">· {r.cost}</span>}
-                </div>
-                <div class="rmini__tags">
-                  {r.components.slice(0, 3).map((c) => <Tag text={c} color="cyan" />)}
-                </div>
+        <Panel kicker="TOP MOVERS · 7D" title="MCPs gaining traction" variant="default" density="tight">
+          <div class="topmovers">
+            {topMovers.map((m, i) => (
+              <a class="tmover" href={reviewedSlugs.includes(m.slug) ? `/mcp/${m.slug}/` : '/mcp/'}>
+                <span class="tmover__rank mono">{String(i + 1).padStart(2, '0')}</span>
+                <span class="tmover__name">{m.name}</span>
+                <span class="tmover__cat mono">{m.category}</span>
+                <span class="tmover__delta mono phosphor-green">+{m.delta7d}</span>
+                <span class="tmover__stars mono">{fmtK(m.stars)}★</span>
+                <span class="tmover__trend">
+                  {m.trend && m.trend.length > 0 ? (
+                    <Sparkline data={m.trend} stroke="green" width={48} height={16} />
+                  ) : (
+                    <span class="tmover__trend-empty mono">—</span>
+                  )}
+                </span>
               </a>
             ))}
           </div>
           <div slot="footer" class="bento__footer">
-            <Button href="/recipes/" variant="ghost" size="sm">All recipes <Icon name="arrow-right" size={12} /></Button>
+            <Button href="/mcp/" variant="ghost" size="sm">All MCPs <Icon name="arrow-right" size={12} /></Button>
           </div>
         </Panel>
-      </div>
-    </div>
-  </section>
-
-  <section class="container-wide section">
-    <div class="bento bento--60-40">
-      <div class="bento__cell">
-        <CoverageMatrix pillars={coverage} />
-      </div>
-      <div class="bento__cell">
-        <TotalStarsMetric rows={mcpHealth.rows} />
       </div>
     </div>
   </section>
@@ -260,7 +322,7 @@ const featuredMcp = {
                 <span class="qline__num mono">Q.{String(i + 1).padStart(2, '0')}</span>
                 <span class="qline__main">
                   <span class="qline__q">{f.q}</span>
-                  <span class="qline__hint">{f.hint}</span>
+                  <span class="qline__tease">{f.tease}</span>
                 </span>
                 <Icon name="chevron-right" size={14} />
               </a>
@@ -303,19 +365,24 @@ const featuredMcp = {
         <RoadmapStrip />
       </div>
       <div class="bento__cell">
-        <Panel kicker="TRY IT" title="Install MCP in 30 seconds" variant="cyan" density="tight">
-          <div class="install">
-            <p class="install__lead">Add the GitHub MCP server to Claude Desktop:</p>
-            <div class="install__code">
-              <code>npx -y @github/mcp-server</code>
-              <button class="install__copy" data-copy="npx -y @github/mcp-server" aria-label="Copy command">
-                <Icon name="file-code" size={12} />
-                <span>Copy</span>
-              </button>
-            </div>
-            <p class="install__hint mono">CONFIG → ~/.config/Claude/claude_desktop_config.json</p>
-            <div class="install__cta">
-              <Button href="/mcp/github-mcp/" variant="ghost" size="sm">Full setup <Icon name="arrow-right" size={11} /></Button>
+        <Panel kicker="QUICK INSTALL" title="Add an MCP in 30 seconds" variant="cyan" density="tight">
+          <div class="qi">
+            {quickInstalls.map((q) => (
+              <div class="qi__row">
+                <span class="qi__label">
+                  <span class="qi__name">{q.name}</span>
+                  <span class="qi__cat mono">{q.category}</span>
+                </span>
+                <code class="qi__cmd mono">{q.cmd}</code>
+                <button class="qi__copy" data-copy={q.cmd} aria-label={`Copy ${q.name} install command`}>
+                  <Icon name="file-code" size={12} />
+                  <span class="sr-only">Copy</span>
+                </button>
+              </div>
+            ))}
+            <p class="qi__hint mono">CONFIG → ~/.config/Claude/claude_desktop_config.json</p>
+            <div class="qi__cta">
+              <Button href="/mcp/" variant="ghost" size="sm">Browse all MCPs <Icon name="arrow-right" size={11} /></Button>
             </div>
           </div>
         </Panel>
@@ -325,7 +392,7 @@ const featuredMcp = {
 
   <section class="container-wide section">
     <div class="bento bento--40-60">
-      <div class="bento__cell">
+      <div class="bento__cell mobile-hide">
         <MiniTerminal />
       </div>
       <div class="bento__cell">
@@ -367,6 +434,17 @@ const featuredMcp = {
     </div>
   </section>
 
+  <section class="container-wide section">
+    <div class="bento bento--60-40">
+      <div class="bento__cell">
+        <CoverageMatrix pillars={coverage} />
+      </div>
+      <div class="bento__cell">
+        <TotalStarsMetric rows={mcpHealth.rows} />
+      </div>
+    </div>
+  </section>
+
   <section class="container-wide section section--ultra-tight">
     <DidYouKnow />
   </section>
@@ -378,12 +456,14 @@ const featuredMcp = {
     if (!btn) return;
     const text = btn.dataset.copy ?? '';
     navigator.clipboard.writeText(text).then(() => {
-      const span = btn.querySelector('span');
-      if (!span) return;
-      const orig = span.textContent;
-      span.textContent = 'Copied';
-      btn.classList.add('install__copy--done');
-      setTimeout(() => { span.textContent = orig; btn.classList.remove('install__copy--done'); }, 1500);
+      btn.classList.add('is-copied');
+      const span = btn.querySelector('span:not(.sr-only)');
+      const orig = span?.textContent ?? '';
+      if (span) span.textContent = 'Copied';
+      setTimeout(() => {
+        btn.classList.remove('is-copied');
+        if (span) span.textContent = orig;
+      }, 1500);
     });
   });
 
@@ -411,6 +491,11 @@ const featuredMcp = {
   .section--tight { padding: var(--space-3) 0; }
   .section--ultra-tight { padding: var(--space-2) 0; }
 
+  /* Mobile strip-down: hide cells/panels at phone widths. */
+  @media (max-width: 700px) {
+    .mobile-hide { display: none !important; }
+  }
+
   .section-head { margin-bottom: var(--space-3); max-width: 720px; }
   .section-kicker {
     display: inline-block;
@@ -420,7 +505,6 @@ const featuredMcp = {
     text-transform: uppercase;
     letter-spacing: var(--tracking-widest);
     margin-bottom: var(--space-1);
-    text-shadow: var(--text-glow-accent);
   }
   .section-title {
     font-family: var(--font-display);
@@ -444,16 +528,16 @@ const featuredMcp = {
     margin-top: var(--space-3);
     padding: var(--space-6) var(--gutter) var(--space-6);
     background:
-      radial-gradient(ellipse 60% 60% at 0% 0%, rgba(99, 102, 241, 0.10), transparent 60%),
+      radial-gradient(ellipse 60% 60% at 0% 0%, rgba(99, 102, 241, 0.08), transparent 60%),
       var(--bg-panel);
     border: 1px solid var(--border-dim);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     overflow: hidden;
   }
   .hero__scan {
     position: absolute; top: 0; left: 0; right: 0; height: 1px;
     background: linear-gradient(90deg, transparent, var(--accent), var(--signal-cyan), transparent);
-    opacity: 0.7; box-shadow: 0 0 8px var(--accent-glow);
+    opacity: 0.5;
   }
   .hero__top {
     display: flex;
@@ -479,23 +563,58 @@ const featuredMcp = {
     max-width: 880px;
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .hero__main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+  @media (max-width: 1100px) {
+    .hero__main {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+
+  .hero__visual {
+    min-width: 0;
+  }
+  /* Diagram in hero: drop its outer chrome so it doesn't read as a panel-in-a-panel */
+  .hero__visual :global(.stackdiag) {
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-md);
+  }
+  .hero__visual :global(.stackdiag__head) {
+    padding: var(--space-2) var(--space-3);
+    background: rgba(15, 21, 30, 0.5);
+  }
+  /* Hide the diagram on phones — keeps the hero clean and short */
+  @media (max-width: 600px) {
+    .hero__visual { display: none; }
   }
   .hero__title {
     font-family: var(--font-display);
-    font-size: clamp(32px, 4.6vw, 60px);
+    font-size: clamp(28px, 3.8vw, 48px);
     font-weight: var(--fw-bold);
-    line-height: 1; letter-spacing: -0.04em;
-    color: var(--text-bright); margin: 0;
-    display: flex; flex-direction: column; gap: 1px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin: 0;
   }
-  .hero__line { display: block; }
-  .hero__line--accent { color: var(--accent-hi); text-shadow: 0 0 16px var(--accent-glow); }
+  .hero__title-accent {
+    color: var(--accent-hi);
+  }
   .hero__cursor {
-    display: inline-block; color: var(--accent-hi);
+    display: inline-block;
+    color: var(--accent-hi);
     animation: blink 1.1s infinite step-start;
-    text-shadow: var(--text-glow-accent);
-    margin-left: 4px; line-height: 1;
+    margin-left: 4px;
+    line-height: 1;
   }
   .hero__sub {
     font-size: var(--fs-md);
@@ -504,23 +623,70 @@ const featuredMcp = {
     margin: 0;
     max-width: 760px;
   }
-  .hero__sub strong { color: var(--text-bright); }
+  .hero__sub strong { color: var(--text-bright); font-weight: var(--fw-semibold); }
   .hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+  .hero__stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-5) var(--space-6);
+    margin: var(--space-2) 0 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-dim);
+  }
+  .hero__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .hero__stat-val {
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--text-bright);
+    margin: 0;
+  }
+  .hero__stat-val--cyan { color: var(--signal-cyan); }
+  .hero__stat-val--magenta { color: var(--signal-magenta); }
+  .hero__stat-val--amber { color: var(--signal-amber); }
+  .hero__stat-val--accent { color: var(--accent-hi); }
+  .hero__stat-val--red { color: var(--signal-red); }
+  .hero__stat-suffix {
+    font-size: 0.7em;
+    margin-left: 1px;
+    opacity: 0.85;
+  }
+  .hero__stat-label {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
+
+  @media (max-width: 700px) {
+    .hero__stats {
+      gap: var(--space-3) var(--space-5);
+    }
+    .hero__stat-val {
+      font-size: var(--fs-lg);
+    }
+  }
 
   .pillars-bento {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: var(--space-2);
   }
   .pillars-bento__cell { min-width: 0; }
-  .pillars-bento__cell--feature { grid-column: span 2; }
-  @media (max-width: 1100px) {
+  @media (max-width: 1280px) {
     .pillars-bento { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .pillars-bento__cell--feature { grid-column: span 2; }
   }
   @media (max-width: 700px) {
     .pillars-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .pillars-bento__cell--feature { grid-column: span 2; }
   }
 
   .bento { display: grid; gap: var(--space-3); }
@@ -558,18 +724,18 @@ const featuredMcp = {
 
   .faq-stack { display: flex; flex-direction: column; }
   .qline {
-    display: grid; grid-template-columns: 56px 1fr auto;
-    align-items: center; gap: var(--space-3);
-    padding: var(--space-2-5) 0; border-bottom: 1px solid var(--border-dim);
+    display: grid; grid-template-columns: 48px 1fr auto;
+    align-items: start; gap: var(--space-3);
+    padding: var(--space-3) 0; border-bottom: 1px solid var(--border-dim);
     color: var(--text); transition: all var(--duration-fast) var(--ease-out);
   }
   .qline:last-child { border-bottom: 0; }
-  .qline:hover { background: var(--bg-elevated); margin: 0 calc(-1 * var(--space-3)); padding: var(--space-2-5) var(--space-3); color: var(--text-bright); }
-  .qline__num { font-size: var(--fs-2xs); color: var(--signal-amber); text-transform: uppercase; letter-spacing: var(--tracking-widest); text-shadow: var(--text-glow-amber); font-weight: var(--fw-bold); }
-  .qline__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .qline__q { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-bright); line-height: 1.2; }
-  .qline__hint { font-size: var(--fs-xs); color: var(--text-mute); }
-  .qline > :global(.icon) { color: var(--text-faint); }
+  .qline:hover { background: var(--bg-elevated); margin: 0 calc(-1 * var(--space-3)); padding: var(--space-3); border-radius: var(--radius-sm); color: var(--text-bright); }
+  .qline__num { font-size: var(--fs-2xs); color: var(--signal-amber); text-transform: uppercase; letter-spacing: var(--tracking-widest); font-weight: var(--fw-bold); padding-top: 2px; }
+  .qline__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .qline__q { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-bright); line-height: 1.25; font-weight: var(--fw-semibold); }
+  .qline__tease { font-size: var(--fs-xs); color: var(--text-mute); line-height: 1.55; max-width: 72ch; }
+  .qline > :global(.icon) { color: var(--text-faint); align-self: center; }
   .qline:hover > :global(.icon) { color: var(--signal-amber); }
 
   .vendor-stack { display: flex; flex-direction: column; gap: var(--space-1-5); }
@@ -586,9 +752,9 @@ const featuredMcp = {
     width: 36px; height: 36px;
     display: inline-flex; align-items: center; justify-content: center;
     background: var(--bg-elevated); border: 1px solid var(--signal-amber);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-sm);
     font-size: var(--fs-md); font-weight: var(--fw-bold);
-    color: var(--signal-amber); text-shadow: var(--text-glow-amber);
+    color: var(--signal-amber);
   }
   .vbrick__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .vbrick__name { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-bright); font-weight: var(--fw-semibold); }
@@ -640,10 +806,191 @@ const featuredMcp = {
     cursor: pointer; transition: all var(--duration-fast) var(--ease-out);
   }
   .install__copy:hover { background: var(--signal-cyan); color: var(--bg-base); }
+  .install__copy.is-copied,
   .install__copy--done { background: var(--signal-green); border-color: var(--signal-green); color: var(--bg-base); }
   .install__hint {
     font-size: var(--fs-2xs); color: var(--text-mute);
     text-transform: uppercase; letter-spacing: var(--tracking-widest);
   }
   .install__cta { margin-top: var(--space-1); }
+
+  /* ──────────────────────────────────────────────
+     Ecosystem snapshot strip — under the hero.
+     Mono telemetry tiles. Zero chrome cost, max info-density.
+     ────────────────────────────────────────────── */
+  .ecosys-strip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-2-5) var(--space-3);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+  }
+  .ecosys-strip__label {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-size: var(--fs-2xs);
+    color: var(--accent-hi);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    font-weight: var(--fw-semibold);
+    flex-shrink: 0;
+  }
+  .ecosys-strip__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-5);
+    flex: 1;
+    min-width: 0;
+  }
+  .ecosys-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    white-space: nowrap;
+  }
+  .ecosys-stat__val {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .ecosys-stat__val--cyan { color: var(--signal-cyan); }
+  .ecosys-stat__val--green { color: var(--signal-green); }
+  .ecosys-stat__val--amber { color: var(--signal-amber); }
+  .ecosys-stat__val--accent { color: var(--accent-hi); }
+  .ecosys-stat__val--red { color: var(--signal-red); }
+  .ecosys-stat__val--mute { color: var(--text-bright); }
+  .ecosys-stat__lbl {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  /* ──────────────────────────────────────────────
+     Top Movers panel — replaces the old recipe stack on home.
+     Dense per-row layout: rank · name · cat · delta · stars · trend.
+     ────────────────────────────────────────────── */
+  .topmovers { display: flex; flex-direction: column; }
+  .tmover {
+    display: grid;
+    grid-template-columns: 24px 1fr auto auto auto auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-2-5);
+    border-bottom: 1px solid var(--border-dim);
+    color: var(--text);
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+  .tmover:last-child { border-bottom: 0; }
+  .tmover:hover { background: var(--bg-elevated); color: var(--text-bright); }
+  .tmover__rank {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-widest);
+  }
+  .tmover__name {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--text-bright);
+    font-weight: var(--fw-medium);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    min-width: 0;
+  }
+  .tmover__cat {
+    font-size: var(--fs-2xs);
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .tmover__delta { font-size: var(--fs-xs); font-weight: var(--fw-bold); }
+  .tmover__stars { font-size: var(--fs-xs); color: var(--signal-cyan); font-weight: var(--fw-medium); }
+  .tmover__trend { line-height: 0; }
+  .tmover__trend-empty { color: var(--text-faint); font-size: var(--fs-xs); }
+  @media (max-width: 600px) {
+    .tmover { grid-template-columns: 22px 1fr auto auto; gap: var(--space-1-5); }
+    .tmover__cat, .tmover__trend { display: none; }
+  }
+
+  /* ──────────────────────────────────────────────
+     Quick Install — 4 popular MCPs with copy buttons.
+     Replaces the single GitHub install card.
+     ────────────────────────────────────────────── */
+  .qi { display: flex; flex-direction: column; gap: var(--space-1-5); }
+  .qi__row {
+    display: grid;
+    grid-template-columns: 110px 1fr 30px;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1-5) var(--space-2-5);
+    background: var(--code-bg);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  .qi__row:hover { border-color: var(--signal-cyan); }
+  .qi__label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .qi__name {
+    font-family: var(--font-display);
+    font-size: var(--fs-xs);
+    color: var(--text-bright);
+    font-weight: var(--fw-semibold);
+    line-height: 1.1;
+  }
+  .qi__cat {
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    line-height: 1;
+  }
+  .qi__cmd {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--code-text);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .qi__copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius-xs);
+    color: var(--text-mute);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+  .qi__copy:hover { color: var(--signal-cyan); border-color: var(--signal-cyan); }
+  .qi__copy.is-copied { color: var(--signal-green); border-color: var(--signal-green); }
+  .qi__hint {
+    font-size: var(--fs-2xs);
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: var(--space-2) 0 0;
+    text-align: center;
+  }
+  .qi__cta { margin-top: var(--space-1); display: flex; justify-content: flex-end; }
+  @media (max-width: 600px) {
+    .qi__row { grid-template-columns: 1fr 28px; }
+    .qi__label { display: none; }
+  }
 </style>

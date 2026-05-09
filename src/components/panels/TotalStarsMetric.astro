@@ -130,7 +130,6 @@ function fmt(n: number): string {
     align-items: center;
     gap: var(--space-2);
     color: var(--signal-cyan);
-    text-shadow: var(--text-glow-cyan);
     font-weight: var(--fw-semibold);
   }
 
@@ -163,13 +162,12 @@ function fmt(n: number): string {
     line-height: 0.95;
     letter-spacing: -0.04em;
     color: var(--signal-cyan);
-    text-shadow: 0 0 24px var(--signal-cyan-glow);
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.25);
   }
 
   .tsm__star {
     font-size: var(--fs-2xl);
     color: var(--signal-cyan);
-    text-shadow: 0 0 12px var(--signal-cyan-glow);
   }
 
   .tsm__meta {
@@ -188,7 +186,6 @@ function fmt(n: number): string {
   .tsm__delta {
     font-size: var(--fs-xs);
     color: var(--signal-green);
-    text-shadow: var(--text-glow-green);
     font-weight: var(--fw-semibold);
   }
 

@@ -175,6 +175,11 @@ const version = packageJson.version;
     .statusbar__group--center { display: none; }
     .statusbar__group--left .statusbar__item:nth-child(n+3) { display: none; }
   }
+
+  /* Mobile strip: hide StatusBar entirely on phones — it's chrome, not content. */
+  @media (max-width: 700px) {
+    .statusbar { display: none; }
+  }
 </style>
 
 <script>
