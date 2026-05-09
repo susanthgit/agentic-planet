@@ -7,6 +7,7 @@
  */
 import StatusBar from '@components/StatusBar.astro';
 import Nav from '@components/Nav.astro';
+import CosmosBar from '@components/CosmosBar.astro';
 import Footer from '@components/Footer.astro';
 import CommandPalette from '@components/interactive/CommandPalette.tsx';
 import '@styles/global.css';
@@ -65,9 +66,11 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
 
   <meta name="theme-color" content="#0A0E14" />
   <meta name="color-scheme" content="dark" />
+  <link rel="stylesheet" href="/cosmos-bar.css" />
 </head>
 
 <body class={bodyClass}>
+  <CosmosBar />
   <a href="#main" class="skip-link">Skip to main content</a>
 
   <div data-pagefind-ignore>
