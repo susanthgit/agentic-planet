@@ -113,6 +113,13 @@ const cosmosMap = [
           </li>
         ))}
       </ul>
+
+      <a href="https://cosmos.aguidetocloud.com/" class="cosmos-tour-cta mono" rel="noopener" aria-label="Open the visual cosmos atlas — every planet on one map">
+        <span aria-hidden="true">▸</span>
+        <span class="cosmos-tour-cta__label">ATLAS // TOUR ALL PLANETS</span>
+        <span aria-hidden="true" class="cosmos-tour-cta__arrow">→</span>
+      </a>
+
       <p class="text-mute" style="font-size: var(--fs-sm);">
         Read the <a href="https://learn.aguidetocloud.com/reference/cosmos-philosophy/" rel="noopener">cosmos philosophy</a>
         if that frame intrigues you.
@@ -204,5 +211,59 @@ const cosmosMap = [
     gap: var(--space-3);
     margin-top: var(--space-6);
     flex-wrap: wrap;
+  }
+
+  /* ============================================================
+     COSMOS TOUR CTA — about page §"THE COSMOS"
+     Carries the cross-planet "tour cosmos" pattern Earth ships.
+     Sits between the cosmos map list and the philosophy link.
+     Cockpit voice — signal-cyan border, glow, mono uppercase.
+     ============================================================ */
+  .cosmos-tour-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    margin: var(--space-3) 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--signal-cyan);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--signal-cyan);
+    text-decoration: none;
+    text-shadow: 0 0 6px var(--signal-cyan-glow);
+    transition: background 200ms ease-out, color 200ms ease-out, transform 200ms ease-out, box-shadow 200ms ease-out, text-shadow 200ms ease-out;
+  }
+  .cosmos-tour-cta:hover {
+    background: var(--signal-cyan);
+    color: var(--bg-base);
+    text-shadow: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cosmos-tour-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 18px var(--signal-cyan-glow);
+    }
+    .cosmos-tour-cta:hover .cosmos-tour-cta__arrow {
+      transform: translateX(2px);
+    }
+  }
+  .cosmos-tour-cta__label {
+    font-weight: var(--fw-semibold, 600);
+  }
+  .cosmos-tour-cta__arrow {
+    display: inline-block;
+    transition: transform 200ms ease-out;
+  }
+
+  /* Mobile — full-width tap target */
+  @media (max-width: 640px) {
+    .cosmos-tour-cta {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      padding: var(--space-3) var(--space-4);
+    }
   }
 </style>
