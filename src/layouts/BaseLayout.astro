@@ -23,16 +23,33 @@ export interface Props {
 
 const {
   title,
-  description = 'Tools, MCPs, recipes, and honest reviews for techies building with agents. Plain English. No vendor spin.',
+  description = 'Tools, MCPs, recipes, and honest reviews for techies building AI agents. Plain English, no vendor spin, no hype — just what actually works in production.',
   canonical,
   ogImage,
   noIndex = false,
   bodyClass = '',
 } = Astro.props;
 
-const fullTitle = title === 'The Agentic Planet'
-  ? title
-  : `${title} · The Agentic Planet`;
+// Word-boundary trim for SEO compliance (added 11 May 2026, Phase 3D sweep).
+// Long human-readable page titles like "Pick Your Stack — agentic AI stack
+// recommender" overflow Google's 60-char title truncation budget once we add
+// the brand suffix. Trim at the last space past 60% of maxLen so we don't
+// chop mid-word; strip trailing punctuation before adding the ellipsis.
+const trimToWord = (s: string, max: number): string => {
+  if (s.length <= max) return s;
+  const sliced = s.slice(0, max);
+  const lastSpace = sliced.lastIndexOf(' ');
+  const cut = lastSpace > max * 0.6 ? sliced.slice(0, lastSpace) : sliced;
+  return cut.replace(/[\s.,;:—–\-]+$/, '') + '…';
+};
+
+const hasBrand = title === 'The Agentic Planet' || title.includes('Agentic Planet');
+const rawTitle = hasBrand ? title : `${title} · The Agentic Planet`;
+const fullTitle = trimToWord(rawTitle, 60);
+
+// Trim description too — collection-driven pages (MCP reviews, vendor reviews,
+// recipes) pass entry.data.summary verbatim, which often exceeds 155 chars.
+const trimmedDescription = trimToWord(description, 155);
 
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
 ---
@@ -45,7 +62,7 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   <meta name="generator" content={Astro.generator} />
 
   <title>{fullTitle}</title>
-  <meta name="description" content={description} />
+  <meta name="description" content={trimmedDescription} />
   <link rel="canonical" href={canonicalUrl} />
 
   {noIndex && <meta name="robots" content="noindex, nofollow" />}
@@ -55,13 +72,13 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:title" content={fullTitle} />
-  <meta property="og:description" content={description} />
+  <meta property="og:description" content={trimmedDescription} />
   {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />}
   <meta property="og:site_name" content="The Agentic Planet" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={fullTitle} />
-  <meta name="twitter:description" content={description} />
+  <meta name="twitter:description" content={trimmedDescription} />
   {ogImage && <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />}
 
   <meta name="theme-color" content="#0A0E14" />
