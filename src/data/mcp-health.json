@@ -1,31 +1,31 @@
 {
   "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
-  "_lastUpdated": "2026-06-05T09:55:21.475Z",
+  "_lastUpdated": "2026-06-05T14:56:03.284Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
       "slug": "github-mcp",
       "name": "github-mcp-server",
       "category": "Dev",
-      "stars": 30445,
-      "delta7d": 49,
+      "stars": 30449,
+      "delta7d": 48,
       "lastCommit": "<1d ago",
       "lastCommitDays": 0,
       "health": "alive",
       "trend": [
-        30401,
         30409,
         30416,
         30423,
         30424,
         30437,
-        30445
+        30445,
+        30449
       ],
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
-      "repoStars": 30445,
-      "representativeStars": 30445,
+      "repoStars": 30449,
+      "representativeStars": 30449,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -38,25 +38,25 @@
       "slug": "playwright-mcp",
       "name": "playwright-mcp",
       "category": "Browser",
-      "stars": 33524,
-      "delta7d": 108,
+      "stars": 33530,
+      "delta7d": 103,
       "lastCommit": "<1d ago",
       "lastCommitDays": 0,
       "health": "alive",
       "trend": [
-        33427,
         33446,
         33472,
         33485,
         33497,
         33508,
-        33524
+        33524,
+        33530
       ],
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
-      "repoStars": 33524,
-      "representativeStars": 33524,
+      "repoStars": 33530,
+      "representativeStars": 33530,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -86,7 +86,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
-      "repoStars": 86765,
+      "repoStars": 86779,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -119,7 +119,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
-      "repoStars": 86765,
+      "repoStars": 86779,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -152,7 +152,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
-      "repoStars": 86765,
+      "repoStars": 86779,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -174,11 +174,11 @@
       "lastCommitDays": 2,
       "health": "alive",
       "trend": [
-        3816,
         3818,
         3820,
         3820,
         3820,
+        3821,
         3821,
         3821
       ],
@@ -206,11 +206,11 @@
       "health": "alive",
       "trend": [
         4385,
-        4385,
         4390,
         4390,
         4391,
         4392,
+        4393,
         4393
       ],
       "sourceType": "repo",
@@ -230,25 +230,25 @@
       "slug": "figma-mcp",
       "name": "figma-mcp",
       "category": "Design",
-      "stars": 14999,
-      "delta7d": 18,
+      "stars": 15001,
+      "delta7d": 19,
       "lastCommit": "1w ago",
       "lastCommitDays": 8,
       "health": "alive",
       "trend": [
-        14982,
         14985,
         14991,
         14993,
         14994,
         14999,
-        14999
+        14999,
+        15001
       ],
       "sourceType": "repo",
       "repo": "GLips/Figma-Context-MCP",
       "packagePath": null,
-      "repoStars": 14999,
-      "representativeStars": 14999,
+      "repoStars": 15001,
+      "representativeStars": 15001,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -262,7 +262,7 @@
       "name": "azure-mcp",
       "category": "Cloud",
       "stars": 1216,
-      "delta7d": 2,
+      "delta7d": 0,
       "lastCommit": "3mo ago",
       "lastCommitDays": 118,
       "health": "abandoned",
@@ -302,8 +302,8 @@
         1587,
         1587,
         1587,
-        1587,
         1588,
+        1589,
         1589
       ],
       "sourceType": "repo",
@@ -329,12 +329,12 @@
       "lastCommitDays": 28,
       "health": "alive",
       "trend": [
+        3365,
+        3365,
+        3365,
+        3365,
+        3365,
         3364,
-        3365,
-        3365,
-        3365,
-        3365,
-        3365,
         3364
       ],
       "sourceType": "repo",
