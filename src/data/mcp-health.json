@@ -1,31 +1,31 @@
 {
   "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
-  "_lastUpdated": "2026-06-28T04:02:32.773Z",
+  "_lastUpdated": "2026-06-28T08:55:34.099Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
       "slug": "github-mcp",
       "name": "github-mcp-server",
       "category": "Dev",
-      "stars": 31016,
-      "delta7d": 34,
-      "lastCommit": "<1d ago",
-      "lastCommitDays": 0,
+      "stars": 31021,
+      "delta7d": 36,
+      "lastCommit": "1d ago",
+      "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        30985,
         30990,
         30994,
         30998,
         31003,
         31004,
-        31016
+        31016,
+        31021
       ],
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
-      "repoStars": 31016,
-      "representativeStars": 31016,
+      "repoStars": 31021,
+      "representativeStars": 31021,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -38,25 +38,25 @@
       "slug": "playwright-mcp",
       "name": "playwright-mcp",
       "category": "Browser",
-      "stars": 34435,
-      "delta7d": 58,
+      "stars": 34447,
+      "delta7d": 63,
       "lastCommit": "2d ago",
       "lastCommitDays": 2,
       "health": "alive",
       "trend": [
-        34384,
         34392,
         34398,
         34407,
         34418,
         34425,
-        34435
+        34435,
+        34447
       ],
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
-      "repoStars": 34435,
-      "representativeStars": 34435,
+      "repoStars": 34447,
+      "representativeStars": 34447,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -86,7 +86,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
-      "repoStars": 87768,
+      "repoStars": 87777,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -119,7 +119,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
-      "repoStars": 87768,
+      "repoStars": 87777,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -152,7 +152,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
-      "repoStars": 87768,
+      "repoStars": 87777,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -168,25 +168,25 @@
       "slug": "cloudflare-mcp",
       "name": "cloudflare-mcp",
       "category": "Cloud",
-      "stars": 3897,
-      "delta7d": 3,
-      "lastCommit": "<1d ago",
-      "lastCommitDays": 0,
+      "stars": 3899,
+      "delta7d": 5,
+      "lastCommit": "1d ago",
+      "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        3894,
         3894,
         3896,
         3896,
         3896,
         3897,
-        3897
+        3897,
+        3899
       ],
       "sourceType": "repo",
       "repo": "cloudflare/mcp-server-cloudflare",
       "packagePath": null,
-      "repoStars": 3897,
-      "representativeStars": 3897,
+      "repoStars": 3899,
+      "representativeStars": 3899,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -205,12 +205,12 @@
       "lastCommitDays": 5,
       "health": "alive",
       "trend": [
-        4461,
         4462,
         4462,
         4462,
         4462,
         4462,
+        4463,
         4463
       ],
       "sourceType": "repo",
@@ -240,8 +240,8 @@
         15239,
         15239,
         15239,
-        15239,
         15240,
+        15241,
         15241
       ],
       "sourceType": "repo",
@@ -271,7 +271,7 @@
         1219,
         1219,
         1219,
-        1219,
+        1220,
         1220,
         1220
       ],
@@ -292,25 +292,25 @@
       "slug": "stripe-mcp",
       "name": "stripe-mcp",
       "category": "Payments",
-      "stars": 1636,
-      "delta7d": 2,
+      "stars": 1638,
+      "delta7d": 4,
       "lastCommit": "2d ago",
       "lastCommitDays": 2,
       "health": "alive",
       "trend": [
-        1634,
         1635,
         1635,
         1635,
         1635,
         1636,
-        1636
+        1636,
+        1638
       ],
       "sourceType": "repo",
       "repo": "stripe/agent-toolkit",
       "packagePath": null,
-      "repoStars": 1636,
-      "representativeStars": 1636,
+      "repoStars": 1638,
+      "representativeStars": 1638,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -323,25 +323,25 @@
       "slug": "browserbase-mcp",
       "name": "browserbase-mcp",
       "category": "Browser",
-      "stars": 3386,
-      "delta7d": 3,
+      "stars": 3387,
+      "delta7d": 4,
       "lastCommit": "1mo ago",
       "lastCommitDays": 51,
       "health": "slowing",
       "trend": [
         3383,
-        3383,
         3385,
         3385,
         3385,
         3385,
-        3386
+        3386,
+        3387
       ],
       "sourceType": "repo",
       "repo": "browserbase/mcp-server-browserbase",
       "packagePath": null,
-      "repoStars": 3386,
-      "representativeStars": 3386,
+      "repoStars": 3387,
+      "representativeStars": 3387,
       "healthSignalsMissing": [
         "issue-response time"
       ],
