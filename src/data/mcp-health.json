@@ -1,31 +1,31 @@
 {
   "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
-  "_lastUpdated": "2026-06-30T09:40:21.915Z",
+  "_lastUpdated": "2026-06-30T14:23:49.188Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
       "slug": "github-mcp",
       "name": "github-mcp-server",
       "category": "Dev",
-      "stars": 31082,
-      "delta7d": 54,
+      "stars": 31085,
+      "delta7d": 50,
       "lastCommit": "<1d ago",
       "lastCommitDays": 0,
       "health": "alive",
       "trend": [
-        31035,
         31044,
         31051,
         31058,
         31062,
         31070,
-        31082
+        31082,
+        31085
       ],
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
-      "repoStars": 31082,
-      "representativeStars": 31082,
+      "repoStars": 31085,
+      "representativeStars": 31085,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -38,25 +38,25 @@
       "slug": "playwright-mcp",
       "name": "playwright-mcp",
       "category": "Browser",
-      "stars": 34530,
-      "delta7d": 78,
+      "stars": 34536,
+      "delta7d": 71,
       "lastCommit": "<1d ago",
       "lastCommitDays": 0,
       "health": "alive",
       "trend": [
-        34465,
         34474,
         34496,
         34502,
         34507,
         34516,
-        34530
+        34530,
+        34536
       ],
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
-      "repoStars": 34530,
-      "representativeStars": 34530,
+      "repoStars": 34536,
+      "representativeStars": 34536,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -86,7 +86,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
-      "repoStars": 87877,
+      "repoStars": 87888,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -119,7 +119,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
-      "repoStars": 87877,
+      "repoStars": 87888,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -152,7 +152,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
-      "repoStars": 87877,
+      "repoStars": 87888,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -168,25 +168,25 @@
       "slug": "cloudflare-mcp",
       "name": "cloudflare-mcp",
       "category": "Cloud",
-      "stars": 3906,
-      "delta7d": 6,
+      "stars": 3907,
+      "delta7d": 7,
       "lastCommit": "3d ago",
       "lastCommitDays": 3,
       "health": "alive",
       "trend": [
-        3900,
         3901,
         3903,
         3903,
         3903,
         3904,
-        3906
+        3906,
+        3907
       ],
       "sourceType": "repo",
       "repo": "cloudflare/mcp-server-cloudflare",
       "packagePath": null,
-      "repoStars": 3906,
-      "representativeStars": 3906,
+      "repoStars": 3907,
+      "representativeStars": 3907,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -199,25 +199,25 @@
       "slug": "notion-mcp",
       "name": "notion-mcp",
       "category": "Productivity",
-      "stars": 4469,
-      "delta7d": 6,
+      "stars": 4471,
+      "delta7d": 7,
       "lastCommit": "1w ago",
       "lastCommitDays": 7,
       "health": "alive",
       "trend": [
-        4464,
         4467,
         4467,
         4468,
         4468,
         4469,
-        4469
+        4469,
+        4471
       ],
       "sourceType": "repo",
       "repo": "makenotion/notion-mcp-server",
       "packagePath": null,
-      "repoStars": 4469,
-      "representativeStars": 4469,
+      "repoStars": 4471,
+      "representativeStars": 4471,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -230,25 +230,25 @@
       "slug": "figma-mcp",
       "name": "figma-mcp",
       "category": "Design",
-      "stars": 15262,
-      "delta7d": 20,
+      "stars": 15266,
+      "delta7d": 24,
       "lastCommit": "5d ago",
       "lastCommitDays": 5,
       "health": "alive",
       "trend": [
-        15242,
         15246,
         15250,
         15252,
         15253,
         15257,
-        15262
+        15262,
+        15266
       ],
       "sourceType": "repo",
       "repo": "GLips/Figma-Context-MCP",
       "packagePath": null,
-      "repoStars": 15262,
-      "representativeStars": 15262,
+      "repoStars": 15266,
+      "representativeStars": 15266,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -267,7 +267,7 @@
       "lastCommitDays": 143,
       "health": "abandoned",
       "trend": [
-        1220,
+        1221,
         1221,
         1221,
         1221,
@@ -292,25 +292,25 @@
       "slug": "stripe-mcp",
       "name": "stripe-mcp",
       "category": "Payments",
-      "stars": 1641,
-      "delta7d": 3,
+      "stars": 1640,
+      "delta7d": 1,
       "lastCommit": "4d ago",
       "lastCommitDays": 4,
       "health": "alive",
       "trend": [
-        1639,
         1640,
         1641,
         1641,
         1641,
         1641,
-        1641
+        1641,
+        1640
       ],
       "sourceType": "repo",
       "repo": "stripe/agent-toolkit",
       "packagePath": null,
-      "repoStars": 1641,
-      "representativeStars": 1641,
+      "repoStars": 1640,
+      "representativeStars": 1640,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -334,7 +334,7 @@
         3387,
         3387,
         3387,
-        3387,
+        3389,
         3389
       ],
       "sourceType": "repo",
