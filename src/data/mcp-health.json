@@ -1,31 +1,31 @@
 {
   "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
-  "_lastUpdated": "2026-07-05T03:37:40.407Z",
+  "_lastUpdated": "2026-07-05T08:55:10.748Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
       "slug": "github-mcp",
       "name": "github-mcp-server",
       "category": "Dev",
-      "stars": 31190,
-      "delta7d": 44,
+      "stars": 31199,
+      "delta7d": 49,
       "lastCommit": "1d ago",
       "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        31150,
         31154,
         31157,
         31164,
         31173,
         31178,
-        31190
+        31190,
+        31199
       ],
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
-      "repoStars": 31190,
-      "representativeStars": 31190,
+      "repoStars": 31199,
+      "representativeStars": 31199,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -38,25 +38,25 @@
       "slug": "playwright-mcp",
       "name": "playwright-mcp",
       "category": "Browser",
-      "stars": 34710,
+      "stars": 34718,
       "delta7d": 61,
       "lastCommit": "5d ago",
       "lastCommitDays": 5,
       "health": "alive",
       "trend": [
-        34657,
         34660,
         34667,
         34673,
         34686,
         34698,
-        34710
+        34710,
+        34718
       ],
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
-      "repoStars": 34710,
-      "representativeStars": 34710,
+      "repoStars": 34718,
+      "representativeStars": 34718,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -86,7 +86,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
-      "repoStars": 88056,
+      "repoStars": 88069,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -119,7 +119,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
-      "repoStars": 88056,
+      "repoStars": 88069,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -152,7 +152,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
-      "repoStars": 88056,
+      "repoStars": 88069,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -177,9 +177,9 @@
         3915,
         3915,
         3915,
-        3915,
         3916,
         3916,
+        3919,
         3919
       ],
       "sourceType": "repo",
@@ -208,9 +208,9 @@
         4473,
         4473,
         4473,
-        4473,
         4474,
         4476,
+        4477,
         4477
       ],
       "sourceType": "repo",
@@ -231,17 +231,17 @@
       "name": "figma-mcp",
       "category": "Design",
       "stars": 15305,
-      "delta7d": 9,
+      "delta7d": 7,
       "lastCommit": "1d ago",
       "lastCommitDays": 1,
       "health": "alive",
       "trend": [
         15298,
-        15298,
         15300,
         15300,
         15300,
         15302,
+        15305,
         15305
       ],
       "sourceType": "repo",
@@ -272,7 +272,7 @@
         1221,
         1221,
         1221,
-        1221,
+        1222,
         1222
       ],
       "sourceType": "repo",
@@ -299,10 +299,10 @@
       "health": "alive",
       "trend": [
         1644,
-        1644,
         1645,
         1645,
         1645,
+        1646,
         1646,
         1646
       ],
@@ -331,10 +331,10 @@
       "trend": [
         3391,
         3391,
-        3391,
         3390,
         3390,
         3391,
+        3392,
         3392
       ],
       "sourceType": "repo",
