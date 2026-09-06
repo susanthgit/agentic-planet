@@ -1,31 +1,31 @@
 {
   "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
-  "_lastUpdated": "2026-09-06T03:29:39.739Z",
+  "_lastUpdated": "2026-09-06T10:29:21.216Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
       "slug": "github-mcp",
       "name": "github-mcp-server",
       "category": "Dev",
-      "stars": 32741,
-      "delta7d": 35,
-      "lastCommit": "<1d ago",
-      "lastCommitDays": 0,
+      "stars": 32743,
+      "delta7d": 31,
+      "lastCommit": "1d ago",
+      "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        32712,
         32714,
         32718,
         32723,
         32726,
         32735,
-        32741
+        32741,
+        32743
       ],
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
-      "repoStars": 32741,
-      "representativeStars": 32741,
+      "repoStars": 32743,
+      "representativeStars": 32743,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -38,25 +38,25 @@
       "slug": "playwright-mcp",
       "name": "playwright-mcp",
       "category": "Browser",
-      "stars": 36836,
-      "delta7d": 50,
+      "stars": 36843,
+      "delta7d": 47,
       "lastCommit": "1d ago",
       "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        36796,
         36800,
         36806,
         36814,
         36822,
         36830,
-        36836
+        36836,
+        36843
       ],
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
-      "repoStars": 36836,
-      "representativeStars": 36836,
+      "repoStars": 36843,
+      "representativeStars": 36843,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -86,7 +86,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
-      "repoStars": 90104,
+      "repoStars": 90108,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -119,7 +119,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
-      "repoStars": 90104,
+      "repoStars": 90108,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -152,7 +152,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
-      "repoStars": 90104,
+      "repoStars": 90108,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -168,25 +168,25 @@
       "slug": "cloudflare-mcp",
       "name": "cloudflare-mcp",
       "category": "Cloud",
-      "stars": 4150,
-      "delta7d": 6,
+      "stars": 4153,
+      "delta7d": 8,
       "lastCommit": "4d ago",
       "lastCommitDays": 4,
       "health": "alive",
       "trend": [
         4145,
         4145,
-        4145,
         4146,
         4147,
         4148,
-        4150
+        4150,
+        4153
       ],
       "sourceType": "repo",
       "repo": "cloudflare/mcp-server-cloudflare",
       "packagePath": null,
-      "repoStars": 4150,
-      "representativeStars": 4150,
+      "repoStars": 4153,
+      "representativeStars": 4153,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -206,10 +206,10 @@
       "health": "slowing",
       "trend": [
         4622,
-        4622,
         4623,
         4623,
         4623,
+        4624,
         4624,
         4624
       ],
@@ -231,17 +231,17 @@
       "name": "figma-mcp",
       "category": "Design",
       "stars": 15783,
-      "delta7d": 9,
+      "delta7d": 8,
       "lastCommit": "<1d ago",
       "lastCommitDays": 0,
       "health": "alive",
       "trend": [
-        15775,
         15776,
         15776,
         15780,
         15780,
         15782,
+        15783,
         15783
       ],
       "sourceType": "repo",
@@ -299,9 +299,9 @@
       "health": "alive",
       "trend": [
         1790,
-        1790,
         1791,
         1791,
+        1792,
         1792,
         1792,
         1792
@@ -331,8 +331,8 @@
       "trend": [
         3404,
         3404,
-        3404,
         3405,
+        3406,
         3406,
         3406,
         3406
