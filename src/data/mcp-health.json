@@ -1,31 +1,31 @@
 {
   "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
-  "_lastUpdated": "2026-09-08T03:35:12.494Z",
+  "_lastUpdated": "2026-09-08T10:48:56.562Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
       "slug": "github-mcp",
       "name": "github-mcp-server",
       "category": "Dev",
-      "stars": 32795,
+      "stars": 32806,
       "delta7d": 52,
       "lastCommit": "<1d ago",
       "lastCommitDays": 0,
       "health": "alive",
       "trend": [
-        32754,
         32762,
         32767,
         32775,
         32784,
         32788,
-        32795
+        32795,
+        32806
       ],
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
-      "repoStars": 32795,
-      "representativeStars": 32795,
+      "repoStars": 32806,
+      "representativeStars": 32806,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -38,25 +38,25 @@
       "slug": "playwright-mcp",
       "name": "playwright-mcp",
       "category": "Browser",
-      "stars": 36877,
-      "delta7d": 34,
+      "stars": 36890,
+      "delta7d": 38,
       "lastCommit": "3d ago",
       "lastCommitDays": 3,
       "health": "alive",
       "trend": [
-        36852,
         36856,
         36858,
         36866,
         36869,
         36872,
-        36877
+        36877,
+        36890
       ],
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
-      "repoStars": 36877,
-      "representativeStars": 36877,
+      "repoStars": 36890,
+      "representativeStars": 36890,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -86,7 +86,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
-      "repoStars": 90144,
+      "repoStars": 90155,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -119,7 +119,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
-      "repoStars": 90144,
+      "repoStars": 90155,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -152,7 +152,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
-      "repoStars": 90144,
+      "repoStars": 90155,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -168,25 +168,25 @@
       "slug": "cloudflare-mcp",
       "name": "cloudflare-mcp",
       "category": "Cloud",
-      "stars": 4160,
-      "delta7d": 7,
+      "stars": 4162,
+      "delta7d": 9,
       "lastCommit": "6d ago",
       "lastCommitDays": 6,
       "health": "alive",
       "trend": [
-        4153,
         4156,
         4156,
         4159,
         4159,
         4159,
-        4160
+        4160,
+        4162
       ],
       "sourceType": "repo",
       "repo": "cloudflare/mcp-server-cloudflare",
       "packagePath": null,
-      "repoStars": 4160,
-      "representativeStars": 4160,
+      "repoStars": 4162,
+      "representativeStars": 4162,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -199,25 +199,25 @@
       "slug": "notion-mcp",
       "name": "notion-mcp",
       "category": "Productivity",
-      "stars": 4621,
-      "delta7d": -3,
+      "stars": 4622,
+      "delta7d": -1,
       "lastCommit": "1mo ago",
       "lastCommitDays": 44,
       "health": "slowing",
       "trend": [
-        4623,
         4622,
         4622,
         4621,
         4621,
         4621,
-        4621
+        4621,
+        4622
       ],
       "sourceType": "repo",
       "repo": "makenotion/notion-mcp-server",
       "packagePath": null,
-      "repoStars": 4621,
-      "representativeStars": 4621,
+      "repoStars": 4622,
+      "representativeStars": 4622,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -230,25 +230,25 @@
       "slug": "figma-mcp",
       "name": "figma-mcp",
       "category": "Design",
-      "stars": 15793,
-      "delta7d": 10,
+      "stars": 15799,
+      "delta7d": 15,
       "lastCommit": "1d ago",
       "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        15784,
         15787,
         15789,
         15792,
         15792,
         15792,
-        15793
+        15793,
+        15799
       ],
       "sourceType": "repo",
       "repo": "GLips/Figma-Context-MCP",
       "packagePath": null,
-      "repoStars": 15793,
-      "representativeStars": 15793,
+      "repoStars": 15799,
+      "representativeStars": 15799,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -298,9 +298,9 @@
       "lastCommitDays": 4,
       "health": "alive",
       "trend": [
-        1792,
         1794,
         1795,
+        1794,
         1794,
         1794,
         1794,
@@ -331,8 +331,8 @@
       "trend": [
         3406,
         3406,
-        3406,
         3405,
+        3404,
         3404,
         3404,
         3404
