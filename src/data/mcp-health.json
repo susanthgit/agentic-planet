@@ -1,31 +1,31 @@
 {
   "_note": "Seed data for the MCP Health Board. Auto-replaced by GitHub Actions cron in production. Schema v2 (2026-05-07): sourceType + repo + packagePath fields added; monorepo-subdir rows have representativeStars=null until per-package metrics available.",
-  "_lastUpdated": "2026-09-10T20:32:45.601Z",
+  "_lastUpdated": "2026-09-11T03:35:32.224Z",
   "_source": "GitHub API · refreshed by GitHub Actions cron",
   "rows": [
     {
       "slug": "github-mcp",
       "name": "github-mcp-server",
       "category": "Dev",
-      "stars": 32848,
-      "delta7d": 34,
+      "stars": 32853,
+      "delta7d": 37,
       "lastCommit": "<1d ago",
       "lastCommitDays": 0,
       "health": "alive",
       "trend": [
-        32816,
         32823,
         32829,
         32839,
         32843,
         32846,
-        32848
+        32848,
+        32853
       ],
       "sourceType": "repo",
       "repo": "github/github-mcp-server",
       "packagePath": null,
-      "repoStars": 32848,
-      "representativeStars": 32848,
+      "repoStars": 32853,
+      "representativeStars": 32853,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -38,25 +38,25 @@
       "slug": "playwright-mcp",
       "name": "playwright-mcp",
       "category": "Browser",
-      "stars": 36983,
-      "delta7d": 76,
-      "lastCommit": "<1d ago",
-      "lastCommitDays": 0,
+      "stars": 36992,
+      "delta7d": 83,
+      "lastCommit": "1d ago",
+      "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        36909,
         36914,
         36921,
         36936,
         36957,
         36971,
-        36983
+        36983,
+        36992
       ],
       "sourceType": "repo",
       "repo": "microsoft/playwright-mcp",
       "packagePath": null,
-      "repoStars": 36983,
-      "representativeStars": 36983,
+      "repoStars": 36992,
+      "representativeStars": 36992,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -72,7 +72,7 @@
       "stars": 0,
       "delta7d": 0,
       "lastCommit": "1w ago",
-      "lastCommitDays": 7,
+      "lastCommitDays": 8,
       "health": "alive",
       "trend": [
         6500,
@@ -86,7 +86,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/filesystem",
-      "repoStars": 90216,
+      "repoStars": 90224,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -105,7 +105,7 @@
       "stars": 0,
       "delta7d": 0,
       "lastCommit": "1w ago",
-      "lastCommitDays": 7,
+      "lastCommitDays": 8,
       "health": "alive",
       "trend": [
         5020,
@@ -119,7 +119,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/postgres",
-      "repoStars": 90216,
+      "repoStars": 90224,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -138,7 +138,7 @@
       "stars": 0,
       "delta7d": 0,
       "lastCommit": "1w ago",
-      "lastCommitDays": 7,
+      "lastCommitDays": 8,
       "health": "alive",
       "trend": [
         3950,
@@ -152,7 +152,7 @@
       "sourceType": "monorepo-subdir",
       "repo": "modelcontextprotocol/servers",
       "packagePath": "src/slack",
-      "repoStars": 90216,
+      "repoStars": 90224,
       "representativeStars": null,
       "healthSignalsMissing": [
         "per-package stars",
@@ -168,25 +168,25 @@
       "slug": "cloudflare-mcp",
       "name": "cloudflare-mcp",
       "category": "Cloud",
-      "stars": 4181,
+      "stars": 4182,
       "delta7d": 10,
       "lastCommit": "1w ago",
       "lastCommitDays": 9,
       "health": "alive",
       "trend": [
-        4172,
         4173,
         4175,
         4175,
         4176,
         4178,
-        4181
+        4181,
+        4182
       ],
       "sourceType": "repo",
       "repo": "cloudflare/mcp-server-cloudflare",
       "packagePath": null,
-      "repoStars": 4181,
-      "representativeStars": 4181,
+      "repoStars": 4182,
+      "representativeStars": 4182,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -199,25 +199,25 @@
       "slug": "notion-mcp",
       "name": "notion-mcp",
       "category": "Productivity",
-      "stars": 4624,
-      "delta7d": 2,
+      "stars": 4625,
+      "delta7d": 3,
       "lastCommit": "1mo ago",
       "lastCommitDays": 47,
       "health": "slowing",
       "trend": [
-        4622,
         4623,
         4623,
         4623,
         4624,
         4624,
-        4624
+        4624,
+        4625
       ],
       "sourceType": "repo",
       "repo": "makenotion/notion-mcp-server",
       "packagePath": null,
-      "repoStars": 4624,
-      "representativeStars": 4624,
+      "repoStars": 4625,
+      "representativeStars": 4625,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -230,25 +230,25 @@
       "slug": "figma-mcp",
       "name": "figma-mcp",
       "category": "Design",
-      "stars": 15834,
-      "delta7d": 28,
-      "lastCommit": "<1d ago",
-      "lastCommitDays": 0,
+      "stars": 15835,
+      "delta7d": 25,
+      "lastCommit": "1d ago",
+      "lastCommitDays": 1,
       "health": "alive",
       "trend": [
-        15810,
         15812,
         15813,
         15815,
         15827,
         15833,
-        15834
+        15834,
+        15835
       ],
       "sourceType": "repo",
       "repo": "GLips/Figma-Context-MCP",
       "packagePath": null,
-      "repoStars": 15834,
-      "representativeStars": 15834,
+      "repoStars": 15835,
+      "representativeStars": 15835,
       "healthSignalsMissing": [
         "issue-response time"
       ],
@@ -300,8 +300,8 @@
       "trend": [
         1795,
         1795,
-        1795,
         1797,
+        1798,
         1798,
         1798,
         1798
@@ -326,7 +326,7 @@
       "stars": 3404,
       "delta7d": 0,
       "lastCommit": "1mo ago",
-      "lastCommitDays": 51,
+      "lastCommitDays": 52,
       "health": "slowing",
       "trend": [
         3404,
